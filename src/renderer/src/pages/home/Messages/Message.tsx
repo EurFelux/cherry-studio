@@ -162,7 +162,8 @@ const MessageItem: FC<Props> = ({
       })}
       ref={messageContainerRef}
       style={{ ...style, alignItems: isBubbleStyle ? (isAssistantMessage ? 'start' : 'end') : undefined }}>
-      <ContextMenu>
+      <ContextMenu
+        style={{ display: isBubbleStyle ? 'flex' : undefined, flexDirection: isBubbleStyle ? 'column' : undefined }}>
         <MessageHeader message={message} assistant={assistant} model={model} key={getModelUniqId(model)} />
         <MessageContentContainer
           className={
@@ -177,7 +178,9 @@ const MessageItem: FC<Props> = ({
             fontSize,
             background: messageBackground,
             overflowY: 'visible',
-            maxWidth: narrowMode ? 760 : undefined
+            maxWidth: narrowMode ? 760 : undefined,
+            textAlign: isBubbleStyle ? (isAssistantMessage ? 'left' : 'right') : undefined,
+            alignSelf: isBubbleStyle ? (isAssistantMessage ? 'flex-start' : 'flex-end') : undefined
           }}>
           <MessageErrorBoundary>
             <MessageContent message={message} />
@@ -206,7 +209,8 @@ const MessageItem: FC<Props> = ({
           )}
 
           {!isLastMessage && isBubbleStyle && showTokens && (
-            <MessageTokensContainer style={{ borderTop: messageBorder }}>
+            <MessageTokensContainer
+              style={{ borderTop: messageBorder, justifyContent: isAssistantMessage ? 'flex-start' : 'flex-end' }}>
               <MessageTokens message={message} isLastMessage={isLastMessage} />
             </MessageTokensContainer>
           )}
@@ -294,7 +298,6 @@ const MessageFooter = styled.div`
 
 const MessageTokensContainer = styled.div`
   display: flex;
-  justify-content: flex-end;
   align-items: center;
   height: 2rem;
 `
