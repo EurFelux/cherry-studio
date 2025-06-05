@@ -52,7 +52,7 @@ const MessageItem: FC<Props> = ({
   const { assistant, setModel } = useAssistant(message.assistantId)
   const model = useModel(getMessageModelId(message), message.model?.provider) || message.model
   const { isBubbleStyle } = useMessageStyle()
-  const { showMessageDivider, messageFont, fontSize, narrowMode, messageStyle, showTokens } = useSettings()
+  const { showMessageDivider, messageFont, fontSize, narrowMode, messageStyle } = useSettings()
   const { editMessageBlocks, resendUserMessageWithEdit, editMessage } = useMessageOperations(topic)
   const messageContainerRef = useRef<HTMLDivElement>(null)
   const { editingMessageId, stopEditing } = useMessageEditing()
@@ -162,7 +162,7 @@ const MessageItem: FC<Props> = ({
       })}
       ref={messageContainerRef}
       style={{ ...style, alignItems: isBubbleStyle ? (isAssistantMessage ? 'start' : 'end') : undefined }}>
-      <ContextMenu>
+      <ContextMenu style={{ display: 'flex', flexDirection: 'column' }}>
         <MessageHeader message={message} assistant={assistant} model={model} key={getModelUniqId(model)} />
         <MessageContentContainer
           className={
@@ -177,11 +177,13 @@ const MessageItem: FC<Props> = ({
             fontSize,
             background: messageBackground,
             overflowY: 'visible',
-            maxWidth: narrowMode ? 760 : undefined
+            maxWidth: narrowMode ? 760 : undefined,
+            alignSelf: isBubbleStyle ? (isAssistantMessage ? 'start' : 'end') : undefined
           }}>
           <MessageErrorBoundary>
             <MessageContent message={message} />
           </MessageErrorBoundary>
+          {/* 内部菜单 */}
           {showMenubar && (!isBubbleStyle || isLastMessage) && (
             <MessageFooter
               className="MessageFooter"
@@ -204,13 +206,8 @@ const MessageItem: FC<Props> = ({
               {(!isBubbleStyle || isLastMessage) && <MessageTokens message={message} isLastMessage={isLastMessage} />}
             </MessageFooter>
           )}
-
-          {!isLastMessage && isBubbleStyle && showTokens && (
-            <MessageTokensContainer style={{ borderTop: messageBorder }}>
-              <MessageTokens message={message} isLastMessage={isLastMessage} />
-            </MessageTokensContainer>
-          )}
         </MessageContentContainer>
+        {/* 外部菜单 */}
         {showMenubar && isBubbleStyle && !isLastMessage && (
           <MessageFooter
             className="MessageFooter"
@@ -290,13 +287,6 @@ const MessageFooter = styled.div`
   padding: 2px 0;
   margin-top: 2px;
   gap: 20px;
-`
-
-const MessageTokensContainer = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  height: 2rem;
 `
 
 const NewContextMessage = styled.div`

@@ -7,9 +7,10 @@ import styled from 'styled-components'
 interface ContextMenuProps {
   children: React.ReactNode
   onContextMenu?: (e: React.MouseEvent) => void
+  style?: React.CSSProperties
 }
 
-const ContextMenu: React.FC<ContextMenuProps> = ({ children, onContextMenu }) => {
+const ContextMenu: React.FC<ContextMenuProps> = ({ children, onContextMenu, style }) => {
   const { t } = useTranslation()
   const [contextMenuPosition, setContextMenuPosition] = useState<{ x: number; y: number } | null>(null)
   const [selectedQuoteText, setSelectedQuoteText] = useState<string>('')
@@ -74,7 +75,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ children, onContextMenu }) =>
   ]
 
   return (
-    <ContextContainer onContextMenu={handleContextMenu} className="context-menu-container">
+    <ContextContainer onContextMenu={handleContextMenu} className="context-menu-container" style={style}>
       {contextMenuPosition && (
         <Dropdown
           overlayStyle={{ position: 'fixed', left: contextMenuPosition.x, top: contextMenuPosition.y, zIndex: 1000 }}

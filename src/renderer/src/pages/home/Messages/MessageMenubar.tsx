@@ -35,6 +35,8 @@ import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import styled from 'styled-components'
 
+import MessageTokens from './MessageTokens'
+
 interface Props {
   message: Message
   assistant: Assistant
@@ -340,6 +342,8 @@ const MessageMenubar: FC<Props> = (props) => {
 
   return (
     <MenusBar className={`menubar ${isLastMessage && 'show'}`}>
+      {isBubbleStyle && isUserMessage && <MessageTokens message={message} isLastMessage={isLastMessage} />}
+
       {message.role === 'user' && (
         <Tooltip title={t('common.regenerate')} mouseEnterDelay={0.8}>
           <ActionButton
@@ -498,6 +502,9 @@ const MessageMenubar: FC<Props> = (props) => {
             <Menu size={19} />
           </ActionButton>
         </Dropdown>
+      )}
+      {isBubbleStyle && !isLastMessage && !isUserMessage && (
+        <MessageTokens message={message} isLastMessage={isLastMessage} />
       )}
     </MenusBar>
   )
