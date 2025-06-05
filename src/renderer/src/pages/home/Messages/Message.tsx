@@ -101,7 +101,7 @@ const MessageItem: FC<Props> = ({
   const isAssistantMessage = message.role === 'assistant'
   const showMenubar = !hideMenuBar && !isStreaming && !message.status.includes('ing') && !isEditing
 
-  const messageBorder = showMessageDivider ? undefined : 'none'
+  const messageBorder = !isBubbleStyle && showMessageDivider ? '1px dotted var(--color-border)' : 'none'
   const messageBackground = getMessageBackground(isBubbleStyle, isAssistantMessage)
 
   const messageHighlightHandler = useCallback((highlight: boolean = true) => {
@@ -187,7 +187,7 @@ const MessageItem: FC<Props> = ({
           <MessageFooter
             className="MessageFooter"
             style={{
-              border: messageBorder,
+              borderTop: messageBorder,
               flexDirection: isLastMessage || isBubbleStyle ? 'row-reverse' : undefined
             }}>
             <MessageTokens message={message} isLastMessage={isLastMessage} />
@@ -263,7 +263,6 @@ const MessageFooter = styled.div`
   align-items: center;
   padding: 2px 0;
   margin-top: 2px;
-  border-top: 1px dotted var(--color-border);
   gap: 20px;
 `
 
