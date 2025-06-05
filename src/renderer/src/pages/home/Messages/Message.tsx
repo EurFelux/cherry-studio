@@ -187,7 +187,7 @@ const MessageItem: FC<Props> = ({
               className="MessageFooter"
               style={{
                 borderTop: messageBorder,
-                flexDirection: isLastMessage || isBubbleStyle ? 'row-reverse' : undefined
+                flexDirection: isLastMessage ? 'row-reverse' : undefined
               }}>
               <MessageTokens message={message} isLastMessage={isLastMessage} />
               <MessageMenubar
@@ -210,7 +210,7 @@ const MessageItem: FC<Props> = ({
             className="MessageFooter"
             style={{
               borderTop: messageBorder,
-              flexDirection: isLastMessage || isBubbleStyle ? 'row-reverse' : undefined
+              flexDirection: isLastMessage || !isAssistantMessage ? 'row-reverse' : undefined
             }}>
             <MessageTokens message={message} isLastMessage={isLastMessage} />
             <MessageMenubar
