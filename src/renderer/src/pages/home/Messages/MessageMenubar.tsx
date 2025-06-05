@@ -336,6 +336,8 @@ const MessageMenubar: FC<Props> = (props) => {
     return translationBlocks.length > 0
   }, [message])
 
+  const softHoverBg = isBubbleStyle && !isLastMessage
+
   return (
     <MenusBar className={`menubar ${isLastMessage && 'show'}`}>
       {message.role === 'user' && (
@@ -343,20 +345,20 @@ const MessageMenubar: FC<Props> = (props) => {
           <ActionButton
             className="message-action-button"
             onClick={() => handleResendUserMessage()}
-            $isBubbleStyle={isBubbleStyle}>
+            $softHoverBg={isBubbleStyle}>
             <SyncOutlined />
           </ActionButton>
         </Tooltip>
       )}
       {message.role === 'user' && (
         <Tooltip title={t('common.edit')} mouseEnterDelay={0.8}>
-          <ActionButton className="message-action-button" onClick={onEdit} $isBubbleStyle={isBubbleStyle}>
+          <ActionButton className="message-action-button" onClick={onEdit} $softHoverBg={softHoverBg}>
             <EditOutlined />
           </ActionButton>
         </Tooltip>
       )}
       <Tooltip title={t('common.copy')} mouseEnterDelay={0.8}>
-        <ActionButton className="message-action-button" onClick={onCopy} $isBubbleStyle={isBubbleStyle}>
+        <ActionButton className="message-action-button" onClick={onCopy} $softHoverBg={softHoverBg}>
           {!copied && <Copy size={16} />}
           {copied && <CheckOutlined style={{ color: 'var(--color-primary)' }} />}
         </ActionButton>
@@ -373,7 +375,7 @@ const MessageMenubar: FC<Props> = (props) => {
             mouseEnterDelay={0.8}
             open={showRegenerateTooltip}
             onOpenChange={setShowRegenerateTooltip}>
-            <ActionButton className="message-action-button" $isBubbleStyle={isBubbleStyle}>
+            <ActionButton className="message-action-button" $softHoverBg={softHoverBg}>
               <RefreshCw size={16} />
             </ActionButton>
           </Tooltip>
@@ -381,7 +383,7 @@ const MessageMenubar: FC<Props> = (props) => {
       )}
       {isAssistantMessage && (
         <Tooltip title={t('message.mention.title')} mouseEnterDelay={0.8}>
-          <ActionButton className="message-action-button" onClick={onMentionModel} $isBubbleStyle={isBubbleStyle}>
+          <ActionButton className="message-action-button" onClick={onMentionModel} $softHoverBg={softHoverBg}>
             <AtSign size={16} />
           </ActionButton>
         </Tooltip>
@@ -450,7 +452,7 @@ const MessageMenubar: FC<Props> = (props) => {
             <ActionButton
               className="message-action-button"
               onClick={(e) => e.stopPropagation()}
-              $isBubbleStyle={isBubbleStyle}>
+              $softHoverBg={softHoverBg}>
               <Languages size={16} />
             </ActionButton>
           </Tooltip>
@@ -458,7 +460,7 @@ const MessageMenubar: FC<Props> = (props) => {
       )}
       {isAssistantMessage && isGrouped && (
         <Tooltip title={t('chat.message.useful')} mouseEnterDelay={0.8}>
-          <ActionButton className="message-action-button" onClick={onUseful} $isBubbleStyle={isBubbleStyle}>
+          <ActionButton className="message-action-button" onClick={onUseful} $softHoverBg={softHoverBg}>
             {message.useful ? (
               <ThumbsUp size={17.5} fill="var(--color-primary)" strokeWidth={0} />
             ) : (
@@ -473,10 +475,7 @@ const MessageMenubar: FC<Props> = (props) => {
         icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
         onOpenChange={(open) => open && setShowDeleteTooltip(false)}
         onConfirm={() => deleteMessage(message.id)}>
-        <ActionButton
-          className="message-action-button"
-          onClick={(e) => e.stopPropagation()}
-          $isBubbleStyle={isBubbleStyle}>
+        <ActionButton className="message-action-button" onClick={(e) => e.stopPropagation()} $softHoverBg={softHoverBg}>
           <Tooltip
             title={t('common.delete')}
             mouseEnterDelay={1}
@@ -495,7 +494,7 @@ const MessageMenubar: FC<Props> = (props) => {
           <ActionButton
             className="message-action-button"
             onClick={(e) => e.stopPropagation()}
-            $isBubbleStyle={isBubbleStyle}>
+            $softHoverBg={softHoverBg}>
             <Menu size={19} />
           </ActionButton>
         </Dropdown>
@@ -512,7 +511,7 @@ const MenusBar = styled.div`
   gap: 6px;
 `
 
-const ActionButton = styled.div<{ $isBubbleStyle?: boolean }>`
+const ActionButton = styled.div<{ $softHoverBg?: boolean }>`
   cursor: pointer;
   border-radius: 8px;
   display: flex;
@@ -524,7 +523,7 @@ const ActionButton = styled.div<{ $isBubbleStyle?: boolean }>`
   transition: all 0.2s ease;
   &:hover {
     background-color: ${(props) =>
-      props.$isBubbleStyle ? 'var(--color-background-soft)' : 'var(--color-background-mute)'};
+      props.$softHoverBg ? 'var(--color-background-soft)' : 'var(--color-background-mute)'};
     color: var(--color-text-1);
     .anticon,
     .lucide {

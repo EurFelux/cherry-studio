@@ -182,8 +182,30 @@ const MessageItem: FC<Props> = ({
           <MessageErrorBoundary>
             <MessageContent message={message} />
           </MessageErrorBoundary>
+          {showMenubar && (!isBubbleStyle || isLastMessage) && (
+            <MessageFooter
+              className="MessageFooter"
+              style={{
+                borderTop: messageBorder,
+                flexDirection: isLastMessage || isBubbleStyle ? 'row-reverse' : undefined
+              }}>
+              <MessageTokens message={message} isLastMessage={isLastMessage} />
+              <MessageMenubar
+                message={message}
+                assistant={assistant}
+                model={model}
+                index={index}
+                topic={topic}
+                isLastMessage={isLastMessage}
+                isAssistantMessage={isAssistantMessage}
+                isGrouped={isGrouped}
+                messageContainerRef={messageContainerRef as React.RefObject<HTMLDivElement>}
+                setModel={setModel}
+              />
+            </MessageFooter>
+          )}
         </MessageContentContainer>
-        {showMenubar && (
+        {showMenubar && isBubbleStyle && !isLastMessage && (
           <MessageFooter
             className="MessageFooter"
             style={{
