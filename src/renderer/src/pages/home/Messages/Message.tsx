@@ -52,7 +52,7 @@ const MessageItem: FC<Props> = ({
   const { assistant, setModel } = useAssistant(message.assistantId)
   const model = useModel(getMessageModelId(message), message.model?.provider) || message.model
   const { isBubbleStyle } = useMessageStyle()
-  const { showMessageDivider, messageFont, fontSize, narrowMode, messageStyle } = useSettings()
+  const { showMessageDivider, messageFont, fontSize, narrowMode, messageStyle, showTokens } = useSettings()
   const { editMessageBlocks, resendUserMessageWithEdit, editMessage } = useMessageOperations(topic)
   const messageContainerRef = useRef<HTMLDivElement>(null)
   const { editingMessageId, stopEditing } = useMessageEditing()
@@ -101,7 +101,7 @@ const MessageItem: FC<Props> = ({
   const isAssistantMessage = message.role === 'assistant'
   const showMenubar = !hideMenuBar && !isStreaming && !message.status.includes('ing') && !isEditing
 
-  const messageBorder = !isBubbleStyle && showMessageDivider ? '1px dotted var(--color-border)' : 'none'
+  const messageBorder = showMessageDivider ? '1px dotted var(--color-border)' : 'none'
   const messageBackground = getMessageBackground(isBubbleStyle, isAssistantMessage)
 
   const messageHighlightHandler = useCallback((highlight: boolean = true) => {
@@ -187,9 +187,8 @@ const MessageItem: FC<Props> = ({
               className="MessageFooter"
               style={{
                 borderTop: messageBorder,
-                flexDirection: isLastMessage ? 'row-reverse' : undefined
+                flexDirection: !isLastMessage ? 'row-reverse' : undefined
               }}>
-              <MessageTokens message={message} isLastMessage={isLastMessage} />
               <MessageMenubar
                 message={message}
                 assistant={assistant}
@@ -202,17 +201,22 @@ const MessageItem: FC<Props> = ({
                 messageContainerRef={messageContainerRef as React.RefObject<HTMLDivElement>}
                 setModel={setModel}
               />
+              {(!isBubbleStyle || isLastMessage) && <MessageTokens message={message} isLastMessage={isLastMessage} />}
             </MessageFooter>
+          )}
+
+          {!isLastMessage && isBubbleStyle && showTokens && (
+            <MessageTokensContainer style={{ borderTop: messageBorder }}>
+              <MessageTokens message={message} isLastMessage={isLastMessage} />
+            </MessageTokensContainer>
           )}
         </MessageContentContainer>
         {showMenubar && isBubbleStyle && !isLastMessage && (
           <MessageFooter
             className="MessageFooter"
             style={{
-              borderTop: messageBorder,
               flexDirection: isLastMessage || !isAssistantMessage ? 'row-reverse' : undefined
             }}>
-            <MessageTokens message={message} isLastMessage={isLastMessage} />
             <MessageMenubar
               message={message}
               assistant={assistant}
@@ -286,6 +290,13 @@ const MessageFooter = styled.div`
   padding: 2px 0;
   margin-top: 2px;
   gap: 20px;
+`
+
+const MessageTokensContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 2rem;
 `
 
 const NewContextMessage = styled.div`
