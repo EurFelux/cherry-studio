@@ -182,29 +182,29 @@ const MessageItem: FC<Props> = ({
           <MessageErrorBoundary>
             <MessageContent message={message} />
           </MessageErrorBoundary>
-          {showMenubar && (
-            <MessageFooter
-              className="MessageFooter"
-              style={{
-                border: messageBorder,
-                flexDirection: isLastMessage || isBubbleStyle ? 'row-reverse' : undefined
-              }}>
-              <MessageTokens message={message} isLastMessage={isLastMessage} />
-              <MessageMenubar
-                message={message}
-                assistant={assistant}
-                model={model}
-                index={index}
-                topic={topic}
-                isLastMessage={isLastMessage}
-                isAssistantMessage={isAssistantMessage}
-                isGrouped={isGrouped}
-                messageContainerRef={messageContainerRef as React.RefObject<HTMLDivElement>}
-                setModel={setModel}
-              />
-            </MessageFooter>
-          )}
         </MessageContentContainer>
+        {showMenubar && (
+          <MessageFooter
+            className="MessageFooter"
+            style={{
+              border: messageBorder,
+              flexDirection: isLastMessage || isBubbleStyle ? 'row-reverse' : undefined
+            }}>
+            <MessageTokens message={message} isLastMessage={isLastMessage} />
+            <MessageMenubar
+              message={message}
+              assistant={assistant}
+              model={model}
+              index={index}
+              topic={topic}
+              isLastMessage={isLastMessage}
+              isAssistantMessage={isAssistantMessage}
+              isGrouped={isGrouped}
+              messageContainerRef={messageContainerRef as React.RefObject<HTMLDivElement>}
+              setModel={setModel}
+            />
+          </MessageFooter>
+        )}
       </ContextMenu>
     </MessageContainer>
   )
