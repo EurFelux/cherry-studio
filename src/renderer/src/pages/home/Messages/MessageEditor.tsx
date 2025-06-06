@@ -57,6 +57,7 @@ const MessageBlockEditor: FC<Props> = ({ message, onSave, onResend, onCancel }) 
 
   const resizeTextArea = useCallback(() => {
     const textArea = textareaRef.current?.resizableTextArea?.textArea
+    console.log('resizeTextArea', textArea)
     if (textArea) {
       textArea.style.height = 'auto'
       textArea.style.height = textArea?.scrollHeight > 400 ? '400px' : `${textArea?.scrollHeight}px`
@@ -165,12 +166,6 @@ const MessageBlockEditor: FC<Props> = ({ message, onSave, onResend, onCancel }) 
     }
   }
 
-  const autoResizeTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const textarea = e.target
-    textarea.style.height = 'auto'
-    textarea.style.height = `${textarea.scrollHeight}px`
-  }
-
   return (
     <EditorContainer className="message-editor" onDragOver={(e) => e.preventDefault()} onDrop={handleDrop}>
       {editedBlocks
@@ -184,7 +179,7 @@ const MessageBlockEditor: FC<Props> = ({ message, onSave, onResend, onCancel }) 
             value={block.content}
             onChange={(e) => {
               handleTextChange(block.id, e.target.value)
-              autoResizeTextArea(e)
+              resizeTextArea()
             }}
             autoFocus
             contextMenu="true"
@@ -325,6 +320,7 @@ const ActionBar = styled.div`
   padding: 0 8px;
   justify-content: space-between;
   margin-top: 8px;
+  border-top: 1px solid var(--color-border);
 `
 
 const ActionBarLeft = styled.div`
