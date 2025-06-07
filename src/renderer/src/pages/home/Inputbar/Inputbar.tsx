@@ -85,7 +85,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
   const [files, setFiles] = useState<FileType[]>(_files)
   const { t } = useTranslation()
   const containerRef = useRef(null)
-  const { searching } = useRuntime()
+  const { searching, isAssistantSettingsOpen } = useRuntime()
   const { isBubbleStyle } = useMessageStyle()
   const { pauseMessages } = useMessageOperations(topic)
   const loading = useTopicLoading(topic)
@@ -654,8 +654,10 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
   }, [addNewTopic, onQuote])
 
   useEffect(() => {
-    textareaRef.current?.focus()
-  }, [assistant, topic])
+    if (!isAssistantSettingsOpen) {
+      textareaRef.current?.focus()
+    }
+  }, [assistant, topic, isAssistantSettingsOpen])
 
   useEffect(() => {
     setTimeout(() => resizeTextArea(), 0)
@@ -808,6 +810,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
             }}
             styles={{ textarea: TextareaStyle }}
             onFocus={(e: React.FocusEvent<HTMLTextAreaElement>) => {
+              console.log('Inputbar onFocus', e)
               setInputFocus(true)
               // 记录当前聚焦的组件
               PasteService.setLastFocusedComponent('inputbar')
