@@ -85,7 +85,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
   const [files, setFiles] = useState<FileType[]>(_files)
   const { t } = useTranslation()
   const containerRef = useRef(null)
-  const { searching, isAssistantSettingsOpen } = useRuntime()
+  const { searching } = useRuntime()
   const { isBubbleStyle } = useMessageStyle()
   const { pauseMessages } = useMessageOperations(topic)
   const loading = useTopicLoading(topic)
@@ -654,10 +654,10 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
   }, [addNewTopic, onQuote])
 
   useEffect(() => {
-    if (!isAssistantSettingsOpen) {
+    if (!document.querySelector('.assistant-settings')) {
       textareaRef.current?.focus()
     }
-  }, [assistant, topic, isAssistantSettingsOpen])
+  }, [assistant, topic])
 
   useEffect(() => {
     setTimeout(() => resizeTextArea(), 0)

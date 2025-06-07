@@ -35,7 +35,6 @@ export interface RuntimeState {
   update: UpdateState
   export: ExportState
   chat: ChatState
-  isAssistantSettingsOpen: boolean
 }
 
 export interface ExportState {
@@ -67,8 +66,7 @@ const initialState: RuntimeState = {
     isMultiSelectMode: false,
     selectedMessageIds: [],
     activeTopic: null
-  },
-  isAssistantSettingsOpen: false
+  }
 }
 
 const runtimeSlice = createSlice({
@@ -120,9 +118,6 @@ const runtimeSlice = createSlice({
     },
     setActiveTopic: (state, action: PayloadAction<Topic>) => {
       state.chat.activeTopic = action.payload
-    },
-    setAssistantSettingsOpen: (state, action: PayloadAction<boolean>) => {
-      state.isAssistantSettingsOpen = action.payload
     }
   }
 })
@@ -142,8 +137,7 @@ export const {
   // Chat related actions
   toggleMultiSelectMode,
   setSelectedMessageIds,
-  setActiveTopic,
-  setAssistantSettingsOpen
+  setActiveTopic
 } = runtimeSlice.actions
 
 export default runtimeSlice.reducer

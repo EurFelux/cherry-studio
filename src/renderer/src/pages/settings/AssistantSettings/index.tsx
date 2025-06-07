@@ -3,11 +3,9 @@ import { TopView } from '@renderer/components/TopView'
 import { useAgent } from '@renderer/hooks/useAgents'
 import { useAssistant } from '@renderer/hooks/useAssistant'
 import { useSidebarIconShow } from '@renderer/hooks/useSidebarIcon'
-import { useAppDispatch } from '@renderer/store'
-import { setAssistantSettingsOpen } from '@renderer/store/runtime'
 import { Assistant } from '@renderer/types'
 import { Menu, Modal } from 'antd'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -32,7 +30,6 @@ const AssistantSettingPopupContainer: React.FC<Props> = ({ resolve, tab, ...prop
   const [open, setOpen] = useState(true)
   const { t } = useTranslation()
   const [menu, setMenu] = useState<AssistantSettingPopupTab>(tab || 'prompt')
-  const dispatch = useAppDispatch()
 
   const _useAssistant = useAssistant(props.assistant.id)
   const _useAgent = useAgent(props.assistant.id)
@@ -53,13 +50,8 @@ const AssistantSettingPopupContainer: React.FC<Props> = ({ resolve, tab, ...prop
   }
 
   const afterClose = () => {
-    dispatch(setAssistantSettingsOpen(false))
     resolve(assistant)
   }
-
-  useEffect(() => {
-    dispatch(setAssistantSettingsOpen(true))
-  }, [dispatch])
 
   const items = [
     {
@@ -86,6 +78,7 @@ const AssistantSettingPopupContainer: React.FC<Props> = ({ resolve, tab, ...prop
 
   return (
     <StyledModal
+      className="assistant-settings"
       open={open}
       onOk={onOk}
       onClose={onCancel}
