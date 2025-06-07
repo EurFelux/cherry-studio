@@ -810,7 +810,6 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
             }}
             styles={{ textarea: TextareaStyle }}
             onFocus={(e: React.FocusEvent<HTMLTextAreaElement>) => {
-              console.log('Inputbar onFocus', e)
               setInputFocus(true)
               // 记录当前聚焦的组件
               PasteService.setLastFocusedComponent('inputbar')
