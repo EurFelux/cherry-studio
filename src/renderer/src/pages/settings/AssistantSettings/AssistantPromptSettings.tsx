@@ -100,8 +100,6 @@ const AssistantPromptSettings: React.FC<Props> = ({ assistant, updateAssistant }
         <Popover title={t('agents.add.prompt.variables.tip.title')} content={promptVarsContent}>
           <QuestionCircleOutlined size={14} color="var(--color-text-2)" />
         </Popover>
-        {/* <Tooltip title={t('agents.add.prompt.variables.tip')}>
-        </Tooltip> */}
       </HStack>
       <TextAreaContainer>
         {showMarkdown ? (
