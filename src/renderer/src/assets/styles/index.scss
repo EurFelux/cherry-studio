@@ -136,7 +136,8 @@ ul {
   }
   .message-user {
     color: var(--chat-text-user);
-    .message-content-container-user .anticon {
+    .message-content-container-user .anticon,
+    .message-tokens {
       color: var(--chat-text-user) !important;
     }
 
