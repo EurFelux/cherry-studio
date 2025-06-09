@@ -1,6 +1,5 @@
 import { TopView } from '@renderer/components/TopView'
 import { DEFAULT_KNOWLEDGE_DOCUMENT_COUNT } from '@renderer/config/constant'
-import { getEmbeddingMaxContext } from '@renderer/config/embedings'
 import { isEmbeddingModel, isRerankModel } from '@renderer/config/models'
 import { NOT_SUPPORTED_REANK_PROVIDERS } from '@renderer/config/providers'
 // import { SUPPORTED_REANK_PROVIDERS } from '@renderer/config/providers'
@@ -12,7 +11,7 @@ import { getKnowledgeBaseParams } from '@renderer/services/KnowledgeService'
 import { getModelUniqId } from '@renderer/services/ModelService'
 import { Model } from '@renderer/types'
 import { getErrorMessage } from '@renderer/utils/error'
-import { Form, Input, Modal, Select, Slider } from 'antd'
+import { Col, Form, Input, InputNumber, Modal, Row, Select, Slider, Switch } from 'antd'
 import { find, sortBy } from 'lodash'
 import { nanoid } from 'nanoid'
 import { useMemo, useRef, useState } from 'react'
@@ -25,6 +24,7 @@ interface ShowParams {
 interface FormData {
   name: string
   model: string
+  dimensions: number | undefined
   rerankModel: string | undefined
   documentCount: number | undefined
 }
@@ -36,6 +36,7 @@ interface Props extends ShowParams {
 const PopupContainer: React.FC<Props> = ({ title, resolve }) => {
   const [open, setOpen] = useState(true)
   const [loading, setLoading] = useState(false)
+  const [setEmbeddingDims, setSetEmbeddingDims] = useState(false)
   const [form] = Form.useForm<FormData>()
   const { t } = useTranslation()
   const { providers } = useProviders()
@@ -68,7 +69,8 @@ const PopupContainer: React.FC<Props> = ({ title, resolve }) => {
           .map((m) => ({
             label: m.name,
             value: getModelUniqId(m),
-            key: `${p.id}-${m.id}`
+            providerId: p.id,
+            modelId: m.id
           }))
       }))
       .filter((group) => group.options.length > 0)
@@ -109,15 +111,19 @@ const PopupContainer: React.FC<Props> = ({ title, resolve }) => {
         }
 
         const aiProvider = new AiProvider(provider)
-        let dimensions = 0
 
-        try {
-          dimensions = await aiProvider.getEmbeddingDimensions(selectedEmbeddingModel)
-        } catch (error) {
-          console.error('Error getting embedding dimensions:', error)
-          window.message.error(t('message.error.get_embedding_dimensions') + '\n' + getErrorMessage(error))
-          setLoading(false)
-          return
+        if (!setEmbeddingDims || typeof values.dimensions === 'undefined') {
+          try {
+            values.dimensions = await aiProvider.getEmbeddingDimensions(selectedEmbeddingModel)
+          } catch (error) {
+            console.error('Error getting embedding dimensions:', error)
+            window.message.error(t('message.error.get_embedding_dimensions') + '\n' + getErrorMessage(error))
+            setLoading(false)
+            return
+          }
+        } else if (typeof values.dimensions === 'string') {
+          // 按理来说不应该是string的，但是确实是string
+          values.dimensions = parseInt(values.dimensions)
         }
 
         const newBase = {
@@ -125,13 +131,15 @@ const PopupContainer: React.FC<Props> = ({ title, resolve }) => {
           name: values.name,
           model: selectedEmbeddingModel,
           rerankModel: selectedRerankModel,
-          dimensions,
+          dimensions: values.dimensions,
           documentCount: values.documentCount || DEFAULT_KNOWLEDGE_DOCUMENT_COUNT,
           items: [],
           created_at: Date.now(),
           updated_at: Date.now(),
           version: 1
         }
+
+        console.log(newBase)
 
         await window.api.knowledgeBase.create(getKnowledgeBaseParams(newBase))
 
@@ -175,7 +183,6 @@ const PopupContainer: React.FC<Props> = ({ title, resolve }) => {
           name="model"
           label={t('models.embedding_model')}
           tooltip={{ title: t('models.embedding_model_tooltip'), placement: 'right' }}
-          dependencies={['model']}
           rules={[{ required: true, message: t('message.error.enter.model') }]}>
           <Select style={{ width: '100%' }} options={embeddingSelectOptions} placeholder={t('settings.models.empty')} />
         </Form.Item>
@@ -207,25 +214,31 @@ const PopupContainer: React.FC<Props> = ({ title, resolve }) => {
         </Form.Item>
         <Form.Item
           name="dimensions"
-          label={t('knowledge.dimensions')}
           layout="horizontal"
-          initialValue={undefined}
+          initialValue={1024}
+          label={t('knowledge.dimensions')}
           tooltip={{ title: t('knowledge.dimensions_size_tooltip') }}
-          rules={[
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                const maxContext = getEmbeddingMaxContext(getFieldValue('model').id)
-                if (value && maxContext && value > maxContext) {
-                  return Promise.reject(
-                    new Error(t('knowledge.dimensions_size_too_large', { max_context: maxContext }))
-                  )
-                }
-                return Promise.resolve()
-              }
-            })
-          ]}>
-          <Select></Select>
+          dependencies={['model']}
+          rules={[]}>
+          <Row>
+            <Col span={20}>
+              <InputNumber
+                style={{ width: '100%' }}
+                defaultValue={1024}
+                placeholder={t('knowledge.dimensions_size_placeholder')}
+                disabled={!setEmbeddingDims}
+              />
+            </Col>
+            <Col span={4} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <Form.Item>
+                <Switch checked={setEmbeddingDims} onChange={() => setSetEmbeddingDims(!setEmbeddingDims)}></Switch>
+              </Form.Item>
+            </Col>
+          </Row>
         </Form.Item>
+        <SettingHelpText style={{ marginTop: -15, marginBottom: 20 }}>
+          {setEmbeddingDims ? t('knowledge.dimensions_set_right') : t('knowledge.dimensions_default')}
+        </SettingHelpText>
       </Form>
     </Modal>
   )

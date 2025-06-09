@@ -491,7 +491,9 @@
       "dimensions": "Размерность встраивания",
       "dimensions_size_tooltip": "Размерность встраивания. Чем больше значение, тем выше размерность, но тем больше токенов требуется",
       "dimensions_size_placeholder": "Значение по умолчанию (не рекомендуется изменять)",
-      "dimensions_size_too_large": "Размерность встраивания не может превышать ограничение контекста модели ({{max_context}})"
+      "dimensions_size_too_large": "Размерность встраивания не может превышать ограничение контекста модели ({{max_context}})",
+      "dimensions_set_right": "⚠️ Assurez-vous que le modèle prend en charge la taille de dimension d'incorporation définie",
+      "dimensions_default": "Le modèle utilisera les dimensions d'incorporation par défaut"
     },
     "languages": {
       "arabic": "Arabe",
