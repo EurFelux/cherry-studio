@@ -161,8 +161,18 @@ const MessageItem: FC<Props> = ({
         'message-user': !isAssistantMessage
       })}
       ref={messageContainerRef}
-      style={{ ...style, alignItems: isBubbleStyle ? (isAssistantMessage ? 'start' : 'end') : undefined }}>
-      <ContextMenu style={{ display: 'flex', flexDirection: 'column' }}>
+      style={{
+        ...style,
+        justifyContent: isBubbleStyle ? (isAssistantMessage ? 'flex-start' : 'flex-end') : undefined,
+        flex: isBubbleStyle ? undefined : 1
+      }}>
+      <ContextMenu
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignSelf: isAssistantMessage ? 'flex-start' : 'flex-end',
+          flex: isBubbleStyle ? undefined : 1
+        }}>
         <MessageHeader message={message} assistant={assistant} model={model} key={getModelUniqId(model)} />
         <MessageContentContainer
           className={
@@ -243,7 +253,7 @@ const getMessageBackground = (isBubbleStyle: boolean, isAssistantMessage: boolea
 
 const MessageContainer = styled.div`
   display: flex;
-  flex-direction: column;
+  width: 100%;
   position: relative;
   transition: background-color 0.3s ease;
   padding: 0 20px;
