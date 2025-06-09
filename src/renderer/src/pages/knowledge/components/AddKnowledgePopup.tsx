@@ -1,5 +1,6 @@
 import { TopView } from '@renderer/components/TopView'
 import { DEFAULT_KNOWLEDGE_DOCUMENT_COUNT } from '@renderer/config/constant'
+import { getEmbeddingMaxContext } from '@renderer/config/embedings'
 import { isEmbeddingModel, isRerankModel } from '@renderer/config/models'
 import { NOT_SUPPORTED_REANK_PROVIDERS } from '@renderer/config/providers'
 // import { SUPPORTED_REANK_PROVIDERS } from '@renderer/config/providers'
@@ -174,6 +175,7 @@ const PopupContainer: React.FC<Props> = ({ title, resolve }) => {
           name="model"
           label={t('models.embedding_model')}
           tooltip={{ title: t('models.embedding_model_tooltip'), placement: 'right' }}
+          dependencies={['model']}
           rules={[{ required: true, message: t('message.error.enter.model') }]}>
           <Select style={{ width: '100%' }} options={embeddingSelectOptions} placeholder={t('settings.models.empty')} />
         </Form.Item>
@@ -202,6 +204,27 @@ const PopupContainer: React.FC<Props> = ({ title, resolve }) => {
             step={1}
             marks={{ 1: '1', 6: t('knowledge.document_count_default'), 30: '30' }}
           />
+        </Form.Item>
+        <Form.Item
+          name="dimensions"
+          label={t('knowledge.dimensions')}
+          layout="horizontal"
+          initialValue={undefined}
+          tooltip={{ title: t('knowledge.dimensions_size_tooltip') }}
+          rules={[
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                const maxContext = getEmbeddingMaxContext(getFieldValue('model').id)
+                if (value && maxContext && value > maxContext) {
+                  return Promise.reject(
+                    new Error(t('knowledge.dimensions_size_too_large', { max_context: maxContext }))
+                  )
+                }
+                return Promise.resolve()
+              }
+            })
+          ]}>
+          <Select></Select>
         </Form.Item>
       </Form>
     </Modal>
