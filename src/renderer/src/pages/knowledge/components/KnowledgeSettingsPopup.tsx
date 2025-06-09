@@ -188,38 +188,6 @@ const PopupContainer: React.FC<Props> = ({ base: _base, resolve }) => {
 
         <div style={{ display: showAdvanced ? 'block' : 'none' }}>
           <Form.Item
-            name="dimensions"
-            label={t('knowledge.dimensions')}
-            layout="horizontal"
-            initialValue={base.dimensions}
-            tooltip={{ title: t('knowledge.dimensions_size_tooltip') }}
-            rules={[
-              {
-                // 不应该允许修改已存在的知识库的嵌入维度
-                // 但是这段验证代码可能能在创建新的知识库时复用
-                // 所以暂时注释掉这段代码
-                //
-                // validator(_, value) {
-                // const provider = getProviderByModelId(base.model.id)
-                // const AI = new AiProvider(provider)
-                // const dims = AI.getEmbeddingDimensions(base.model)
-                // if (value && dims && value === dims) {
-                //   return Promise.reject(
-                //     new Error(t('knowledge.dimensions_???', { max_context: maxContext }))
-                //   )
-                // }
-                // return Promise.resolve()
-                // }
-              }
-            ]}>
-            <InputNumber
-              style={{ width: '100%' }}
-              defaultValue={base.dimensions}
-              placeholder={t('knowledge.dimensions_size_placeholder')}
-              disabled
-            />
-          </Form.Item>
-          <Form.Item
             name="chunkSize"
             label={t('knowledge.chunk_size')}
             layout="horizontal"
