@@ -136,22 +136,6 @@ const MessageItem: FC<Props> = ({
     )
   }
 
-  if (isEditing) {
-    return (
-      <MessageContainer style={{ paddingTop: 15 }}>
-        <MessageHeader message={message} assistant={assistant} model={model} key={getModelUniqId(model)} />
-        <div style={{ paddingLeft: messageStyle === 'plain' ? 46 : undefined }}>
-          <MessageEditor
-            message={message}
-            onSave={handleEditSave}
-            onResend={handleEditResend}
-            onCancel={handleEditCancel}
-          />
-        </div>
-      </MessageContainer>
-    )
-  }
-
   return (
     <MessageContainer
       key={message.id}
@@ -166,41 +150,95 @@ const MessageItem: FC<Props> = ({
         justifyContent: isBubbleStyle ? (isAssistantMessage ? 'flex-start' : 'flex-end') : undefined,
         flex: isBubbleStyle ? undefined : 1
       }}>
-      <ContextMenu
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignSelf: isAssistantMessage ? 'flex-start' : 'flex-end',
-          flex: isBubbleStyle ? undefined : 1
-        }}>
-        <MessageHeader message={message} assistant={assistant} model={model} key={getModelUniqId(model)} />
-        <MessageContentContainer
-          className={
-            message.role === 'user'
-              ? 'message-content-container message-content-container-user'
-              : message.role === 'assistant'
-                ? 'message-content-container message-content-container-assistant'
-                : 'message-content-container'
-          }
+      {isEditing && (
+        <ContextMenu
           style={{
-            fontFamily: messageFont === 'serif' ? 'var(--font-family-serif)' : 'var(--font-family)',
-            fontSize,
-            background: messageBackground,
-            overflowY: 'visible',
-            maxWidth: narrowMode ? 760 : undefined,
-            alignSelf: isBubbleStyle ? (isAssistantMessage ? 'start' : 'end') : undefined
+            display: 'flex',
+            flexDirection: 'column',
+            alignSelf: isAssistantMessage ? 'flex-start' : 'flex-end',
+            flex: isBubbleStyle ? undefined : 1
           }}>
-          <MessageErrorBoundary>
-            <MessageContent message={message} />
-          </MessageErrorBoundary>
-          {showMenubar && (!isBubbleStyle || isLastMessage) && (
+          <MessageHeader
+            message={message}
+            assistant={assistant}
+            model={model}
+            key={getModelUniqId(model)}
+            index={index}
+          />
+          <div style={{ paddingLeft: messageStyle === 'plain' ? 46 : undefined }}>
+            <MessageEditor
+              message={message}
+              onSave={handleEditSave}
+              onResend={handleEditResend}
+              onCancel={handleEditCancel}
+            />
+          </div>
+        </ContextMenu>
+      )}
+      {!isEditing && (
+        <ContextMenu
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignSelf: isAssistantMessage ? 'flex-start' : 'flex-end',
+            flex: isBubbleStyle ? undefined : 1
+          }}>
+          <MessageHeader
+            message={message}
+            assistant={assistant}
+            model={model}
+            key={getModelUniqId(model)}
+            index={index}
+          />
+          <MessageContentContainer
+            className={
+              message.role === 'user'
+                ? 'message-content-container message-content-container-user'
+                : message.role === 'assistant'
+                  ? 'message-content-container message-content-container-assistant'
+                  : 'message-content-container'
+            }
+            style={{
+              fontFamily: messageFont === 'serif' ? 'var(--font-family-serif)' : 'var(--font-family)',
+              fontSize,
+              background: messageBackground,
+              overflowY: 'visible',
+              maxWidth: narrowMode ? 760 : undefined,
+              alignSelf: isBubbleStyle ? (isAssistantMessage ? 'start' : 'end') : undefined
+            }}>
+            <MessageErrorBoundary>
+              <MessageContent message={message} />
+            </MessageErrorBoundary>
+            {showMenubar && (!isBubbleStyle || isLastMessage) && (
+              <MessageFooter
+                className="MessageFooter"
+                style={{
+                  borderTop: messageBorder,
+                  flexDirection: isLastMessage ? 'row-reverse' : undefined
+                }}>
+                <MessageTokens message={message} isLastMessage={isLastMessage} />
+                <MessageMenubar
+                  message={message}
+                  assistant={assistant}
+                  model={model}
+                  index={index}
+                  topic={topic}
+                  isLastMessage={isLastMessage}
+                  isAssistantMessage={isAssistantMessage}
+                  isGrouped={isGrouped}
+                  messageContainerRef={messageContainerRef as React.RefObject<HTMLDivElement>}
+                  setModel={setModel}
+                />
+              </MessageFooter>
+            )}
+          </MessageContentContainer>
+          {showMenubar && isBubbleStyle && !isLastMessage && (
             <MessageFooter
               className="MessageFooter"
               style={{
                 borderTop: messageBorder,
-                flexDirection: isLastMessage ? 'row-reverse' : undefined
+                flexDirection: isLastMessage || !isAssistantMessage ? 'row-reverse' : undefined
               }}>
-              <MessageTokens message={message} isLastMessage={isLastMessage} />
               <MessageMenubar
                 message={message}
                 assistant={assistant}
@@ -215,30 +253,8 @@ const MessageItem: FC<Props> = ({
               />
             </MessageFooter>
           )}
-        </MessageContentContainer>
-        {showMenubar && isBubbleStyle && !isLastMessage && (
-          <MessageFooter
-            className="MessageFooter"
-            style={{
-              borderTop: messageBorder,
-              flexDirection: isLastMessage || !isAssistantMessage ? 'row-reverse' : undefined
-            }}>
-            <MessageTokens message={message} isLastMessage={isLastMessage} />
-            <MessageMenubar
-              message={message}
-              assistant={assistant}
-              model={model}
-              index={index}
-              topic={topic}
-              isLastMessage={isLastMessage}
-              isAssistantMessage={isAssistantMessage}
-              isGrouped={isGrouped}
-              messageContainerRef={messageContainerRef as React.RefObject<HTMLDivElement>}
-              setModel={setModel}
-            />
-          </MessageFooter>
-        )}
-      </ContextMenu>
+        </ContextMenu>
+      )}
     </MessageContainer>
   )
 }

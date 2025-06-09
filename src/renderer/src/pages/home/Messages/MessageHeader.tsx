@@ -17,10 +17,13 @@ import { CSSProperties, FC, memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import MessageTokens from './MessageTokens'
+
 interface Props {
   message: Message
   assistant: Assistant
   model?: Model
+  index: number | undefined
 }
 
 const getAvatarSource = (isLocalAi: boolean, modelId: string | undefined) => {
@@ -28,7 +31,7 @@ const getAvatarSource = (isLocalAi: boolean, modelId: string | undefined) => {
   return modelId ? getModelLogo(modelId) : undefined
 }
 
-const MessageHeader: FC<Props> = memo(({ assistant, model, message }) => {
+const MessageHeader: FC<Props> = memo(({ assistant, model, message, index }) => {
   const avatar = useAvatar()
   const { theme } = useTheme()
   const { userName, sidebarIcons } = useSettings()
@@ -52,9 +55,11 @@ const MessageHeader: FC<Props> = memo(({ assistant, model, message }) => {
 
   const isAssistantMessage = message.role === 'assistant'
   const showMinappIcon = sidebarIcons.visible.includes('minapp')
+  const { showTokens } = useSettings()
 
   const avatarName = useMemo(() => firstLetter(assistant?.name).toUpperCase(), [assistant?.name])
   const username = useMemo(() => removeLeadingEmoji(getUserName()), [getUserName])
+  const isLastMessage = index === 0
 
   const showMiniApp = useCallback(() => {
     showMinappIcon && model?.provider && openMinappById(model.provider)
@@ -111,7 +116,11 @@ const MessageHeader: FC<Props> = memo(({ assistant, model, message }) => {
           <UserName isBubbleStyle={isBubbleStyle} theme={theme}>
             {username}
           </UserName>
-          <MessageTime>{dayjs(message?.updatedAt ?? message.createdAt).format('MM/DD HH:mm')}</MessageTime>
+          <InfoWrap style={{ flexDirection: isAssistantMessage ? undefined : 'row-reverse' }}>
+            <MessageTime>{dayjs(message?.updatedAt ?? message.createdAt).format('MM/DD HH:mm')}</MessageTime>
+            {showTokens && <span style={{ color: 'var(--color-text-3)' }}> | </span>}
+            <MessageTokens message={message} isLastMessage={isLastMessage} />
+          </InfoWrap>
         </UserWrap>
       </AvatarWrapper>
     </Container>
@@ -138,6 +147,13 @@ const UserWrap = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+`
+
+const InfoWrap = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
 `
 
 const UserName = styled.div<{ isBubbleStyle?: boolean; theme?: string }>`
