@@ -19,6 +19,16 @@ export default class EmbeddingsFactory {
       })
     }
     if (provider === 'ollama') {
+      if (baseURL.includes('v1/')) {
+        return new OllamaEmbeddings({
+          model: model,
+          baseUrl: baseURL.replace('v1/', ''),
+          requestOptions: {
+            // @ts-ignore expected
+            'encoding-format': 'float'
+          }
+        })
+      }
       return new OllamaEmbeddings({
         model: model,
         baseUrl: baseURL,
