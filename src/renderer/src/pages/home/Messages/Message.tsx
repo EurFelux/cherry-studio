@@ -156,7 +156,7 @@ const MessageItem: FC<Props> = ({
             display: 'flex',
             flexDirection: 'column',
             alignSelf: isAssistantMessage ? 'flex-start' : 'flex-end',
-            flex: 1
+            width: '50%'
           }}>
           <MessageHeader
             message={message}
