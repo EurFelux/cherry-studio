@@ -176,10 +176,6 @@ export type Model = {
   type?: ModelType[]
 }
 
-export type EmbeddingModel = Model & {
-  dimensions: number
-}
-
 export type Suggestion = {
   content: string
 }
