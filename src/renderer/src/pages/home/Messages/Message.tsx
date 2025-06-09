@@ -162,7 +162,7 @@ const MessageItem: FC<Props> = ({
       })}
       ref={messageContainerRef}
       style={{ ...style, alignItems: isBubbleStyle ? (isAssistantMessage ? 'start' : 'end') : undefined }}>
-      <ContextMenu>
+      <ContextMenu style={{ display: 'flex', flexDirection: 'column' }}>
         <MessageHeader message={message} assistant={assistant} model={model} key={getModelUniqId(model)} />
         <MessageContentContainer
           className={
@@ -177,7 +177,8 @@ const MessageItem: FC<Props> = ({
             fontSize,
             background: messageBackground,
             overflowY: 'visible',
-            maxWidth: narrowMode ? 760 : undefined
+            maxWidth: narrowMode ? 760 : undefined,
+            alignSelf: isBubbleStyle ? (isAssistantMessage ? 'start' : 'end') : undefined
           }}>
           <MessageErrorBoundary>
             <MessageContent message={message} />
