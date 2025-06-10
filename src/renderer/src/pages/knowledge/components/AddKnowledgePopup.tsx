@@ -213,6 +213,7 @@ const PopupContainer: React.FC<Props> = ({ title, resolve }) => {
         <Form.Item
           name="autoDims"
           colon={false}
+          initialValue={true}
           layout="horizontal"
           label={t('knowledge.dimensions_auto_set')}
           tooltip={t('knowledge.dimensions_default')}
