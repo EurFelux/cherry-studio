@@ -16,7 +16,6 @@ import { find, sortBy } from 'lodash'
 import { nanoid } from 'nanoid'
 import { useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
 
 interface ShowParams {
   title: string
@@ -211,9 +210,14 @@ const PopupContainer: React.FC<Props> = ({ title, resolve }) => {
             marks={{ 1: '1', 6: t('knowledge.document_count_default'), 30: '30' }}
           />
         </Form.Item>
-        <Form.Item name="autoDims" style={{ marginBottom: 0 }}>
-          <Flex justify="space-between" style={{ marginBottom: '1rem' }}>
-            <Label>{t('knowledge.dimensions_auto_set')}</Label>
+        <Form.Item
+          name="autoDims"
+          colon={false}
+          layout="horizontal"
+          label={t('knowledge.dimensions_auto_set')}
+          tooltip={t('knowledge.dimensions_default')}
+          style={{ marginBottom: 0, justifyContent: 'space-between' }}>
+          <Flex justify="flex-end" style={{ marginBottom: '1rem' }}>
             <Switch
               checked={autoDims}
               onClick={() => {
@@ -258,8 +262,6 @@ const PopupContainer: React.FC<Props> = ({ title, resolve }) => {
     </Modal>
   )
 }
-
-const Label = styled.label``
 export default class AddKnowledgePopup {
   static hide() {
     TopView.hide('AddKnowledgePopup')
