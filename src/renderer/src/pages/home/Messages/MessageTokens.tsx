@@ -72,16 +72,11 @@ const MessageMetadata = styled.div`
   font-size: 10px;
   color: var(--color-text-3);
   user-select: text;
-  margin: 2px 0;
   cursor: pointer;
   text-align: right;
 
-  .tokens {
-    display: block;
-
-    span {
-      padding: 0 2px;
-    }
+  .tokens span {
+    padding: 0 2px;
   }
 `
 
