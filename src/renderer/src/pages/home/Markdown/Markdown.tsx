@@ -88,10 +88,6 @@ const Markdown: FC<Props> = ({ block }) => {
     } as Partial<Components>
   }, [onSaveCodeBlock])
 
-  // if (role === 'user' && !renderInputMessageAsMarkdown) {
-  //   return <p style={{ marginBottom: 5, whiteSpace: 'pre-wrap' }}>{messageContent}</p>
-  // }
-
   if (messageContent.includes('<style>')) {
     components.style = MarkdownShadowDOMRenderer as any
   }

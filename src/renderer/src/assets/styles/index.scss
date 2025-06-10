@@ -129,7 +129,7 @@ ul {
   .message-content-container {
     margin: 5px 0;
     border-radius: 8px;
-    padding: 10px 15px 0 15px;
+    padding: 0.5rem 1rem;
   }
   .message-thought-container {
     margin-top: 8px;
@@ -162,6 +162,11 @@ ul {
   }
   code {
     color: var(--color-text);
+  }
+  .markdown {
+    p:last-child {
+      margin-bottom: 0;
+    }
   }
 }
 
