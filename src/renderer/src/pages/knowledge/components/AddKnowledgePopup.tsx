@@ -9,7 +9,7 @@ import { SettingHelpText } from '@renderer/pages/settings'
 import AiProvider from '@renderer/providers/AiProvider'
 import { getKnowledgeBaseParams } from '@renderer/services/KnowledgeService'
 import { getModelUniqId } from '@renderer/services/ModelService'
-import { Model } from '@renderer/types'
+import { KnowledgeBase, Model } from '@renderer/types'
 import { getErrorMessage } from '@renderer/utils/error'
 import { Col, Form, Input, InputNumber, Modal, Row, Select, Slider, Switch } from 'antd'
 import { find, sortBy } from 'lodash'
@@ -110,10 +110,9 @@ const PopupContainer: React.FC<Props> = ({ title, resolve }) => {
           return
         }
 
-        const aiProvider = new AiProvider(provider)
-
         if (!setEmbeddingDims || typeof values.dimensions === 'undefined') {
           try {
+            const aiProvider = new AiProvider(provider)
             values.dimensions = await aiProvider.getEmbeddingDimensions(selectedEmbeddingModel)
           } catch (error) {
             console.error('Error getting embedding dimensions:', error)
@@ -126,7 +125,7 @@ const PopupContainer: React.FC<Props> = ({ title, resolve }) => {
           values.dimensions = parseInt(values.dimensions)
         }
 
-        const newBase = {
+        const newBase: KnowledgeBase = {
           id: nanoid(),
           name: values.name,
           model: selectedEmbeddingModel,
@@ -139,11 +138,9 @@ const PopupContainer: React.FC<Props> = ({ title, resolve }) => {
           version: 1
         }
 
-        console.log(newBase)
-
         await window.api.knowledgeBase.create(getKnowledgeBaseParams(newBase))
 
-        addKnowledgeBase(newBase as any)
+        addKnowledgeBase(newBase)
         setOpen(false)
         resolve(newBase)
       }
