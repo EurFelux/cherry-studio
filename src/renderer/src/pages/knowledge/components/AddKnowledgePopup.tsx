@@ -11,11 +11,12 @@ import { getKnowledgeBaseParams } from '@renderer/services/KnowledgeService'
 import { getModelUniqId } from '@renderer/services/ModelService'
 import { KnowledgeBase, Model } from '@renderer/types'
 import { getErrorMessage } from '@renderer/utils/error'
-import { Col, Form, Input, InputNumber, Modal, Row, Select, Slider, Switch } from 'antd'
+import { Flex, Form, Input, InputNumber, Modal, Select, Slider, Switch } from 'antd'
 import { find, sortBy } from 'lodash'
 import { nanoid } from 'nanoid'
 import { useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import styled from 'styled-components'
 
 interface ShowParams {
   title: string
@@ -24,6 +25,7 @@ interface ShowParams {
 interface FormData {
   name: string
   model: string
+  autoDims: boolean | undefined
   dimensions: number | undefined
   rerankModel: string | undefined
   documentCount: number | undefined
@@ -36,7 +38,7 @@ interface Props extends ShowParams {
 const PopupContainer: React.FC<Props> = ({ title, resolve }) => {
   const [open, setOpen] = useState(true)
   const [loading, setLoading] = useState(false)
-  const [setEmbeddingDims, setSetEmbeddingDims] = useState(false)
+  const [autoDims, setAutoDims] = useState(true)
   const [form] = Form.useForm<FormData>()
   const { t } = useTranslation()
   const { providers } = useProviders()
@@ -110,7 +112,7 @@ const PopupContainer: React.FC<Props> = ({ title, resolve }) => {
           return
         }
 
-        if (!setEmbeddingDims || typeof values.dimensions === 'undefined') {
+        if (autoDims || typeof values.dimensions === 'undefined') {
           try {
             const aiProvider = new AiProvider(provider)
             values.dimensions = await aiProvider.getEmbeddingDimensions(selectedEmbeddingModel)
@@ -209,38 +211,55 @@ const PopupContainer: React.FC<Props> = ({ title, resolve }) => {
             marks={{ 1: '1', 6: t('knowledge.document_count_default'), 30: '30' }}
           />
         </Form.Item>
+        <Form.Item name="autoDims" style={{ marginBottom: 0 }}>
+          <Flex justify="space-between" style={{ marginBottom: '1rem' }}>
+            <Label>{t('knowledge.dimensions_auto_set')}</Label>
+            <Switch
+              checked={autoDims}
+              onClick={() => {
+                form.setFieldValue('autoDims', !autoDims)
+                if (!autoDims) {
+                  form.validateFields(['dimensions'])
+                }
+                setAutoDims(!autoDims)
+              }}></Switch>
+          </Flex>
+        </Form.Item>
+
         <Form.Item
           name="dimensions"
+          colon={false}
           layout="horizontal"
-          initialValue={1024}
+          initialValue={undefined}
           label={t('knowledge.dimensions')}
           tooltip={{ title: t('knowledge.dimensions_size_tooltip') }}
           dependencies={['model']}
-          rules={[]}>
-          <Row>
-            <Col span={20}>
-              <InputNumber
-                style={{ width: '100%' }}
-                defaultValue={1024}
-                placeholder={t('knowledge.dimensions_size_placeholder')}
-                disabled={!setEmbeddingDims}
-              />
-            </Col>
-            <Col span={4} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <Form.Item>
-                <Switch checked={setEmbeddingDims} onChange={() => setSetEmbeddingDims(!setEmbeddingDims)}></Switch>
-              </Form.Item>
-            </Col>
-          </Row>
+          style={{ display: autoDims ? 'none' : 'block' }}
+          rules={[
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (getFieldValue('autoDims') || value > 0) {
+                  return Promise.resolve()
+                } else {
+                  return Promise.reject(t('knowledge.dimensions_error_invalid'))
+                }
+              }
+            })
+          ]}>
+          <InputNumber min={1} style={{ width: '100%' }} placeholder={t('knowledge.dimensions_size_placeholder')} />
         </Form.Item>
-        <SettingHelpText style={{ marginTop: -15, marginBottom: 20 }}>
-          {setEmbeddingDims ? t('knowledge.dimensions_set_right') : t('knowledge.dimensions_default')}
-        </SettingHelpText>
+
+        {!autoDims && (
+          <SettingHelpText style={{ marginTop: -15, marginBottom: 20 }}>
+            {t('knowledge.dimensions_set_right')}
+          </SettingHelpText>
+        )}
       </Form>
     </Modal>
   )
 }
 
+const Label = styled.label``
 export default class AddKnowledgePopup {
   static hide() {
     TopView.hide('AddKnowledgePopup')
