@@ -235,7 +235,7 @@ const MessageItem: FC<Props> = ({
               className="MessageFooter"
               style={{
                 borderTop: messageBorder,
-                flexDirection: isLastMessage || !isAssistantMessage ? 'row-reverse' : undefined
+                flexDirection: !isAssistantMessage ? 'row-reverse' : undefined
               }}>
               <MessageMenubar
                 message={message}
