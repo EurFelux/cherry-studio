@@ -116,10 +116,10 @@ const MessageHeader: FC<Props> = memo(({ assistant, model, message, index }) => 
           <UserName isBubbleStyle={isBubbleStyle} theme={theme}>
             {username}
           </UserName>
-          <InfoWrap style={{ flexDirection: isAssistantMessage ? undefined : 'row-reverse' }}>
-            <MessageTime>{dayjs(message?.updatedAt ?? message.createdAt).format('MM/DD HH:mm')}</MessageTime>
-            {showTokens && <span style={{ color: 'var(--color-text-3)' }}> | </span>}
+          <InfoWrap style={{ flexDirection: !isAssistantMessage && isBubbleStyle ? undefined : 'row-reverse' }}>
             <MessageTokens message={message} isLastMessage={isLastMessage} />
+            {showTokens && <span style={{ color: 'var(--color-text-3)' }}> | </span>}
+            <MessageTime>{dayjs(message?.updatedAt ?? message.createdAt).format('MM/DD HH:mm')}</MessageTime>
           </InfoWrap>
         </UserWrap>
       </AvatarWrapper>
