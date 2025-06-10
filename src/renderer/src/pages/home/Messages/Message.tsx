@@ -208,7 +208,7 @@ const MessageItem: FC<Props> = ({
             <MessageErrorBoundary>
               <MessageContent message={message} />
             </MessageErrorBoundary>
-            {showMenubar && (!isBubbleStyle || isLastMessage) && (
+            {showMenubar && !isBubbleStyle && (
               <MessageFooter
                 className="MessageFooter"
                 style={{
@@ -230,7 +230,7 @@ const MessageItem: FC<Props> = ({
               </MessageFooter>
             )}
           </MessageContentContainer>
-          {showMenubar && isBubbleStyle && !isLastMessage && (
+          {showMenubar && isBubbleStyle && (
             <MessageFooter
               className="MessageFooter"
               style={{
