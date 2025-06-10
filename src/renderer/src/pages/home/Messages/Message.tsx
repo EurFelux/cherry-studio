@@ -21,7 +21,6 @@ import MessageEditor from './MessageEditor'
 import MessageErrorBoundary from './MessageErrorBoundary'
 import MessageHeader from './MessageHeader'
 import MessageMenubar from './MessageMenubar'
-import MessageTokens from './MessageTokens'
 
 interface Props {
   message: Message
@@ -214,9 +213,8 @@ const MessageItem: FC<Props> = ({
                 className="MessageFooter"
                 style={{
                   borderTop: messageBorder,
-                  flexDirection: isLastMessage ? 'row-reverse' : undefined
+                  flexDirection: !isLastMessage ? 'row-reverse' : undefined
                 }}>
-                <MessageTokens message={message} isLastMessage={isLastMessage} />
                 <MessageMenubar
                   message={message}
                   assistant={assistant}
