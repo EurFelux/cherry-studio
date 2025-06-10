@@ -131,6 +131,15 @@ ul {
     border-radius: 8px;
     padding: 0.5rem 1rem;
   }
+
+  .block-wrapper > *:last-child {
+    margin-bottom: 0;
+  }
+
+  .message-content-container > *:last-child {
+    margin-bottom: 0;
+  }
+
   .message-thought-container {
     margin-top: 8px;
   }

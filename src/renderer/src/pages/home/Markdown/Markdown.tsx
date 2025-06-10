@@ -12,7 +12,7 @@ import { findCitationInChildren, getCodeBlockId } from '@renderer/utils/markdown
 import { isEmpty } from 'lodash'
 import { type FC, memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import ReactMarkdown, { type Components } from 'react-markdown'
+import ReactMarkdown, { type Components, defaultUrlTransform } from 'react-markdown'
 import rehypeKatex from 'rehype-katex'
 // @ts-ignore rehype-mathjax is not typed
 import rehypeMathjax from 'rehype-mathjax'
@@ -92,6 +92,11 @@ const Markdown: FC<Props> = ({ block }) => {
     components.style = MarkdownShadowDOMRenderer as any
   }
 
+  const urlTransform = useCallback((value: string) => {
+    if (value.startsWith('data:image/png') || value.startsWith('data:image/jpeg')) return value
+    return defaultUrlTransform(value)
+  }, [])
+
   return (
     <ReactMarkdown
       rehypePlugins={rehypePlugins}
@@ -99,6 +104,7 @@ const Markdown: FC<Props> = ({ block }) => {
       className="markdown"
       components={components}
       disallowedElements={DISALLOWED_ELEMENTS}
+      urlTransform={urlTransform}
       remarkRehypeOptions={{
         footnoteLabel: t('common.footnotes'),
         footnoteLabelTagName: 'h4',
