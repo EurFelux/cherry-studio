@@ -28,7 +28,6 @@ interface Props {
   assistant?: Assistant
   index?: number
   total?: number
-  hidePresetMessages?: boolean
   hideMenuBar?: boolean
   style?: React.CSSProperties
   isGrouped?: boolean
@@ -41,7 +40,6 @@ const MessageItem: FC<Props> = ({
   topic,
   // assistant,
   index,
-  hidePresetMessages,
   hideMenuBar = false,
   isGrouped,
   isStreaming = false,
@@ -120,10 +118,6 @@ const MessageItem: FC<Props> = ({
     const unsubscribes = [EventEmitter.on(EVENT_NAMES.LOCATE_MESSAGE + ':' + message.id, messageHighlightHandler)]
     return () => unsubscribes.forEach((unsub) => unsub())
   }, [message.id, messageHighlightHandler])
-
-  if (hidePresetMessages && message.isPreset) {
-    return null
-  }
 
   if (message.type === 'clear') {
     return (
