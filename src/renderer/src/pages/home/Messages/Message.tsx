@@ -309,6 +309,7 @@ const MessageFooter = styled.div`
 
 const NewContextMessage = styled.div`
   cursor: pointer;
+  flex: 1;
 `
 
 export default memo(MessageItem)
