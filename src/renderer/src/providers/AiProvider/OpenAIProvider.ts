@@ -1009,9 +1009,11 @@ export default class OpenAIProvider extends BaseOpenAIProvider {
       return prev + (prev ? '\n' : '') + content
     }, '')
 
+    const topicNamingPrompt = getStoreSetting('topicNamingPrompt') || i18n.t('prompts.title')
+
     const systemMessage = {
       role: 'system',
-      content: getStoreSetting('topicNamingPrompt') || i18n.t('prompts.title')
+      content: await buildSystemPrompt(topicNamingPrompt as string)
     }
 
     const userMessage = {
