@@ -821,18 +821,20 @@ export abstract class BaseOpenAIProvider extends BaseProvider {
    */
   public async summaries(messages: Message[], assistant: Assistant): Promise<string> {
     const model = getTopNamingModel() || assistant.model || getDefaultModel()
+
     const userMessages = takeRight(messages, 5).map((message) => ({
       role: message.role,
       content: getMainTextContent(message)
     }))
-    const userMessageContent = userMessages.reduce((prev, curr) => {
-      const content = curr.role === 'user' ? `User: ${curr.content}` : `Assistant: ${curr.content}`
-      return prev + (prev ? '\n' : '') + content
-    }, '')
+
+    // 使用结构化的json字符串，帮助llm阅读
+    const userMessageContent = JSON.stringify(userMessages)
+
+    const topicNamingPrompt = getStoreSetting('topicNamingPrompt') || i18n.t('prompts.title')
 
     const systemMessage: OpenAI.Responses.EasyInputMessage = {
       role: 'system',
-      content: (getStoreSetting('topicNamingPrompt') as string) || i18n.t('prompts.title')
+      content: await buildSystemPrompt(topicNamingPrompt as string)
     }
 
     const userMessage: OpenAI.Responses.EasyInputMessage = {

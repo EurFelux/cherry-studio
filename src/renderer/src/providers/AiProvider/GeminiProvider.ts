@@ -771,14 +771,14 @@ export default class GeminiProvider extends BaseProvider {
       content: getMainTextContent(message)
     }))
 
-    const userMessageContent = userMessages.reduce((prev, curr) => {
-      const content = curr.role === 'user' ? `User: ${curr.content}` : `Assistant: ${curr.content}`
-      return prev + (prev ? '\n' : '') + content
-    }, '')
+    // 使用结构化的json字符串，帮助llm阅读
+    const userMessageContent = JSON.stringify(userMessages)
+
+    const topicNamingPrompt = getStoreSetting('topicNamingPrompt') || i18n.t('prompts.title')
 
     const systemMessage = {
       role: 'system',
-      content: (getStoreSetting('topicNamingPrompt') as string) || i18n.t('prompts.title')
+      content: await buildSystemPrompt(topicNamingPrompt as string)
     }
 
     const userMessage = {
