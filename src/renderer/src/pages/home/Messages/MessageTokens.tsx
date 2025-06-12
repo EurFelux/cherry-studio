@@ -33,7 +33,6 @@ const MessgeTokens: React.FC<MessageTokensProps> = ({ message }) => {
   if (message.role === 'assistant') {
     let metrixs = ''
     let hasMetrics = false
-    console.log('assistant message', message)
     if (message?.metrics?.completion_tokens && message?.metrics?.time_completion_millsec) {
       hasMetrics = true
       metrixs = t('settings.messages.metrics', {
