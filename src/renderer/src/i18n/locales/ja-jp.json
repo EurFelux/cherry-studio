@@ -633,7 +633,6 @@
       "error.enter.api.key": "APIキーを入力してください",
       "error.enter.model": "モデルを選択してください",
       "error.enter.name": "ナレッジベース名を入力してください",
-      "error.fetchTopicName": "トピックの命名に失敗しました",
       "error.get_embedding_dimensions": "埋込み次元を取得できませんでした",
       "error.invalid.api.host": "無効なAPIアドレスです",
       "error.invalid.api.key": "無効なAPIキーです",
@@ -704,7 +703,8 @@
       "warn.siyuan.exporting": "思源ノートにエクスポート中です。重複してエクスポートしないでください!",
       "error.yuque.no_config": "語雀のAPIアドレスまたはトークンが設定されていません",
       "download.success": "ダウンロードに成功しました",
-      "download.failed": "ダウンロードに失敗しました"
+      "download.failed": "ダウンロードに失敗しました",
+      "error.fetchTopicName": "トピック名の取得に失敗しました"
     },
     "minapp": {
       "popup": {
@@ -1018,7 +1018,9 @@
       "zhipu": "智譜AI",
       "voyageai": "Voyage AI",
       "qiniu": "七牛云 AI 推理",
-      "tokenflux": "TokenFlux"
+      "tokenflux": "TokenFlux",
+      "302ai": "302.AI",
+      "cephalon": "Cephalon"
     },
     "restore": {
       "confirm": "データを復元しますか？",
@@ -1691,6 +1693,7 @@
         "key": "キー",
         "mini_window": "クイックアシスタント",
         "selection_assistant_toggle": "選択アシスタントを切り替え",
+        "selection_assistant_select_text": "選択アシスタント：テキストを選択",
         "new_topic": "新しいトピック",
         "press_shortcut": "ショートカットを押す",
         "reset_defaults": "デフォルトのショートカットをリセット",
@@ -1918,11 +1921,16 @@
         "toolbar": {
           "title": "ツールバー",
           "trigger_mode": {
-            "title": "表示方法",
-            "description": "テキスト選択時に即時表示、またはCtrlキー押下時のみ表示",
-            "description_note": "一部のアプリはCtrlキーでのテキスト選択に対応していません。AHKなどでCtrlキーをリマップすると、選択できなくなる場合があります。",
+            "title": "単語の取り出し方",
+            "description": "テキスト選択後、取詞ツールバーを表示する方法",
+            "description_note": "一部のアプリケーションでは、Ctrl キーでテキストを選択できません。AHK などのツールを使用して Ctrl キーを再マップした場合、一部のアプリケーションでテキスト選択が失敗する可能性があります。",
             "selected": "選択時",
-            "ctrlkey": "Ctrlキー"
+            "selected_note": "テキスト選択時に即時表示",
+            "ctrlkey": "Ctrlキー",
+            "ctrlkey_note": "テキスト選択後、Ctrlキーを押下して表示",
+            "shortcut": "ショートカットキー",
+            "shortcut_note": "テキスト選択後、ショートカットキーを押下して表示。ショートカットキーを設定するには、ショートカット設定ページで有効にしてください。",
+            "shortcut_link": "ショートカット設定ページに移動"
           },
           "compact_mode": {
             "title": "コンパクトモード",
