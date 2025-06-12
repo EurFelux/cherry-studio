@@ -170,6 +170,10 @@ const MessageBlockEditor: FC<Props> = ({ message, onSave, onResend, onCancel }) 
   }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (message.role !== 'user') {
+      return
+    }
+
     const isEnterPressed = event.key === 'Enter'
 
     if (isEnterPressed && !event.shiftKey && sendMessageShortcut === 'Enter') {
