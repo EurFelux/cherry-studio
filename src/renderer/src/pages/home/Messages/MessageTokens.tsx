@@ -33,6 +33,7 @@ const MessgeTokens: React.FC<MessageTokensProps> = ({ message }) => {
   if (message.role === 'assistant') {
     let metrixs = ''
     let hasMetrics = false
+    console.log('assistant message', message)
     if (message?.metrics?.completion_tokens && message?.metrics?.time_completion_millsec) {
       hasMetrics = true
       metrixs = t('settings.messages.metrics', {
@@ -53,15 +54,17 @@ const MessgeTokens: React.FC<MessageTokensProps> = ({ message }) => {
     )
 
     return (
-      <MessageMetadata className="message-tokens" onClick={locateMessage}>
-        {hasMetrics ? (
-          <Popover content={metrixs} placement="top" trigger="hover" styles={{ root: { fontSize: 11 } }}>
-            {showTokens && tokensInfo}
-          </Popover>
-        ) : (
-          tokensInfo
-        )}
-      </MessageMetadata>
+      showTokens && (
+        <MessageMetadata className="message-tokens" onClick={locateMessage}>
+          {hasMetrics ? (
+            <Popover content={metrixs} placement="top" trigger="hover" styles={{ root: { fontSize: 11 } }}>
+              {tokensInfo}
+            </Popover>
+          ) : (
+            tokensInfo
+          )}
+        </MessageMetadata>
+      )
     )
   }
 
