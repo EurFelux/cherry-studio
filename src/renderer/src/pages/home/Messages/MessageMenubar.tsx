@@ -15,6 +15,7 @@ import type { Model } from '@renderer/types'
 import type { Assistant, Topic } from '@renderer/types'
 import type { Message } from '@renderer/types/newMessage'
 import { captureScrollableDivAsBlob, captureScrollableDivAsDataURL } from '@renderer/utils'
+import { copyMessageAsPlainText } from '@renderer/utils/copy'
 import {
   exportMarkdownToJoplin,
   exportMarkdownToSiyuan,
@@ -23,7 +24,6 @@ import {
   exportMessageToNotion,
   messageToMarkdown
 } from '@renderer/utils/export'
-import { copyMessageAsPlainText } from '@renderer/utils/copy'
 // import { withMessageThought } from '@renderer/utils/formats'
 import { removeTrailingDoubleSpaces } from '@renderer/utils/markdown'
 import { findMainTextBlocks, findTranslationBlocks, getMainTextContent } from '@renderer/utils/messageUtils/find'
@@ -31,7 +31,7 @@ import { Dropdown, Popconfirm, Tooltip } from 'antd'
 import dayjs from 'dayjs'
 import { AtSign, Copy, Languages, Menu, RefreshCw, Save, Share, Split, ThumbsUp, Trash } from 'lucide-react'
 import { FilePenLine } from 'lucide-react'
-import { FC, memo, useCallback, useMemo, useState } from 'react'
+import { FC, memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import styled from 'styled-components'
@@ -77,12 +77,28 @@ const MessageMenubar: FC<Props> = (props) => {
 
   const exportMenuOptions = useSelector((state: RootState) => state.settings.exportMenuOptions)
 
+  const [assistantWithTopicPrompt, setAssistantWithTopicPrompt] = useState<Assistant>({
+    ...assistant,
+    prompt: topic.prompt ? `${assistant.prompt}\n${topic.prompt}` : assistant.prompt
+  })
+
   // const processedMessage = useMemo(() => {
   //   if (message.role === 'assistant' && message.model && isReasoningModel(message.model)) {
   //     return withMessageThought(message)
   //   }
   //   return message
   // }, [message])
+
+  useEffect(() => {
+    if (topic.prompt) {
+      setAssistantWithTopicPrompt({
+        ...assistant,
+        prompt: `${assistant.prompt}\n${topic.prompt}`
+      })
+    } else {
+      setAssistantWithTopicPrompt(assistant)
+    }
+  }, [topic.prompt, assistant])
 
   const mainTextContent = useMemo(() => {
     // 只处理助手消息和来自推理模型的消息
@@ -124,10 +140,10 @@ const MessageMenubar: FC<Props> = (props) => {
   const handleResendUserMessage = useCallback(
     async (messageUpdate?: Message) => {
       if (!loading) {
-        await resendMessage(messageUpdate ?? message, assistant)
+        await resendMessage(messageUpdate ?? message, assistantWithTopicPrompt)
       }
     },
-    [assistant, loading, message, resendMessage]
+    [assistantWithTopicPrompt, loading, message, resendMessage]
   )
 
   const { startEditing } = useMessageEditing()
@@ -317,7 +333,7 @@ const MessageMenubar: FC<Props> = (props) => {
     // editMessage(message.id, { ..._message }) // REMOVED
 
     // Call the function from the hook
-    regenerateAssistantMessage(message, assistant)
+    regenerateAssistantMessage(message, assistantWithTopicPrompt)
   }
 
   const onMentionModel = async (e: React.MouseEvent) => {
