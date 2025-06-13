@@ -68,6 +68,31 @@ const CodeBlockView: React.FC<Props> = ({ children, language, onSave }) => {
   }, [children, t])
 
   const handleDownloadSource = useCallback(() => {
+    const languageToSuffix = (language: string) => {
+      switch (language) {
+        case 'python':
+          return 'py'
+        case 'rust':
+          return 'rs'
+        case 'ruby':
+          return 'rb'
+        case 'kotlin':
+          return 'kt'
+        case 'javascript':
+          return 'js'
+        case 'typescript':
+          return 'ts'
+        case 'bash':
+        case 'shell':
+          return 'sh'
+        case 'markdown':
+          return 'md'
+        case 'csharp':
+          return 'cs'
+        default:
+          return language
+      }
+    }
     let fileName = ''
 
     // 尝试提取标题
@@ -80,7 +105,7 @@ const CodeBlockView: React.FC<Props> = ({ children, language, onSave }) => {
 
     // 默认使用日期格式命名
     if (!fileName) {
-      fileName = `${dayjs().format('YYYYMMDDHHmm')}.${language}`
+      fileName = `${dayjs().format('YYYYMMDDHHmm')}.${languageToSuffix(language)}`
     }
 
     window.api.file.save(fileName, children)
