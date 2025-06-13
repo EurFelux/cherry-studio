@@ -202,7 +202,7 @@ export const buildSystemPrompt = async (
 
     if (userSystemPrompt.includes('{{model_name}}')) {
       try {
-        userSystemPrompt = userSystemPrompt.replace(/{{model_name}}/g, assistant?.name || 'Unknown Model')
+        userSystemPrompt = userSystemPrompt.replace(/{{model_name}}/g, assistant?.model?.name || 'Unknown Model')
       } catch (error) {
         console.error('Failed to get model name:', error)
         userSystemPrompt = userSystemPrompt.replace(/{{model_name}}/g, 'Unknown Model')
