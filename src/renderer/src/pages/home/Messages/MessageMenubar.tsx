@@ -31,7 +31,7 @@ import { Dropdown, Popconfirm, Tooltip } from 'antd'
 import dayjs from 'dayjs'
 import { AtSign, Copy, Languages, Menu, RefreshCw, Save, Share, Split, ThumbsUp, Trash } from 'lucide-react'
 import { FilePenLine } from 'lucide-react'
-import { FC, memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { FC, memo, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import styled from 'styled-components'
@@ -77,28 +77,12 @@ const MessageMenubar: FC<Props> = (props) => {
 
   const exportMenuOptions = useSelector((state: RootState) => state.settings.exportMenuOptions)
 
-  const [assistantWithTopicPrompt, setAssistantWithTopicPrompt] = useState<Assistant>({
-    ...assistant,
-    prompt: topic.prompt ? `${assistant.prompt}\n${topic.prompt}` : assistant.prompt
-  })
-
   // const processedMessage = useMemo(() => {
   //   if (message.role === 'assistant' && message.model && isReasoningModel(message.model)) {
   //     return withMessageThought(message)
   //   }
   //   return message
   // }, [message])
-
-  useEffect(() => {
-    if (topic.prompt) {
-      setAssistantWithTopicPrompt({
-        ...assistant,
-        prompt: `${assistant.prompt}\n${topic.prompt}`
-      })
-    } else {
-      setAssistantWithTopicPrompt(assistant)
-    }
-  }, [topic.prompt, assistant])
 
   const mainTextContent = useMemo(() => {
     // 只处理助手消息和来自推理模型的消息
@@ -140,10 +124,13 @@ const MessageMenubar: FC<Props> = (props) => {
   const handleResendUserMessage = useCallback(
     async (messageUpdate?: Message) => {
       if (!loading) {
+        const assistantWithTopicPrompt = topic.prompt
+          ? { ...assistant, prompt: `${assistant.prompt}\n${topic.prompt}` }
+          : assistant
         await resendMessage(messageUpdate ?? message, assistantWithTopicPrompt)
       }
     },
-    [assistantWithTopicPrompt, loading, message, resendMessage]
+    [assistant, loading, message, resendMessage, topic.prompt]
   )
 
   const { startEditing } = useMessageEditing()
@@ -331,6 +318,10 @@ const MessageMenubar: FC<Props> = (props) => {
     // const selectedModel = isGrouped ? model : assistantModel
     // const _message = resetAssistantMessage(message, selectedModel)
     // editMessage(message.id, { ..._message }) // REMOVED
+
+    const assistantWithTopicPrompt = topic.prompt
+      ? { ...assistant, prompt: `${assistant.prompt}\n${topic.prompt}` }
+      : assistant
 
     // Call the function from the hook
     regenerateAssistantMessage(message, assistantWithTopicPrompt)
