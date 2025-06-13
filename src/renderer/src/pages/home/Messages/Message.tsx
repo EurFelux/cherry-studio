@@ -12,7 +12,7 @@ import { Assistant, Topic } from '@renderer/types'
 import type { Message, MessageBlock } from '@renderer/types/newMessage'
 import { classNames } from '@renderer/utils'
 import { Divider } from 'antd'
-import React, { Dispatch, FC, memo, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
+import React, { Dispatch, FC, memo, SetStateAction, useCallback, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -54,10 +54,6 @@ const MessageItem: FC<Props> = ({
   const messageContainerRef = useRef<HTMLDivElement>(null)
   const { editingMessageId, stopEditing } = useMessageEditing()
   const isEditing = editingMessageId === message.id
-  const [assistantWithTopicPrompt, setAssistantWithTopicPrompt] = useState<Assistant>({
-    ...assistant,
-    prompt: topic.prompt ? `${assistant.prompt}\n${topic.prompt}` : assistant.prompt
-  })
 
   useEffect(() => {
     if (isEditing && messageContainerRef.current) {
@@ -84,6 +80,9 @@ const MessageItem: FC<Props> = ({
 
   const handleEditResend = useCallback(
     async (blocks: MessageBlock[]) => {
+      const assistantWithTopicPrompt = topic.prompt
+        ? { ...assistant, prompt: `${assistant.prompt}\n${topic.prompt}` }
+        : assistant
       try {
         await resendUserMessageWithEdit(message, blocks, assistantWithTopicPrompt)
         stopEditing()
@@ -91,7 +90,7 @@ const MessageItem: FC<Props> = ({
         console.error('Failed to resend message:', error)
       }
     },
-    [message, resendUserMessageWithEdit, assistantWithTopicPrompt, stopEditing]
+    [message, resendUserMessageWithEdit, assistant, stopEditing, topic.prompt]
   )
 
   const handleEditCancel = useCallback(() => {
@@ -122,17 +121,6 @@ const MessageItem: FC<Props> = ({
     const unsubscribes = [EventEmitter.on(EVENT_NAMES.LOCATE_MESSAGE + ':' + message.id, messageHighlightHandler)]
     return () => unsubscribes.forEach((unsub) => unsub())
   }, [message.id, messageHighlightHandler])
-
-  useEffect(() => {
-    if (topic.prompt) {
-      setAssistantWithTopicPrompt({
-        ...assistant,
-        prompt: `${assistant.prompt}\n${topic.prompt}`
-      })
-    } else {
-      setAssistantWithTopicPrompt(assistant)
-    }
-  }, [topic.prompt, assistant])
 
   if (message.type === 'clear') {
     return (
