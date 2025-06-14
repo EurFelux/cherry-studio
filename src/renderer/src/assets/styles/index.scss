@@ -136,7 +136,7 @@ ul {
     display: flow-root;
   }
 
-  .block-wrapper > *:last-child {
+  .block-wrapper:last-child > *:last-child {
     margin-bottom: 0;
   }
 
