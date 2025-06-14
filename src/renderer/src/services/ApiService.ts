@@ -433,20 +433,17 @@ export async function fetchMessagesSummary({ messages, assistant }: { messages: 
       role: message.role,
       mainText: getMainTextContent(message)
     }
-    if (message.role === 'user') {
-      // 让LLM知道用户上传了什么文件，但不提供文件内容
-      const fileBlocks = findFileBlocks(message)
-      let fileList: Array<string> = []
-      if (fileBlocks.length && fileBlocks.length > 0) {
-        fileList = fileBlocks.map((fileBlock) => fileBlock.file.origin_name)
-      }
-      return {
-        ...structredMessage,
-        files: fileList
-      }
-    } else {
-      // 对助手消息而言，没有提供工具调用结果等更多信息，仅提供文本上下文。
-      return structredMessage
+
+    // 让LLM知道消息中包含的文件，但只提供文件名
+    // 对助手消息而言，没有提供工具调用结果等更多信息，仅提供文本上下文。
+    const fileBlocks = findFileBlocks(message)
+    let fileList: Array<string> = []
+    if (fileBlocks.length && fileBlocks.length > 0) {
+      fileList = fileBlocks.map((fileBlock) => fileBlock.file.origin_name)
+    }
+    return {
+      ...structredMessage,
+      files: fileList.length > 0 ? fileList : undefined
     }
   })
   const conversation = JSON.stringify(structredMessages)
