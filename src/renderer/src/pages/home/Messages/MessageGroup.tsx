@@ -222,7 +222,16 @@ const MessageGroup = ({ messages, topic, registerMessageElement }: Props) => {
         </SelectableMessage>
       )
     },
-    [isGrid, isGrouped, topic, multiModelMessageStyle, isHorizontal, selectedMessageId, gridPopoverTrigger]
+    [
+      isGrid,
+      isGrouped,
+      topic,
+      multiModelMessageStyle,
+      isHorizontal,
+      selectedMessageId,
+      gridPopoverTrigger,
+      isBubbleStyle
+    ]
   )
 
   return (
