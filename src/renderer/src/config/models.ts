@@ -55,6 +55,7 @@ import {
   default as ChatGptModelLogoDakr,
   default as ChatGPTo1ModelLogoDark
 } from '@renderer/assets/images/models/gpt_dark.png'
+import ChatGPTImageModelLogo from '@renderer/assets/images/models/gpt_image_1.png'
 import ChatGPTo1ModelLogo from '@renderer/assets/images/models/gpt_o1.png'
 import GrokModelLogo from '@renderer/assets/images/models/grok.png'
 import GrokModelLogoDark from '@renderer/assets/images/models/grok_dark.png'
@@ -144,6 +145,7 @@ import YoudaoLogo from '@renderer/assets/images/providers/netease-youdao.svg'
 import NomicLogo from '@renderer/assets/images/providers/nomic.png'
 import { getProviderByModel } from '@renderer/services/AssistantService'
 import { Model } from '@renderer/types'
+import { getBaseModelName } from '@renderer/utils'
 import OpenAI from 'openai'
 
 import { WEB_SEARCH_PROMPT_FOR_OPENROUTER } from './prompts'
@@ -181,7 +183,8 @@ const visionAllowedModels = [
   'o4(?:-[\\w-]+)?',
   'deepseek-vl(?:[\\w-]+)?',
   'kimi-latest',
-  'gemma-3(?:-[\\w-]+)'
+  'gemma-3(?:-[\\w-]+)',
+  'doubao-1.6-seed(?:-[\\w-]+)'
 ]
 
 const visionExcludedModels = [
@@ -291,6 +294,7 @@ export function getModelLogo(modelId: string) {
     o1: isLight ? ChatGPTo1ModelLogo : ChatGPTo1ModelLogoDark,
     o3: isLight ? ChatGPTo1ModelLogo : ChatGPTo1ModelLogoDark,
     o4: isLight ? ChatGPTo1ModelLogo : ChatGPTo1ModelLogoDark,
+    'gpt-image': ChatGPTImageModelLogo,
     'gpt-3': isLight ? ChatGPT35ModelLogo : ChatGPT35ModelLogoDark,
     'gpt-4': isLight ? ChatGPT4ModelLogo : ChatGPT4ModelLogoDark,
     gpts: isLight ? ChatGPT4ModelLogo : ChatGPT4ModelLogoDark,
@@ -312,6 +316,7 @@ export function getModelLogo(modelId: string) {
     mistral: isLight ? MistralModelLogo : MistralModelLogoDark,
     codestral: CodestralModelLogo,
     ministral: isLight ? MistralModelLogo : MistralModelLogoDark,
+    magistral: isLight ? MistralModelLogo : MistralModelLogoDark,
     moonshot: isLight ? MoonshotModelLogo : MoonshotModelLogoDark,
     kimi: isLight ? MoonshotModelLogo : MoonshotModelLogoDark,
     phi: isLight ? MicrosoftModelLogo : MicrosoftModelLogoDark,
@@ -2411,7 +2416,8 @@ export function isSupportedThinkingTokenModel(model?: Model): boolean {
   return (
     isSupportedThinkingTokenGeminiModel(model) ||
     isSupportedThinkingTokenQwenModel(model) ||
-    isSupportedThinkingTokenClaudeModel(model)
+    isSupportedThinkingTokenClaudeModel(model) ||
+    isSupportedThinkingTokenDoubaoModel(model)
   )
 }
 
@@ -2479,9 +2485,10 @@ export function isSupportedThinkingTokenQwenModel(model?: Model): boolean {
     return false
   }
 
+  const baseName = getBaseModelName(model.id, '/').toLowerCase()
+
   return (
-    model.id.toLowerCase().startsWith('qwen3') ||
-    model.id.toLowerCase().startsWith('qwen/qwen3') ||
+    baseName.startsWith('qwen3') ||
     [
       'qwen-plus-latest',
       'qwen-plus-0428',
@@ -2489,8 +2496,16 @@ export function isSupportedThinkingTokenQwenModel(model?: Model): boolean {
       'qwen-turbo-latest',
       'qwen-turbo-0428',
       'qwen-turbo-2025-04-28'
-    ].includes(model.id.toLowerCase())
+    ].includes(baseName)
   )
+}
+
+export function isSupportedThinkingTokenDoubaoModel(model?: Model): boolean {
+  if (!model) {
+    return false
+  }
+
+  return DOUBAO_THINKING_MODEL_REGEX.test(model.id)
 }
 
 export function isClaudeReasoningModel(model?: Model): boolean {
@@ -2513,7 +2528,12 @@ export function isReasoningModel(model?: Model): boolean {
   }
 
   if (model.provider === 'doubao') {
-    return REASONING_REGEX.test(model.name) || model.type?.includes('reasoning') || false
+    return (
+      REASONING_REGEX.test(model.name) ||
+      model.type?.includes('reasoning') ||
+      isSupportedThinkingTokenDoubaoModel(model) ||
+      false
+    )
   }
 
   if (
@@ -2522,7 +2542,8 @@ export function isReasoningModel(model?: Model): boolean {
     isGeminiReasoningModel(model) ||
     isQwenReasoningModel(model) ||
     isGrokReasoningModel(model) ||
-    model.id.includes('glm-z1')
+    model.id.includes('glm-z1') ||
+    model.id.includes('magistral')
   ) {
     return true
   }
@@ -2804,3 +2825,16 @@ export const findTokenLimit = (modelId: string): { min: number; max: number } | 
   }
   return undefined
 }
+
+// Doubao 支持思考模式的模型正则
+export const DOUBAO_THINKING_MODEL_REGEX =
+  /doubao-(?:1(\.|-5)-thinking-vision-pro|1(\.|-)5-thinking-pro-m|seed-1\.6|seed-1\.6-flash)(?:-[\\w-]+)?/i
+
+// 支持 auto 的 Doubao 模型
+export const DOUBAO_THINKING_AUTO_MODEL_REGEX = /doubao-(?:1-5-thinking-pro-m|seed-1.6)(?:-[\\w-]+)?/i
+
+export function isDoubaoThinkingAutoModel(model: Model): boolean {
+  return DOUBAO_THINKING_AUTO_MODEL_REGEX.test(model.id)
+}
+
+export const GEMINI_FLASH_MODEL_REGEX = new RegExp('gemini-.*-flash.*$')

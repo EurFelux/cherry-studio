@@ -415,9 +415,16 @@ export async function fetchTranslate({ content, assistant, onResponse }: FetchTr
 export async function fetchMessagesSummary({ messages, assistant }: { messages: Message[]; assistant: Assistant }) {
   const prompt = (getStoreSetting('topicNamingPrompt') as string) || i18n.t('prompts.title')
   const model = getTopNamingModel() || assistant.model || getDefaultModel()
+<<<<<<< HEAD
 
   // 总结上下文总是取最后5条消息
   const contextMessages = takeRight(messages, 5)
+=======
+  const userMessages = takeRight(messages, 5).map((message) => ({
+    ...message,
+    content: getMainTextContent(message)
+  }))
+>>>>>>> main
 
   const provider = getProviderByModel(model)
 
