@@ -1,52 +1,33 @@
-import { GenericChunk } from '@renderer/aiCore/middleware/schemas'
-import { DEFAULT_MAX_TOKENS } from '@renderer/config/constant'
-import Logger from '@renderer/config/logger'
-import { findTokenLimit, isClaudeReasoningModel, isReasoningModel, isWebSearchModel } from '@renderer/config/models'
-import { getAssistantSettings } from '@renderer/services/AssistantService'
-import FileManager from '@renderer/services/FileManager'
-import { estimateTextTokens } from '@renderer/services/TokenService'
 import {
-  Assistant,
-  EFFORT_RATIO,
-  FileTypes,
+  GenerateImageParams,
   MCPCallToolResponse,
   MCPTool,
   MCPToolResponse,
   Model,
   Provider,
-  ToolCallResponse,
-  WebSearchSource
+  ToolCallResponse
 } from '@renderer/types'
 import {
-  ChunkType,
-  ErrorChunk,
-  LLMWebSearchCompleteChunk,
-  LLMWebSearchInProgressChunk,
-  MCPToolCreatedChunk,
-  TextDeltaChunk,
-  ThinkingDeltaChunk
-} from '@renderer/types/chunk'
-import type { Message } from '@renderer/types/newMessage'
-import {
-  AnthropicSdkMessageParam,
-  AnthropicSdkParams,
-  AnthropicSdkRawChunk,
-  AnthropicSdkRawOutput
+  OllamaSdkMessageParam,
+  OllamaSdkParams,
+  OllamaSdkRawChunk,
+  OllamaSdkRawOutput,
+  RequestOptions
 } from '@renderer/types/sdk'
-import { addImageFileToContents } from '@renderer/utils/formats'
-import {
-  anthropicToolUseToMcpTool,
-  isEnabledToolUse,
-  mcpToolCallResponseToAnthropicMessage,
-  mcpToolsToAnthropicTools
-} from '@renderer/utils/mcp-tools'
-import { findFileBlocks, findImageBlocks, getMainTextContent } from '@renderer/utils/messageUtils/find'
-import { buildSystemPrompt } from '@renderer/utils/prompt'
+import { Ollama, Tool as OllamaTool, ToolCall as OllamaToolCall } from 'ollama'
 
 import { BaseApiClient } from '../BaseApiClient'
-import { AnthropicStreamListener, RawStreamListener, RequestTransformer, ResponseChunkTransformer } from '../types'
+import { RequestTransformer, ResponseChunkTransformer } from '../types'
 
-export class OllamaAPIClient extends BaseApiClient {
+export class OllamaAPIClient extends BaseApiClient<
+  Ollama,
+  OllamaSdkParams,
+  OllamaSdkRawOutput,
+  OllamaSdkRawChunk,
+  OllamaSdkMessageParam,
+  OllamaToolCall,
+  OllamaTool
+> {
   constructor(provider: Provider) {
     super(provider)
   }
@@ -55,24 +36,24 @@ export class OllamaAPIClient extends BaseApiClient {
    * 核心API Endpoint
    **/
 
-  function createCompletions(payload: TSdkParams, options?: RequestOptions): Promise<TRawOutput> {
-
+  override createCompletions(payload: OllamaSdkParams, options?: RequestOptions): Promise<OllamaSdkRawOutput> {
+    throw new Error('Not implemented')
   }
 
-  function generateImage(generateImageParams: GenerateImageParams): Promise<string[]> {
-
+  override generateImage(generateImageParams: GenerateImageParams): Promise<string[]> {
+    throw new Error('Not implemented')
   }
 
-  function getEmbeddingDimensions(model?: Model): Promise<number> {
-
+  override getEmbeddingDimensions(model?: Model): Promise<number> {
+    throw new Error('Not implemented')
   }
 
-  function listModels(): Promise<SdkModel[]> {
-
+  override listModels(): Promise<SdkModel[]> {
+    throw new Error('Not implemented')
   }
 
-  function getSdkInstance(): Promise<TSdkInstance> | TSdkInstance {
-
+  override getSdkInstance(): Promise<Ollama> | Ollama {
+    throw new Error('Not implemented')
   }
 
   /**
@@ -80,12 +61,12 @@ export class OllamaAPIClient extends BaseApiClient {
    **/
 
   // 在 CoreRequestToSdkParamsMiddleware中使用
-  function getRequestTransformer(): RequestTransformer<TSdkParams, TMessageParam> {
-
+  override getRequestTransformer(): RequestTransformer<OllamaSdkParams, OllamaSdkMessageParam> {
+    throw new Error('Not implemented')
   }
   // 在RawSdkChunkToGenericChunkMiddleware中使用
-  function getResponseChunkTransformer(): ResponseChunkTransformer<TRawChunk> {
-
+  override getResponseChunkTransformer(): ResponseChunkTransformer<TRawChunk> {
+    throw new Error('Not implemented')
   }
 
   /**
@@ -93,44 +74,44 @@ export class OllamaAPIClient extends BaseApiClient {
    **/
 
   // Optional tool conversion methods - implement if needed by the specific provider
-  function convertMcpToolsToSdkTools(mcpTools: MCPTool[]): TSdkSpecificTool[] {
-
+  override convertMcpToolsToSdkTools(mcpTools: MCPTool[]): TSdkSpecificTool[] {
+    throw new Error('Not implemented')
   }
 
-  function convertSdkToolCallToMcp(toolCall: TToolCall, mcpTools: MCPTool[]): MCPTool | undefined {
-
+  override convertSdkToolCallToMcp(toolCall: OllamaToolCall, mcpTools: MCPTool[]): MCPTool | undefined {
+    throw new Error('Not implemented')
   }
 
-  function convertSdkToolCallToMcpToolResponse(toolCall: TToolCall, mcpTool: MCPTool): ToolCallResponse {
-
+  override convertSdkToolCallToMcpToolResponse(toolCall: OllamaToolCall, mcpTool: MCPTool): ToolCallResponse {
+    throw new Error('Not implemented')
   }
 
-  function buildSdkMessages(
-    currentReqMessages: TMessageParam[],
-    output: TRawOutput | string | undefined,
-    toolResults: TMessageParam[],
-    toolCalls?: TToolCall[]
-  ): TMessageParam[] {
-
+  override buildSdkMessages(
+    currentReqMessages: OllamaSdkMessageParam[],
+    output: OllamaSdkRawOutput | string | undefined,
+    toolResults: OllamaSdkMessageParam[],
+    toolCalls?: OllamaToolCall[]
+  ): OllamaSdkMessageParam[] {
+    throw new Error('Not implemented')
   }
 
-  function estimateMessageTokens(message: TMessageParam): number {
-
+  override estimateMessageTokens(message: OllamaSdkMessageParam): number {
+    throw new Error('Not implemented')
   }
 
-  function convertMcpToolResponseToSdkMessageParam(
+  override convertMcpToolResponseToSdkMessageParam(
     mcpToolResponse: MCPToolResponse,
     resp: MCPCallToolResponse,
     model: Model
-  ): TMessageParam | undefined {
-
+  ): OllamaSdkMessageParam | undefined {
+    throw new Error('Not implemented')
   }
 
   /**
    * 从SDK载荷中提取消息数组（用于中间件中的类型安全访问）
    * 不同的提供商可能使用不同的字段名（如messages、history等）
    */
-  function extractMessagesFromSdkPayload(sdkPayload: TSdkParams): TMessageParam[] {
-
+  override extractMessagesFromSdkPayload(sdkPayload: OllamaSdkParams): OllamaSdkMessageParam[] {
+    throw new Error('Not implemented')
   }
 }

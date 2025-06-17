@@ -18,7 +18,14 @@ import {
   SendMessageParameters,
   Tool
 } from '@google/genai'
-import { GenerateRequest, GenerateResponse, Ollama, Tool as OllamaTool, ToolCall as OllamaToolCall } from 'ollama'
+import {
+  GenerateRequest,
+  GenerateResponse,
+  ModelDetails as OllamaModel,
+  Ollama,
+  Tool as OllamaTool,
+  ToolCall as OllamaToolCall
+} from 'ollama'
 import OpenAI, { AzureOpenAI } from 'openai'
 import { Stream } from 'openai/streaming'
 
@@ -54,7 +61,7 @@ export type SdkToolCall =
   | OpenAIResponseSdkToolCall
   | OllamaToolCall
 export type SdkTool = OpenAI.Chat.Completions.ChatCompletionTool | ToolUnion | Tool | OpenAIResponseSdkTool | OllamaTool
-export type SdkModel = OpenAI.Models.Model | Anthropic.ModelInfo | GeminiModel
+export type SdkModel = OpenAI.Models.Model | Anthropic.ModelInfo | GeminiModel | OllamaModel
 
 export type RequestOptions = Anthropic.RequestOptions | OpenAI.RequestOptions | GeminiOptions
 
