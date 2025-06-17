@@ -2539,6 +2539,20 @@ export function isSupportedThinkingTokenDoubaoModel(model?: Model): boolean {
   return DOUBAO_THINKING_MODEL_REGEX.test(model.id)
 }
 
+/**
+ * 判断是否为只有ollama支持的可控制推理关闭的模型。目前只有deepseek-r1
+ * @param model
+ * @returns
+ */
+export function isSupportedThinkingTokenOllamaModel(model?: Model): boolean {
+  if (!model || model.provider != 'ollama') {
+    return false
+  }
+
+  const baseName = getBaseModelName(model.id, '/').toLowerCase()
+  return ['deepseek-r1'].includes(baseName)
+}
+
 export function isClaudeReasoningModel(model?: Model): boolean {
   if (!model) {
     return false

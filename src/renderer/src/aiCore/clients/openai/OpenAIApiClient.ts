@@ -13,6 +13,7 @@ import {
   isSupportedThinkingTokenDoubaoModel,
   isSupportedThinkingTokenGeminiModel,
   isSupportedThinkingTokenModel,
+  isSupportedThinkingTokenOllamaModel,
   isSupportedThinkingTokenQwenModel,
   isVisionModel
 } from '@renderer/config/models'
@@ -136,6 +137,10 @@ export class OpenAIAPIClient extends OpenAIBaseClient<
         return { thinking: { type: 'disabled' } }
       }
 
+      if (isSupportedThinkingTokenOllamaModel(model)) {
+        return { thinking: false }
+      }
+
       return {}
     }
     const effortRatio = EFFORT_RATIO[reasoningEffort]
@@ -197,6 +202,12 @@ export class OpenAIAPIClient extends OpenAIBaseClient<
             type: 'enabled'
           }
         }
+      }
+    }
+
+    if (isSupportedThinkingTokenOllamaModel(model)) {
+      return {
+        thinking: true
       }
     }
 
