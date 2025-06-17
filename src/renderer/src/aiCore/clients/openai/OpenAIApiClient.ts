@@ -9,11 +9,11 @@ import {
   isSupportedReasoningEffortGrokModel,
   isSupportedReasoningEffortModel,
   isSupportedReasoningEffortOpenAIModel,
+  isSupportedThinkingToggleOllamaModel,
   isSupportedThinkingTokenClaudeModel,
   isSupportedThinkingTokenDoubaoModel,
   isSupportedThinkingTokenGeminiModel,
   isSupportedThinkingTokenModel,
-  isSupportedThinkingTokenOllamaModel,
   isSupportedThinkingTokenQwenModel,
   isVisionModel
 } from '@renderer/config/models'
@@ -137,8 +137,8 @@ export class OpenAIAPIClient extends OpenAIBaseClient<
         return { thinking: { type: 'disabled' } }
       }
 
-      if (isSupportedThinkingTokenOllamaModel(model)) {
-        return { thinking: false }
+      if (isSupportedThinkingToggleOllamaModel(model)) {
+        return { think: false }
       }
 
       return {}
@@ -205,9 +205,9 @@ export class OpenAIAPIClient extends OpenAIBaseClient<
       }
     }
 
-    if (isSupportedThinkingTokenOllamaModel(model)) {
+    if (isSupportedThinkingToggleOllamaModel(model)) {
       return {
-        thinking: true
+        think: true
       }
     }
 
@@ -620,7 +620,7 @@ export class OpenAIAPIClient extends OpenAIBaseClient<
 
           // 处理推理内容 (e.g. from OpenRouter DeepSeek-R1)
           // @ts-ignore - reasoning_content is not in standard OpenAI types but some providers use it
-          const reasoningText = contentSource.reasoning_content || contentSource.reasoning
+          const reasoningText = contentSource.reasoning_content || contentSource.reasoning || contentSource.thinking
           if (reasoningText) {
             controller.enqueue({
               type: ChunkType.THINKING_DELTA,

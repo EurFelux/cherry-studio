@@ -2448,7 +2448,8 @@ export function isSupportedThinkingTokenModel(model?: Model): boolean {
     isSupportedThinkingTokenGeminiModel(model) ||
     isSupportedThinkingTokenQwenModel(model) ||
     isSupportedThinkingTokenClaudeModel(model) ||
-    isSupportedThinkingTokenDoubaoModel(model)
+    isSupportedThinkingTokenDoubaoModel(model) ||
+    isSupportedThinkingToggleOllamaModel(model)
   )
 }
 
@@ -2544,13 +2545,13 @@ export function isSupportedThinkingTokenDoubaoModel(model?: Model): boolean {
  * @param model
  * @returns
  */
-export function isSupportedThinkingTokenOllamaModel(model?: Model): boolean {
+export function isSupportedThinkingToggleOllamaModel(model?: Model): boolean {
   if (!model || model.provider != 'ollama') {
     return false
   }
 
   const baseName = getBaseModelName(model.id, '/').toLowerCase()
-  return ['deepseek-r1'].includes(baseName)
+  return baseName.startsWith('deepseek-r1')
 }
 
 export function isClaudeReasoningModel(model?: Model): boolean {
