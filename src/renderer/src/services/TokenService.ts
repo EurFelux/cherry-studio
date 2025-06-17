@@ -147,14 +147,16 @@ export async function estimateMessageUsage(message: Partial<Message>): Promise<U
 
 export async function estimateMessagesUsage({
   assistant,
-  messages
+  messages,
+  topicPrompt
 }: {
   assistant: Assistant
   messages: Message[]
+  topicPrompt: string | undefined
 }): Promise<Usage> {
   const outputMessage = messages.pop()!
 
-  const prompt_tokens = await estimateHistoryTokens(assistant, messages)
+  const prompt_tokens = await estimateHistoryTokens(assistant, messages, topicPrompt)
   const { completion_tokens } = await estimateMessageUsage(outputMessage)
 
   return {
@@ -164,7 +166,7 @@ export async function estimateMessagesUsage({
   } as Usage
 }
 
-export async function estimateHistoryTokens(assistant: Assistant, msgs: Message[]) {
+export async function estimateHistoryTokens(assistant: Assistant, msgs: Message[], topicPrompt?: string) {
   const { contextCount } = getAssistantSettings(assistant)
   const maxContextCount = contextCount
   const messages = filterMessages(filterContextMessages(takeRight(msgs, maxContextCount)))
@@ -186,7 +188,7 @@ export async function estimateHistoryTokens(assistant: Assistant, msgs: Message[
     allMessages = allMessages.concat(items)
   }
 
-  const prompt = assistant.prompt
+  const prompt = topicPrompt ? `${assistant.prompt}\n${topicPrompt}` : assistant.prompt
   const input = flatten(allMessages)
     .map((m) => m.content)
     .join('\n')
