@@ -25,13 +25,18 @@ import FileManager from '@renderer/services/FileManager'
 import { checkRateLimit, getUserMessage } from '@renderer/services/MessagesService'
 import { getModelUniqId } from '@renderer/services/ModelService'
 import PasteService from '@renderer/services/PasteService'
-import { estimateTextTokens as estimateTxtTokens, estimateUserPromptUsage } from '@renderer/services/TokenService'
+import {
+  estimateExternalTextFileTokens,
+  estimateImageTokens,
+  estimateTextTokens as estimateTxtTokens,
+  estimateUserPromptUsage
+} from '@renderer/services/TokenService'
 import { translateText } from '@renderer/services/TranslateService'
 import WebSearchService from '@renderer/services/WebSearchService'
 import { useAppDispatch, useAppSelector } from '@renderer/store'
 import { setSearching } from '@renderer/store/runtime'
 import { sendMessage as _sendMessage } from '@renderer/store/thunk/messageThunk'
-import { Assistant, FileType, KnowledgeBase, KnowledgeItem, Model, Topic } from '@renderer/types'
+import { Assistant, FileType, FileTypes, KnowledgeBase, KnowledgeItem, Model, Topic } from '@renderer/types'
 import type { MessageInputBaseParams } from '@renderer/types/newMessage'
 import { classNames, delay, formatFileSize, getFileExtension } from '@renderer/utils'
 import { formatQuotedText } from '@renderer/utils/formats'
@@ -119,13 +124,32 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedEstimate = useCallback(
-    debounce((newText) => {
+    debounce(async (newText) => {
       if (showInputEstimatedTokens) {
-        const count = estimateTxtTokens(newText) || 0
-        setTokenCount(count)
+        // 估计输入内容与暂存的文件的token用量
+        const inputTokens = estimateTxtTokens(newText) || 0
+        const fileTokens = await Promise.all(
+          files.map(async (file) => {
+            if (file.tokens) {
+              return file.tokens
+            } else if ([FileTypes.TEXT, FileTypes.DOCUMENT].includes(file.type)) {
+              return await estimateExternalTextFileTokens(file)
+            } else if (file.type === FileTypes.IMAGE) {
+              return estimateImageTokens(file)
+            } else {
+              return 0
+            }
+          })
+        )
+        files.forEach((file, index) => {
+          file.tokens = fileTokens[index]
+        })
+        const finalTokens = inputTokens + fileTokens.reduce((sum, tokens) => sum + tokens, 0)
+
+        setTokenCount(finalTokens)
       }
     }, 500),
-    [showInputEstimatedTokens]
+    [showInputEstimatedTokens, files]
   )
 
   useEffect(() => {
