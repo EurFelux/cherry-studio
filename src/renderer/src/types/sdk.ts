@@ -18,24 +18,42 @@ import {
   SendMessageParameters,
   Tool
 } from '@google/genai'
+import { GenerateRequest, GenerateResponse, Ollama, Tool as OllamaTool, ToolCall as OllamaToolCall } from 'ollama'
 import OpenAI, { AzureOpenAI } from 'openai'
 import { Stream } from 'openai/streaming'
 
-export type SdkInstance = OpenAI | AzureOpenAI | Anthropic | GoogleGenAI
-export type SdkParams = OpenAISdkParams | OpenAIResponseSdkParams | AnthropicSdkParams | GeminiSdkParams
-export type SdkRawChunk = OpenAISdkRawChunk | OpenAIResponseSdkRawChunk | AnthropicSdkRawChunk | GeminiSdkRawChunk
-export type SdkRawOutput = OpenAISdkRawOutput | OpenAIResponseSdkRawOutput | AnthropicSdkRawOutput | GeminiSdkRawOutput
+export type SdkInstance = OpenAI | AzureOpenAI | Anthropic | GoogleGenAI | Ollama
+export type SdkParams =
+  | OpenAISdkParams
+  | OpenAIResponseSdkParams
+  | AnthropicSdkParams
+  | GeminiSdkParams
+  | OllamaSdkParams
+export type SdkRawChunk =
+  | OpenAISdkRawChunk
+  | OpenAIResponseSdkRawChunk
+  | AnthropicSdkRawChunk
+  | GeminiSdkRawChunk
+  | OllamaSdkRawChunk
+export type SdkRawOutput =
+  | OpenAISdkRawOutput
+  | OpenAIResponseSdkRawOutput
+  | AnthropicSdkRawOutput
+  | GeminiSdkRawOutput
+  | OllamaSdkRawOutput
 export type SdkMessageParam =
   | OpenAISdkMessageParam
   | OpenAIResponseSdkMessageParam
   | AnthropicSdkMessageParam
   | GeminiSdkMessageParam
+  | OllamaSdkMessageParam
 export type SdkToolCall =
   | OpenAI.Chat.Completions.ChatCompletionMessageToolCall
   | ToolUseBlock
   | FunctionCall
   | OpenAIResponseSdkToolCall
-export type SdkTool = OpenAI.Chat.Completions.ChatCompletionTool | ToolUnion | Tool | OpenAIResponseSdkTool
+  | OllamaToolCall
+export type SdkTool = OpenAI.Chat.Completions.ChatCompletionTool | ToolUnion | Tool | OpenAIResponseSdkTool | OllamaTool
 export type SdkModel = OpenAI.Models.Model | Anthropic.ModelInfo | GeminiModel
 
 export type RequestOptions = Anthropic.RequestOptions | OpenAI.RequestOptions | GeminiOptions
@@ -105,3 +123,12 @@ export type GeminiOptions = {
   abortSignal?: AbortSignal
   timeout?: number
 }
+
+/**
+ * Ollama
+ */
+export type OllamaSdkParams = GenerateRequest
+export type OllamaSdkResponse = GenerateResponse
+export type OllamaSdkRawChunk = GenerateResponse
+export type OllamaSdkRawOutput = GenerateResponse
+export type OllamaSdkMessageParam = GenerateRequest
