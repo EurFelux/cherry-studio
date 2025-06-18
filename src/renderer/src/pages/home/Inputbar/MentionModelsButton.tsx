@@ -145,12 +145,12 @@ const MentionModelsButton: FC<Props> = ({
     }
   }, [openQuickPanel, quickPanel])
 
-  // 重新渲染时关闭quick panel
   useEffect(() => {
     if (quickPanel.isVisible && quickPanel.symbol === '@') {
-      console.log('useEffect quickPanel', quickPanel)
       quickPanel.close()
     }
+    // 为了在文件更新时关闭quickPanel，不应该有quickPanel依赖
+    // eslint-disable-next-line
   }, [files])
 
   useImperativeHandle(ref, () => ({
