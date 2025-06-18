@@ -1,7 +1,7 @@
 import ModelTagsWithLabel from '@renderer/components/ModelTagsWithLabel'
 import { useQuickPanel } from '@renderer/components/QuickPanel'
 import { QuickPanelListItem } from '@renderer/components/QuickPanel/types'
-import { getModelLogo, isEmbeddingModel, isRerankModel } from '@renderer/config/models'
+import { getModelLogo, isEmbeddingModel, isRerankModel, isVisionModel } from '@renderer/config/models'
 import db from '@renderer/databases'
 import { useProviders } from '@renderer/hooks/useProvider'
 import { getModelUniqId } from '@renderer/services/ModelService'
@@ -21,12 +21,19 @@ export interface MentionModelsButtonRef {
 
 interface Props {
   ref?: React.RefObject<MentionModelsButtonRef | null>
-  mentionModels: Model[]
+  mentionedModels: Model[]
   onMentionModel: (model: Model) => void
+  couldMentionNotVisionModel: boolean
   ToolbarButton: any
 }
 
-const MentionModelsButton: FC<Props> = ({ ref, mentionModels, onMentionModel, ToolbarButton }) => {
+const MentionModelsButton: FC<Props> = ({
+  ref,
+  mentionedModels,
+  onMentionModel,
+  couldMentionNotVisionModel,
+  ToolbarButton
+}) => {
   const { providers } = useProviders()
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -49,6 +56,7 @@ const MentionModelsButton: FC<Props> = ({ ref, mentionModels, onMentionModel, To
         p.models
           .filter((m) => !isEmbeddingModel(m) && !isRerankModel(m))
           .filter((m) => pinnedModels.includes(getModelUniqId(m)))
+          .filter((m) => couldMentionNotVisionModel || (!couldMentionNotVisionModel && isVisionModel(m)))
           .map((m) => ({
             label: (
               <>
@@ -64,7 +72,7 @@ const MentionModelsButton: FC<Props> = ({ ref, mentionModels, onMentionModel, To
             ),
             filterText: (p.isSystem ? t(`provider.${p.id}`) : p.name) + m.name,
             action: () => onMentionModel(m),
-            isSelected: mentionModels.some((selected) => getModelUniqId(selected) === getModelUniqId(m))
+            isSelected: mentionedModels.some((selected) => getModelUniqId(selected) === getModelUniqId(m))
           }))
       )
 
@@ -77,7 +85,8 @@ const MentionModelsButton: FC<Props> = ({ ref, mentionModels, onMentionModel, To
       const providerModels = sortBy(
         p.models
           .filter((m) => !isEmbeddingModel(m) && !isRerankModel(m))
-          .filter((m) => !pinnedModels.includes(getModelUniqId(m))),
+          .filter((m) => !pinnedModels.includes(getModelUniqId(m)))
+          .filter((m) => couldMentionNotVisionModel || (!couldMentionNotVisionModel && isVisionModel(m))),
         ['group', 'name']
       )
 
@@ -96,7 +105,7 @@ const MentionModelsButton: FC<Props> = ({ ref, mentionModels, onMentionModel, To
         ),
         filterText: (p.isSystem ? t(`provider.${p.id}`) : p.name) + m.name,
         action: () => onMentionModel(m),
-        isSelected: mentionModels.some((selected) => getModelUniqId(selected) === getModelUniqId(m))
+        isSelected: mentionedModels.some((selected) => getModelUniqId(selected) === getModelUniqId(m))
       }))
 
       if (providerModelItems.length > 0) {
@@ -112,7 +121,7 @@ const MentionModelsButton: FC<Props> = ({ ref, mentionModels, onMentionModel, To
     })
 
     return items
-  }, [providers, t, pinnedModels, mentionModels, onMentionModel, navigate])
+  }, [pinnedModels, providers, t, couldMentionNotVisionModel, mentionedModels, onMentionModel, navigate])
 
   const openQuickPanel = useCallback(() => {
     quickPanel.open({

@@ -31,7 +31,7 @@ import WebSearchService from '@renderer/services/WebSearchService'
 import { useAppDispatch, useAppSelector } from '@renderer/store'
 import { setSearching } from '@renderer/store/runtime'
 import { sendMessage as _sendMessage } from '@renderer/store/thunk/messageThunk'
-import { Assistant, FileType, KnowledgeBase, KnowledgeItem, Model, Topic } from '@renderer/types'
+import { Assistant, FileType, FileTypes, KnowledgeBase, KnowledgeItem, Model, Topic } from '@renderer/types'
 import type { MessageInputBaseParams } from '@renderer/types/newMessage'
 import { classNames, delay, formatFileSize, getFileExtension } from '@renderer/utils'
 import { formatQuotedText } from '@renderer/utils/formats'
@@ -96,18 +96,31 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
   const spaceClickTimer = useRef<NodeJS.Timeout>(null)
   const [isTranslating, setIsTranslating] = useState(false)
   const [selectedKnowledgeBases, setSelectedKnowledgeBases] = useState<KnowledgeBase[]>([])
-  const [mentionModels, setMentionModels] = useState<Model[]>([])
+  const [mentionedModels, setMentionedModels] = useState<Model[]>([])
   const [isDragging, setIsDragging] = useState(false)
   const [isFileDragging, setIsFileDragging] = useState(false)
   const [textareaHeight, setTextareaHeight] = useState<number>()
   const startDragY = useRef<number>(0)
   const startHeight = useRef<number>(0)
   const currentMessageId = useRef<string>('')
-  const isVision = useMemo(() => isVisionModel(model), [model])
-  const supportExts = useMemo(() => [...textExts, ...documentExts, ...(isVision ? imageExts : [])], [isVision])
   const { activedMcpServers } = useMCPServers()
   const { bases: knowledgeBases } = useKnowledgeBases()
   const isMultiSelectMode = useAppSelector((state) => state.runtime.chat.isMultiSelectMode)
+  const isVisionAssistant = useMemo(() => isVisionModel(model), [model])
+  const isVisionSupported = useMemo(() => {
+    return (
+      (mentionedModels.length > 0 && mentionedModels.every((model) => isVisionModel(model))) ||
+      (mentionedModels.length == 0 && isVisionAssistant)
+    )
+  }, [mentionedModels, isVisionAssistant])
+  const supportExts = useMemo(
+    () => [...textExts, ...documentExts, ...(isVisionSupported ? imageExts : [])],
+    [isVisionSupported]
+  )
+  // 仅允许在不含图片文件时mention非视觉模型
+  const couldMentionNotVisionModel = useMemo(() => {
+    return !files.some((file) => file.type === FileTypes.IMAGE)
+  }, [files])
 
   const quickPanel = useQuickPanel()
 
@@ -182,8 +195,8 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
         baseUserMessage.knowledgeBaseIds = knowledgeBaseIds
       }
 
-      if (mentionModels) {
-        baseUserMessage.mentions = mentionModels
+      if (mentionedModels) {
+        baseUserMessage.mentions = mentionedModels
       }
 
       if (!isEmpty(assistant.mcpServers) && !isEmpty(activedMcpServers)) {
@@ -219,7 +232,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
     files,
     inputEmpty,
     loading,
-    mentionModels,
+    mentionedModels,
     resizeTextArea,
     selectedKnowledgeBases,
     text,
@@ -398,8 +411,8 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
       }
     }
 
-    if (enableBackspaceDeleteModel && event.key === 'Backspace' && text.trim() === '' && mentionModels.length > 0) {
-      setMentionModels((prev) => prev.slice(0, -1))
+    if (enableBackspaceDeleteModel && event.key === 'Backspace' && text.trim() === '' && mentionedModels.length > 0) {
+      setMentionedModels((prev) => prev.slice(0, -1))
       return event.preventDefault()
     }
 
@@ -706,7 +719,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
   }
 
   const handleRemoveModel = (model: Model) => {
-    setMentionModels(mentionModels.filter((m) => m.id !== model.id))
+    setMentionedModels(mentionedModels.filter((m) => m.id !== model.id))
   }
 
   const handleRemoveKnowledgeBase = (knowledgeBase: KnowledgeBase) => {
@@ -737,13 +750,21 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
     }
   }, [assistant, model, updateAssistant])
 
-  const onMentionModel = useCallback((model: Model) => {
-    setMentionModels((prev) => {
-      const modelId = getModelUniqId(model)
-      const exists = prev.some((m) => getModelUniqId(m) === modelId)
-      return exists ? prev.filter((m) => getModelUniqId(m) !== modelId) : [...prev, model]
-    })
-  }, [])
+  const onMentionModel = useCallback(
+    (model: Model) => {
+      // 我想应该没有模型是只支持视觉而不支持文本的？
+      if (isVisionModel(model) || couldMentionNotVisionModel) {
+        setMentionedModels((prev) => {
+          const modelId = getModelUniqId(model)
+          const exists = prev.some((m) => getModelUniqId(m) === modelId)
+          return exists ? prev.filter((m) => getModelUniqId(m) !== modelId) : [...prev, model]
+        })
+      } else {
+        window.message.error('在已上传图片时，不能添加非视觉模型')
+      }
+    },
+    [couldMentionNotVisionModel]
+  )
 
   const onToggleExpended = () => {
     const currentlyExpanded = expended || !!textareaHeight
@@ -795,8 +816,8 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
               onRemoveKnowledgeBase={handleRemoveKnowledgeBase}
             />
           )}
-          {mentionModels.length > 0 && (
-            <MentionModelsInput selectedModels={mentionModels} onRemoveModel={handleRemoveModel} />
+          {mentionedModels.length > 0 && (
+            <MentionModelsInput selectedModels={mentionedModels} onRemoveModel={handleRemoveModel} />
           )}
           <Textarea
             value={text}
@@ -848,8 +869,9 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
               handleKnowledgeBaseSelect={handleKnowledgeBaseSelect}
               setText={setText}
               resizeTextArea={resizeTextArea}
-              mentionModels={mentionModels}
+              mentionModels={mentionedModels}
               onMentionModel={onMentionModel}
+              couldMentionNotVisionModel={couldMentionNotVisionModel}
               onEnableGenerateImage={onEnableGenerateImage}
               isExpended={isExpended}
               onToggleExpended={onToggleExpended}

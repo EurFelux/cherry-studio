@@ -13,28 +13,42 @@ export interface AttachmentButtonRef {
 interface Props {
   ref?: React.RefObject<AttachmentButtonRef | null>
   model: Model
+  mentionedModels: Model[]
   files: FileType[]
   setFiles: (files: FileType[]) => void
   ToolbarButton: any
   disabled?: boolean
 }
 
-const AttachmentButton: FC<Props> = ({ ref, model, files, setFiles, ToolbarButton, disabled }) => {
+const AttachmentButton: FC<Props> = ({ ref, model, mentionedModels, files, setFiles, ToolbarButton, disabled }) => {
   const { t } = useTranslation()
 
-  // const extensions = useMemo(
-  //   () => (isVisionModel(model) ? [...imageExts, ...documentExts, ...textExts] : [...documentExts, ...textExts]),
-  //   [model]
-  // )
+  const isVisionAssistant = useMemo(() => isVisionModel(model), [model])
+  const isGenerateImageAssistant = useMemo(() => isGenerateImageModel(model), [model])
+
+  const isVisionSupported = useMemo(() => {
+    return (
+      (mentionedModels.length > 0 && mentionedModels.every((model) => isVisionModel(model))) ||
+      (mentionedModels.length == 0 && isVisionAssistant)
+    )
+  }, [mentionedModels, isVisionAssistant])
+
+  const isGenerateImageSupported = useMemo(() => {
+    return (
+      (mentionedModels.length > 0 && mentionedModels.every((model) => isGenerateImageModel(model))) ||
+      (mentionedModels.length == 0 && isGenerateImageAssistant)
+    )
+  }, [mentionedModels, isGenerateImageAssistant])
+
   const extensions = useMemo(() => {
-    if (isVisionModel(model)) {
+    if (isVisionSupported) {
       return [...imageExts, ...documentExts, ...textExts]
-    } else if (isGenerateImageModel(model)) {
+    } else if (isGenerateImageSupported) {
       return [...imageExts]
     } else {
       return [...documentExts, ...textExts]
     }
-  }, [model])
+  }, [isVisionSupported, isGenerateImageSupported])
 
   const onSelectFile = useCallback(async () => {
     const _files = await window.api.file.select({
@@ -63,9 +77,7 @@ const AttachmentButton: FC<Props> = ({ ref, model, files, setFiles, ToolbarButto
   return (
     <Tooltip
       placement="top"
-      title={
-        isVisionModel(model) || isGenerateImageModel(model) ? t('chat.input.upload') : t('chat.input.upload.document')
-      }
+      title={isVisionSupported || isGenerateImageSupported ? t('chat.input.upload') : t('chat.input.upload.document')}
       arrow>
       <ToolbarButton type="text" onClick={onSelectFile} disabled={disabled}>
         <Paperclip size={18} style={{ color: files.length ? 'var(--color-primary)' : 'var(--color-icon)' }} />

@@ -65,6 +65,7 @@ export interface InputbarToolsProps {
   resizeTextArea: () => void
   mentionModels: Model[]
   onMentionModel: (model: Model) => void
+  couldMentionNotVisionModel: boolean
   onEnableGenerateImage: () => void
   isExpended: boolean
   onToggleExpended: () => void
@@ -104,6 +105,7 @@ const InputbarTools = ({
   resizeTextArea,
   mentionModels,
   onMentionModel,
+  couldMentionNotVisionModel,
   onEnableGenerateImage,
   isExpended,
   onToggleExpended,
@@ -299,6 +301,7 @@ const InputbarTools = ({
           <AttachmentButton
             ref={attachmentButtonRef}
             model={model}
+            mentionedModels={mentionModels}
             files={files}
             setFiles={setFiles}
             ToolbarButton={ToolbarButton}
@@ -364,9 +367,10 @@ const InputbarTools = ({
         component: (
           <MentionModelsButton
             ref={mentionModelsButtonRef}
-            mentionModels={mentionModels}
+            mentionedModels={mentionModels}
             onMentionModel={onMentionModel}
             ToolbarButton={ToolbarButton}
+            couldMentionNotVisionModel={couldMentionNotVisionModel}
           />
         )
       },
@@ -416,6 +420,7 @@ const InputbarTools = ({
     assistant,
     cleanTopicShortcut,
     clearTopic,
+    couldMentionNotVisionModel,
     files,
     handleKnowledgeBaseSelect,
     isExpended,
