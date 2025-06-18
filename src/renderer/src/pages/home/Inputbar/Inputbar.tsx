@@ -542,35 +542,38 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
     setIsFileDragging(false)
   }
 
-  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsFileDragging(false)
+  const handleDrop = useCallback(
+    async (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault()
+      e.stopPropagation()
+      setIsFileDragging(false)
 
-    const files = await getFilesFromDropEvent(e).catch((err) => {
-      Logger.error('[src/renderer/src/pages/home/Inputbar/Inputbar.tsx] handleDrop:', err)
-      return null
-    })
-
-    if (files) {
-      let supportedFiles = 0
-
-      files.forEach((file) => {
-        if (supportExts.includes(getFileExtension(file.path))) {
-          setFiles((prevFiles) => [...prevFiles, file])
-          supportedFiles++
-        }
+      const files = await getFilesFromDropEvent(e).catch((err) => {
+        Logger.error('[src/renderer/src/pages/home/Inputbar/Inputbar.tsx] handleDrop:', err)
+        return null
       })
 
-      // 如果有文件，但都不支持
-      if (files.length > 0 && supportedFiles === 0) {
-        window.message.info({
-          key: 'file_not_supported',
-          content: t('chat.input.file_not_supported')
+      if (files) {
+        let supportedFiles = 0
+
+        files.forEach((file) => {
+          if (supportExts.includes(getFileExtension(file.path))) {
+            setFiles((prevFiles) => [...prevFiles, file])
+            supportedFiles++
+          }
         })
+
+        // 如果有文件，但都不支持
+        if (files.length > 0 && supportedFiles === 0) {
+          window.message.info({
+            key: 'file_not_supported',
+            content: t('chat.input.file_not_supported')
+          })
+        }
       }
-    }
-  }
+    },
+    [supportExts, t]
+  )
 
   const onTranslated = (translatedText: string) => {
     setText(translatedText)
