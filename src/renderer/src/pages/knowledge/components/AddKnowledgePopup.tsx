@@ -115,6 +115,9 @@ const PopupContainer: React.FC<Props> = ({ title, resolve }) => {
           try {
             const aiProvider = new AiProvider(provider)
             values.dimensions = await aiProvider.getEmbeddingDimensions(selectedEmbeddingModel)
+            if (values.dimensions === 0) {
+              throw new Error('')
+            }
           } catch (error) {
             console.error('Error getting embedding dimensions:', error)
             window.message.error(t('message.error.get_embedding_dimensions') + '\n' + getErrorMessage(error))
