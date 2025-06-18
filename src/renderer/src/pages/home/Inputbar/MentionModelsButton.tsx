@@ -10,7 +10,7 @@ import { Avatar, Tooltip } from 'antd'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { first, sortBy } from 'lodash'
 import { AtSign, Plus } from 'lucide-react'
-import { FC, memo, useCallback, useEffect, useImperativeHandle, useMemo } from 'react'
+import { FC, memo, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import styled from 'styled-components'
@@ -145,13 +145,17 @@ const MentionModelsButton: FC<Props> = ({
     }
   }, [openQuickPanel, quickPanel])
 
+  const filesRef = useRef(files)
+
   useEffect(() => {
-    if (quickPanel.isVisible && quickPanel.symbol === '@') {
-      quickPanel.close()
+    // 检查files是否变化
+    if (filesRef.current !== files) {
+      if (quickPanel.isVisible && quickPanel.symbol === '@') {
+        quickPanel.close()
+      }
+      filesRef.current = files
     }
-    // 为了在文件更新时关闭quickPanel，不应该有quickPanel依赖
-    // eslint-disable-next-line
-  }, [files])
+  }, [files, quickPanel])
 
   useImperativeHandle(ref, () => ({
     openQuickPanel
