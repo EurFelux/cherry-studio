@@ -85,17 +85,13 @@ export abstract class OpenAIBaseClient<
 
   override async getEmbeddingDimensions(model: Model): Promise<number> {
     const sdk = await this.getSdkInstance()
-    try {
-      const data = await sdk.embeddings.create({
-        model: model.id,
-        input: model?.provider === 'baidu-cloud' ? ['hi'] : 'hi',
-        encoding_format: 'float'
-      })
-      return data.data[0].embedding.length
-    } catch (e) {
-      console.error('Error getting embedding dimensions:', e)
-      throw e
-    }
+
+    const data = await sdk.embeddings.create({
+      model: model.id,
+      input: model?.provider === 'baidu-cloud' ? ['hi'] : 'hi',
+      encoding_format: 'float'
+    })
+    return data.data[0].embedding.length
   }
 
   override async listModels(): Promise<OpenAI.Models.Model[]> {
