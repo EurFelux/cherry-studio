@@ -154,7 +154,8 @@ export class GeminiAPIClient extends BaseApiClient<
       })
       return data.embeddings?.[0]?.values?.length || 0
     } catch (e) {
-      return 0
+      console.error('Error getting embedding dimensions:', e)
+      throw e
     }
   }
 

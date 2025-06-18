@@ -93,7 +93,8 @@ export abstract class OpenAIBaseClient<
       })
       return data.data[0].embedding.length
     } catch (e) {
-      return 0
+      console.error('Error getting embedding dimensions:', e)
+      throw e
     }
   }
 
