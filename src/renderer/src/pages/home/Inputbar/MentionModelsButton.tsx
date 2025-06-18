@@ -5,12 +5,12 @@ import { getModelLogo, isEmbeddingModel, isRerankModel, isVisionModel } from '@r
 import db from '@renderer/databases'
 import { useProviders } from '@renderer/hooks/useProvider'
 import { getModelUniqId } from '@renderer/services/ModelService'
-import { Model } from '@renderer/types'
+import { FileType, Model } from '@renderer/types'
 import { Avatar, Tooltip } from 'antd'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { first, sortBy } from 'lodash'
 import { AtSign, Plus } from 'lucide-react'
-import { FC, memo, useCallback, useImperativeHandle, useMemo } from 'react'
+import { FC, memo, useCallback, useEffect, useImperativeHandle, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import styled from 'styled-components'
@@ -24,6 +24,7 @@ interface Props {
   mentionedModels: Model[]
   onMentionModel: (model: Model) => void
   couldMentionNotVisionModel: boolean
+  files: FileType[]
   ToolbarButton: any
 }
 
@@ -32,6 +33,7 @@ const MentionModelsButton: FC<Props> = ({
   mentionedModels,
   onMentionModel,
   couldMentionNotVisionModel,
+  files,
   ToolbarButton
 }) => {
   const { providers } = useProviders()
@@ -142,6 +144,14 @@ const MentionModelsButton: FC<Props> = ({
       openQuickPanel()
     }
   }, [openQuickPanel, quickPanel])
+
+  // 重新渲染时关闭quick panel
+  useEffect(() => {
+    if (quickPanel.isVisible && quickPanel.symbol === '@') {
+      console.log('useEffect quickPanel', quickPanel)
+      quickPanel.close()
+    }
+  }, [files])
 
   useImperativeHandle(ref, () => ({
     openQuickPanel
