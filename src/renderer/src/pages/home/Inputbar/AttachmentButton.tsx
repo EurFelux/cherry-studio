@@ -13,7 +13,7 @@ export interface AttachmentButtonRef {
 interface Props {
   ref?: React.RefObject<AttachmentButtonRef | null>
   model: Model
-  mentionedModels: Model[]
+  mentionedModels?: Model[]
   files: FileType[]
   setFiles: (files: FileType[]) => void
   ToolbarButton: any
@@ -28,15 +28,15 @@ const AttachmentButton: FC<Props> = ({ ref, model, mentionedModels, files, setFi
 
   const isVisionSupported = useMemo(() => {
     return (
-      (mentionedModels.length > 0 && mentionedModels.every((model) => isVisionModel(model))) ||
-      (mentionedModels.length == 0 && isVisionAssistant)
+      ((!mentionedModels || mentionedModels.length == 0) && isVisionAssistant) ||
+      (mentionedModels && mentionedModels.length > 0 && mentionedModels.every((model) => isVisionModel(model)))
     )
   }, [mentionedModels, isVisionAssistant])
 
   const isGenerateImageSupported = useMemo(() => {
     return (
-      (mentionedModels.length > 0 && mentionedModels.every((model) => isGenerateImageModel(model))) ||
-      (mentionedModels.length == 0 && isGenerateImageAssistant)
+      ((!mentionedModels || mentionedModels.length == 0) && isGenerateImageAssistant) ||
+      (mentionedModels && mentionedModels.length > 0 && mentionedModels.every((model) => isGenerateImageModel(model)))
     )
   }, [mentionedModels, isGenerateImageAssistant])
 
