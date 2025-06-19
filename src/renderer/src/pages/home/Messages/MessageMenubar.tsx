@@ -336,7 +336,6 @@ const MessageMenubar: FC<Props> = (props) => {
     }
     const state = store.getState()
     const topicMessages = selectMessagesForTopic(state, topic.id)
-    console.log('topicMessages', topicMessages)
     // 理论上助手消息只会关联一条用户消息
     const relatedUserMessage = topicMessages.find((msg) => {
       return msg.role === 'user' && message.askId === msg.id

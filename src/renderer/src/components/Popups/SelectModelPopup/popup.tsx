@@ -42,7 +42,7 @@ interface Props extends PopupParams {
   modelFilter?: (model: Model) => boolean
 }
 
-const PopupContainer: React.FC<Props> = ({ model, resolve, modelFilter = () => true }) => {
+const PopupContainer: React.FC<Props> = ({ model, resolve, modelFilter }) => {
   const { t } = useTranslation()
   const { providers } = useProviders()
   const { pinnedModels, togglePinnedModel, loading } = usePinnedModels()
@@ -160,7 +160,7 @@ const PopupContainer: React.FC<Props> = ({ model, resolve, modelFilter = () => t
       const pinnedItems = providers.flatMap((p) =>
         p.models
           .filter((m) => pinnedModels.includes(getModelUniqId(m)))
-          .filter(modelFilter)
+          .filter(modelFilter ? modelFilter : () => true)
           .map((m) => createModelItem(m, p, true))
       )
 
@@ -181,7 +181,7 @@ const PopupContainer: React.FC<Props> = ({ model, resolve, modelFilter = () => t
     providers.forEach((p) => {
       const filteredModels = getFilteredModels(p)
         .filter((m) => searchText.length > 0 || !pinnedModels.includes(getModelUniqId(m)))
-        .filter(modelFilter)
+        .filter(modelFilter ? modelFilter : () => true)
 
       if (filteredModels.length === 0) return
 
