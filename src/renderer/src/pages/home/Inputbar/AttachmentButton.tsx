@@ -1,9 +1,7 @@
-import { isGenerateImageModel, isVisionModel } from '@renderer/config/models'
 import { FileType, Model } from '@renderer/types'
-import { documentExts, imageExts, textExts } from '@shared/config/constant'
 import { Tooltip } from 'antd'
 import { Paperclip } from 'lucide-react'
-import { FC, useCallback, useImperativeHandle, useMemo } from 'react'
+import { FC, useCallback, useImperativeHandle } from 'react'
 import { useTranslation } from 'react-i18next'
 
 export interface AttachmentButtonRef {
@@ -13,42 +11,24 @@ export interface AttachmentButtonRef {
 interface Props {
   ref?: React.RefObject<AttachmentButtonRef | null>
   model: Model
-  mentionedModels?: Model[]
+  couldAddImageFile: boolean
+  extensions: string[]
   files: FileType[]
   setFiles: (files: FileType[]) => void
   ToolbarButton: any
   disabled?: boolean
 }
 
-const AttachmentButton: FC<Props> = ({ ref, model, mentionedModels, files, setFiles, ToolbarButton, disabled }) => {
+const AttachmentButton: FC<Props> = ({
+  ref,
+  couldAddImageFile,
+  extensions,
+  files,
+  setFiles,
+  ToolbarButton,
+  disabled
+}) => {
   const { t } = useTranslation()
-
-  const isVisionAssistant = useMemo(() => isVisionModel(model), [model])
-  const isGenerateImageAssistant = useMemo(() => isGenerateImageModel(model), [model])
-
-  const isVisionSupported = useMemo(() => {
-    return (
-      ((!mentionedModels || mentionedModels.length == 0) && isVisionAssistant) ||
-      (mentionedModels && mentionedModels.length > 0 && mentionedModels.every((model) => isVisionModel(model)))
-    )
-  }, [mentionedModels, isVisionAssistant])
-
-  const isGenerateImageSupported = useMemo(() => {
-    return (
-      ((!mentionedModels || mentionedModels.length == 0) && isGenerateImageAssistant) ||
-      (mentionedModels && mentionedModels.length > 0 && mentionedModels.every((model) => isGenerateImageModel(model)))
-    )
-  }, [mentionedModels, isGenerateImageAssistant])
-
-  const extensions = useMemo(() => {
-    if (isVisionSupported) {
-      return [...imageExts, ...documentExts, ...textExts]
-    } else if (isGenerateImageSupported) {
-      return [...imageExts]
-    } else {
-      return [...documentExts, ...textExts]
-    }
-  }, [isVisionSupported, isGenerateImageSupported])
 
   const onSelectFile = useCallback(async () => {
     const _files = await window.api.file.select({
@@ -75,10 +55,7 @@ const AttachmentButton: FC<Props> = ({ ref, model, mentionedModels, files, setFi
   }))
 
   return (
-    <Tooltip
-      placement="top"
-      title={isVisionSupported || isGenerateImageSupported ? t('chat.input.upload') : t('chat.input.upload.document')}
-      arrow>
+    <Tooltip placement="top" title={couldAddImageFile ? t('chat.input.upload') : t('chat.input.upload.document')} arrow>
       <ToolbarButton type="text" onClick={onSelectFile} disabled={disabled}>
         <Paperclip size={18} style={{ color: files.length ? 'var(--color-primary)' : 'var(--color-icon)' }} />
       </ToolbarButton>

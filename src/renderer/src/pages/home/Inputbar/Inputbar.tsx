@@ -105,20 +105,47 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
   const { bases: knowledgeBases } = useKnowledgeBases()
   const isMultiSelectMode = useAppSelector((state) => state.runtime.chat.isMultiSelectMode)
   const isVisionAssistant = useMemo(() => isVisionModel(model), [model])
+  const isGenerateImageAssistant = useMemo(() => isGenerateImageModel(model), [model])
+
   const isVisionSupported = useMemo(() => {
     return (
       (mentionedModels.length > 0 && mentionedModels.every((model) => isVisionModel(model))) ||
       (mentionedModels.length == 0 && isVisionAssistant)
     )
   }, [mentionedModels, isVisionAssistant])
-  const supportExts = useMemo(
-    () => [...textExts, ...documentExts, ...(isVisionSupported ? imageExts : [])],
-    [isVisionSupported]
-  )
+
+  const isGenerateImageSupported = useMemo(() => {
+    return (
+      ((!mentionedModels || mentionedModels.length == 0) && isGenerateImageAssistant) ||
+      (mentionedModels && mentionedModels.length > 0 && mentionedModels.every((model) => isGenerateImageModel(model)))
+    )
+  }, [mentionedModels, isGenerateImageAssistant])
+
   // 仅允许在不含图片文件时mention非视觉模型
   const couldMentionNotVisionModel = useMemo(() => {
     return !files.some((file) => file.type === FileTypes.IMAGE)
   }, [files])
+
+  // 允许在支持视觉或生成图片时添加图片文件
+  const couldAddImageFile = useMemo(() => {
+    return isVisionSupported || isGenerateImageSupported
+  }, [isVisionSupported, isGenerateImageSupported])
+
+  const couldAddTextFile = useMemo(() => {
+    return isVisionSupported || (!isVisionSupported && isGenerateImageSupported)
+  }, [isGenerateImageSupported, isVisionSupported])
+
+  const supportExts = useMemo(() => {
+    if (couldAddImageFile && couldAddTextFile) {
+      return [...imageExts, ...documentExts, ...textExts]
+    } else if (couldAddImageFile) {
+      return [...imageExts]
+    } else if (couldAddTextFile) {
+      return [...documentExts, ...textExts]
+    } else {
+      return []
+    }
+  }, [couldAddImageFile, couldAddTextFile])
 
   const quickPanel = useQuickPanel()
 
@@ -449,36 +476,40 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
 
   const onInput = () => !expended && resizeTextArea()
 
-  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newText = e.target.value
-    setText(newText)
+  const onChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const newText = e.target.value
+      setText(newText)
 
-    const textArea = textareaRef.current?.resizableTextArea?.textArea
-    const cursorPosition = textArea?.selectionStart ?? 0
-    const lastSymbol = newText[cursorPosition - 1]
+      const textArea = textareaRef.current?.resizableTextArea?.textArea
+      const cursorPosition = textArea?.selectionStart ?? 0
+      const lastSymbol = newText[cursorPosition - 1]
 
-    if (enableQuickPanelTriggers && !quickPanel.isVisible && lastSymbol === '/') {
-      const quickPanelMenu =
-        inputbarToolsRef.current?.getQuickPanelMenu({
-          t,
-          files,
-          model,
-          text: newText,
-          openSelectFileMenu,
-          translate
-        }) || []
+      if (enableQuickPanelTriggers && !quickPanel.isVisible && lastSymbol === '/') {
+        console.log('onChange could...', couldAddImageFile)
+        const quickPanelMenu =
+          inputbarToolsRef.current?.getQuickPanelMenu({
+            t,
+            files,
+            couldAddImageFile,
+            text: newText,
+            openSelectFileMenu,
+            translate
+          }) || []
 
-      quickPanel.open({
-        title: t('settings.quickPanel.title'),
-        list: quickPanelMenu,
-        symbol: '/'
-      })
-    }
+        quickPanel.open({
+          title: t('settings.quickPanel.title'),
+          list: quickPanelMenu,
+          symbol: '/'
+        })
+      }
 
-    if (enableQuickPanelTriggers && !quickPanel.isVisible && lastSymbol === '@') {
-      inputbarToolsRef.current?.openMentionModelsPanel()
-    }
-  }
+      if (enableQuickPanelTriggers && !quickPanel.isVisible && lastSymbol === '@') {
+        inputbarToolsRef.current?.openMentionModelsPanel()
+      }
+    },
+    [enableQuickPanelTriggers, quickPanel, t, files, couldAddImageFile, openSelectFileMenu, translate]
+  )
 
   const onPaste = useCallback(
     async (event: ClipboardEvent) => {
@@ -840,6 +871,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
               assistant={assistant}
               model={model}
               files={files}
+              extensions={supportExts}
               setFiles={setFiles}
               showThinkingButton={showThinkingButton}
               showKnowledgeIcon={showKnowledgeIcon}
@@ -850,6 +882,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
               mentionModels={mentionedModels}
               onMentionModel={onMentionModel}
               couldMentionNotVisionModel={couldMentionNotVisionModel}
+              couldAddImageFile={couldAddImageFile}
               onEnableGenerateImage={onEnableGenerateImage}
               isExpended={isExpended}
               onToggleExpended={onToggleExpended}
