@@ -48,6 +48,7 @@ const MessageBlockEditor: FC<Props> = ({ message, topicId, onSave, onResend, onC
   const { t } = useTranslation()
   const textareaRef = useRef<TextAreaRef>(null)
   const attachmentButtonRef = useRef<AttachmentButtonRef>(null)
+  const isUserMessage = message.role === 'user'
 
   const resizeTextArea = useCallback(() => {
     const textArea = textareaRef.current?.resizableTextArea?.textArea
@@ -326,15 +327,17 @@ const MessageBlockEditor: FC<Props> = ({ message, topicId, onSave, onResend, onC
 
       <ActionBar>
         <ActionBarLeft>
-          <AttachmentButton
-            ref={attachmentButtonRef}
-            model={model}
-            files={files}
-            setFiles={setFiles}
-            couldAddImageFile={couldAddImageFile}
-            extensions={extensions}
-            ToolbarButton={ToolbarButton}
-          />
+          {isUserMessage && (
+            <AttachmentButton
+              ref={attachmentButtonRef}
+              model={model}
+              files={files}
+              setFiles={setFiles}
+              couldAddImageFile={couldAddImageFile}
+              extensions={extensions}
+              ToolbarButton={ToolbarButton}
+            />
+          )}
         </ActionBarLeft>
         <ActionBarMiddle />
         <ActionBarRight>
