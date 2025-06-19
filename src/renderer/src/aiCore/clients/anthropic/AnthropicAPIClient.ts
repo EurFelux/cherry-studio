@@ -125,7 +125,7 @@ export class AnthropicAPIClient extends BaseApiClient<
 
   // @ts-ignore sdk未提供
   override async getEmbeddingDimensions(): Promise<number> {
-    return 0
+    throw new Error("Anthropic SDK doesn't support getEmbeddingDimensions method.")
   }
 
   override getTemperature(assistant: Assistant, model: Model): number | undefined {
@@ -367,7 +367,7 @@ export class AnthropicAPIClient extends BaseApiClient<
    * Anthropic专用的原始流监听器
    * 处理MessageStream对象的特定事件
    */
-  override attachRawStreamListener(
+  attachRawStreamListener(
     rawOutput: AnthropicSdkRawOutput,
     listener: RawStreamListener<AnthropicSdkRawChunk>
   ): AnthropicSdkRawOutput {
