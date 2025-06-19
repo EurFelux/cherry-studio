@@ -48,7 +48,7 @@ export interface InputbarToolsRef {
     translate: () => void
   }) => QuickPanelListItem[]
   openMentionModelsPanel: () => void
-  openQuickPanel: () => void
+  openAttachmentQuickPanel: () => void
 }
 
 export interface InputbarToolsProps {
@@ -281,7 +281,7 @@ const InputbarTools = ({
   useImperativeHandle(ref, () => ({
     getQuickPanelMenu: getQuickPanelMenuImpl,
     openMentionModelsPanel: () => mentionModelsButtonRef.current?.openQuickPanel(),
-    openQuickPanel: () => attachmentButtonRef.current?.openQuickPanel()
+    openAttachmentQuickPanel: () => attachmentButtonRef.current?.openQuickPanel()
   }))
 
   const toolButtons = useMemo<ToolButtonConfig[]>(() => {
@@ -427,6 +427,7 @@ const InputbarTools = ({
     clearTopic,
     couldAddImageFile,
     couldMentionNotVisionModel,
+    extensions,
     files,
     handleKnowledgeBaseSelect,
     isExpended,

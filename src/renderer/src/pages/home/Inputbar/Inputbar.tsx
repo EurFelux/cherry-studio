@@ -132,7 +132,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
   }, [isVisionSupported, isGenerateImageSupported])
 
   const couldAddTextFile = useMemo(() => {
-    return isVisionSupported || (!isVisionSupported && isGenerateImageSupported)
+    return isVisionSupported || (!isVisionSupported && !isGenerateImageSupported)
   }, [isGenerateImageSupported, isVisionSupported])
 
   const supportExts = useMemo(() => {
@@ -303,7 +303,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
           description: '',
           icon: <Upload />,
           action: () => {
-            inputbarToolsRef.current?.openQuickPanel()
+            inputbarToolsRef.current?.openAttachmentQuickPanel()
           }
         },
         ...knowledgeBases.map((base) => {
