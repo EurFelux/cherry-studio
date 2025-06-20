@@ -471,7 +471,7 @@ const Topics: FC<Props> = ({ assistant: _assistant, activeTopic, setActiveTopic 
                   <TopicName className={getTopicNameClassName()} title={topicName}>
                     {topicName}
                   </TopicName>
-                  {!isPending(topic.id) && !topic.pinned && (
+                  {!topic.pinned && (
                     <Tooltip
                       placement="bottom"
                       mouseEnterDelay={0.7}
