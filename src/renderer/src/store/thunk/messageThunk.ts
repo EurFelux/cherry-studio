@@ -1015,7 +1015,6 @@ export const deleteMessageGroupThunk =
  */
 export const deleteTopicMessagesThunk =
   (topicId: string) => async (dispatch: AppDispatch, getState: () => RootState) => {
-    console.log('messageThunk deleteTopicMessagesThunk')
     try {
       const state = getState()
       const messageIdsToDelete = state.messages.messageIdsByTopic[topicId] || []
@@ -1027,9 +1026,6 @@ export const deleteTopicMessagesThunk =
       })
 
       const blockIdsToDelete = Array.from(blockIdsToDeleteSet)
-
-      console.log('messageThunk deleteTopicMessagesThunk messageIdsToDelelte', messageIdsToDelete)
-      console.log('messageThunk deleteTopicMessagesThunk blockIdsToDelte', blockIdsToDelete)
 
       // 必须先清理blocks
       cleanupMultipleBlocks(dispatch, blockIdsToDelete)
