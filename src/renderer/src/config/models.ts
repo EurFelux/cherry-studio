@@ -2419,6 +2419,10 @@ export function isOpenAIWebSearchChatCompletionOnlyModel(model: Model): boolean 
   return model.id.includes('gpt-4o-search-preview') || model.id.includes('gpt-4o-mini-search-preview')
 }
 
+export function isOpenAIBuiltInWebSearchModel(model: Model): boolean {
+  return model.id.includes('gpt-4o-search-preview') || model.id.includes('gpt-4o-mini-search-preview')
+}
+
 export function isOpenAIWebSearchModel(model: Model): boolean {
   return (
     model.id.includes('gpt-4o-search-preview') ||
@@ -2688,7 +2692,7 @@ export function isOpenRouterBuiltInWebSearchModel(model: Model): boolean {
     return false
   }
 
-  return isOpenAIWebSearchChatCompletionOnlyModel(model) || model.id.includes('sonar')
+  return isOpenAIBuiltInWebSearchModel(model) || model.id.includes('sonar')
 }
 
 export function isGenerateImageModel(model: Model): boolean {
@@ -2768,8 +2772,6 @@ export function getOpenAIWebSearchParams(model: Model, isEnableWebSearch?: boole
   return {
     tools: webSearchTools
   }
-
-  return {}
 }
 
 export function isGemmaModel(model?: Model): boolean {
