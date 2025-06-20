@@ -2,7 +2,7 @@ import db from '@renderer/databases'
 import i18n from '@renderer/i18n'
 import { EVENT_NAMES, EventEmitter } from '@renderer/services/EventService'
 import store from '@renderer/store'
-import { updateTopic } from '@renderer/store/assistants'
+import { removeTopic, updateTopic } from '@renderer/store/assistants'
 import { setNewlyRenamedTopics, setRenamingTopics } from '@renderer/store/runtime'
 import { deleteTopicMessagesThunk, loadTopicMessagesThunk } from '@renderer/store/thunk/messageThunk'
 import { Assistant, Topic } from '@renderer/types'
@@ -174,26 +174,26 @@ export const TopicManager = {
     return updatedTopic?.messages || []
   },
 
-  async removeTopic(id: string) {
-    console.log('useTopic removeTopic', id)
-    this.clearTopicMessages(id)
-    db.topics.delete(id)
+  /**
+   * 删除话题，包括话题本身与话题中所有消息及其blocks。同时删除关联的文件、redux状态与db
+   * @param topic
+   * @param assistantId
+   */
+  async removeTopic(topic: Topic, assistantId: string) {
+    this.clearTopicMessages(topic.id)
+    store.dispatch(removeTopic({ assistantId: assistantId, topic }))
+    db.topics.delete(topic.id)
   },
 
   /**
-   * 删除话题下所有消息，包括关联的文件与Thunk
+   * 删除话题下所有消息及其blocks。同时删除关联的文件、redux状态与db
    * @param id topic id
    */
   async clearTopicMessages(id: string) {
-    console.log('useTopic clearTopicMessages', id)
     const topic = await TopicManager.getTopic(id)
-    console.log('useTopic clearTopicMessages', topic, topic?.messages)
 
     if (topic) {
-      console.log('useTopic clearTopicMessages valid topic')
       store.dispatch(deleteTopicMessagesThunk(topic.id))
-      console.log('useTopic clearTopicMessages cleared topic', topic)
-
       topic.messages = []
 
       await db.topics.update(id, topic)
