@@ -72,6 +72,7 @@ const assistantsSlice = createSlice({
       )
     },
     removeTopic: (state, action: PayloadAction<{ assistantId: string; topic: Topic }>) => {
+      // 更新state
       state.assistants = state.assistants.map((assistant) =>
         assistant.id === action.payload.assistantId
           ? {

@@ -7,10 +7,10 @@ import { updateOneBlock } from '@renderer/store/messageBlock'
 import { newMessagesActions, selectMessagesForTopic } from '@renderer/store/newMessage'
 import {
   appendAssistantResponseThunk,
-  clearTopicMessagesThunk,
   cloneMessagesToNewTopicThunk,
   deleteMessageGroupThunk,
   deleteSingleMessageThunk,
+  deleteTopicMessagesThunk,
   initiateTranslationThunk,
   regenerateAssistantResponseThunk,
   removeBlocksThunk,
@@ -109,7 +109,7 @@ export function useMessageOperations(topic: Topic) {
   const clearTopicMessages = useCallback(
     async (_topicId?: string) => {
       const topicIdToClear = _topicId || topic.id
-      await dispatch(clearTopicMessagesThunk(topicIdToClear))
+      await dispatch(deleteTopicMessagesThunk(topicIdToClear))
     },
     [dispatch, topic.id]
   )

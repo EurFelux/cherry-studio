@@ -55,7 +55,9 @@ export function useAssistant(id: string) {
     model,
     addTopic: (topic: Topic) => dispatch(addTopic({ assistantId: assistant.id, topic })),
     removeTopic: (topic: Topic) => {
+      // 清理db
       TopicManager.removeTopic(topic.id)
+      // 清理状态
       dispatch(removeTopic({ assistantId: assistant.id, topic }))
     },
     moveTopic: (topic: Topic, toAssistant: Assistant) => {
@@ -76,7 +78,12 @@ export function useAssistant(id: string) {
     },
     updateTopic: (topic: Topic) => dispatch(updateTopic({ assistantId: assistant.id, topic })),
     updateTopics: (topics: Topic[]) => dispatch(updateTopics({ assistantId: assistant.id, topics })),
-    removeAllTopics: () => dispatch(removeAllTopics({ assistantId: assistant.id })),
+    removeAllTopics: () => {
+      for (const topic of assistant.topics) {
+        TopicManager.removeTopic(topic.id)
+      }
+      dispatch(removeAllTopics({ assistantId: assistant.id }))
+    },
     setModel: useCallback(
       (model: Model) => assistant && dispatch(setModel({ assistantId: assistant?.id, model })),
       [assistant, dispatch]

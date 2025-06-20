@@ -1,11 +1,10 @@
 import db from '@renderer/databases'
 import i18n from '@renderer/i18n'
 import { EVENT_NAMES, EventEmitter } from '@renderer/services/EventService'
-import { deleteMessageFiles } from '@renderer/services/MessagesService'
 import store from '@renderer/store'
 import { updateTopic } from '@renderer/store/assistants'
 import { setNewlyRenamedTopics, setRenamingTopics } from '@renderer/store/runtime'
-import { loadTopicMessagesThunk } from '@renderer/store/thunk/messageThunk'
+import { deleteTopicMessagesThunk, loadTopicMessagesThunk } from '@renderer/store/thunk/messageThunk'
 import { Assistant, Topic } from '@renderer/types'
 import { findMainTextBlocks } from '@renderer/utils/messageUtils/find'
 import { find, isEmpty } from 'lodash'
@@ -176,22 +175,24 @@ export const TopicManager = {
   },
 
   async removeTopic(id: string) {
-    const messages = await TopicManager.getTopicMessages(id)
-
-    for (const message of messages) {
-      await deleteMessageFiles(message)
-    }
-
+    console.log('useTopic removeTopic', id)
+    this.clearTopicMessages(id)
     db.topics.delete(id)
   },
 
+  /**
+   * 删除话题下所有消息，包括关联的文件与Thunk
+   * @param id topic id
+   */
   async clearTopicMessages(id: string) {
+    console.log('useTopic clearTopicMessages', id)
     const topic = await TopicManager.getTopic(id)
+    console.log('useTopic clearTopicMessages', topic, topic?.messages)
 
     if (topic) {
-      for (const message of topic?.messages ?? []) {
-        await deleteMessageFiles(message)
-      }
+      console.log('useTopic clearTopicMessages valid topic')
+      store.dispatch(deleteTopicMessagesThunk(topic.id))
+      console.log('useTopic clearTopicMessages cleared topic', topic)
 
       topic.messages = []
 
