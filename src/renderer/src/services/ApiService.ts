@@ -344,8 +344,10 @@ export async function fetchChatCompletion({
     (isReasoningModel(model) && (!isSupportedThinkingTokenModel(model) || !isSupportedReasoningEffortModel(model)))
 
   const enableWebSearch =
-    assistant.enableWebSearch &&
-    (isWebSearchModel(model) || isOpenRouterBuiltInWebSearchModel(model) || model.id.includes('sonar'))
+    (assistant.enableWebSearch && isWebSearchModel(model)) ||
+    isOpenRouterBuiltInWebSearchModel(model) ||
+    model.id.includes('sonar') ||
+    false
 
   const enableGenerateImage =
     isGenerateImageModel(model) && (isSupportedDisableGenerationModel(model) ? assistant.enableGenerateImage : true)
