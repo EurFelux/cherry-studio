@@ -43,7 +43,7 @@ export const selectNewDisplayCount = createSelector(
  * @param topic 当前主题对象。 / The current topic object.
  * @returns 包含消息操作函数的对象。 / An object containing message operation functions.
  */
-export function useMessageOperations(topic: Topic) {
+export function useTopicMessageOperations(topic: Topic) {
   const dispatch = useAppDispatch()
 
   /**
