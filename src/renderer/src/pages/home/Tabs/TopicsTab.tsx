@@ -127,11 +127,13 @@ const Topics: FC<Props> = ({ assistant: _assistant, activeTopic, setActiveTopic 
       }
       await modelGenerating()
       const index = findIndex(assistant.topics, (t) => t.id === topic.id)
-      setActiveTopic(assistant.topics[index + 1 === assistant.topics.length ? index - 1 : index + 1])
+      if (topic.id === activeTopic.id) {
+        setActiveTopic(assistant.topics[index + 1 === assistant.topics.length ? index - 1 : index + 1])
+      }
       removeTopic(topic)
       setDeletingTopicId(null)
     },
-    [assistant.topics, onClearMessages, removeTopic, setActiveTopic]
+    [activeTopic.id, assistant.topics, onClearMessages, removeTopic, setActiveTopic]
   )
 
   const onPinTopic = useCallback(
