@@ -32,7 +32,7 @@ const BasicSettings: FC = () => {
             defaultValue={maxResults}
             style={{ width: '200px' }}
             min={1}
-            max={20}
+            max={50}
             step={1}
             marks={{ 1: '1', 5: t('settings.websearch.search_result_default'), 20: '20' }}
             onChangeComplete={(value) => dispatch(setMaxResult(value))}
