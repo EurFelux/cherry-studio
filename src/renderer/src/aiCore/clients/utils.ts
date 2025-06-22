@@ -15,7 +15,7 @@ export function getContentWithTools(blocks: MessageBlock[]) {
         // 如果是工具调用结果，为其添加文本消息
         if (block.type === MessageBlockType.TOOL) {
           let resultString =
-            '\nAssistant called a tool.\nTool Name:' +
+            '\n\nAssistant called a tool.\nTool Name:' +
             block.metadata?.rawMcpToolResponse?.tool.name +
             '\nTool call result: \n```json\n'
           try {
@@ -30,7 +30,7 @@ export function getContentWithTools(blocks: MessageBlock[]) {
           } catch (e) {
             resultString += 'Invalid Result'
           }
-          constructedContent += resultString + '```\n'
+          constructedContent += resultString + '\n```\n\n'
         }
       }
     }
