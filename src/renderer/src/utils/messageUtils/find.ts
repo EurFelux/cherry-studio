@@ -195,7 +195,7 @@ export const findTranslationBlocks = (message: Message): TranslationMessageBlock
   const translationBlocks: TranslationMessageBlock[] = []
   for (const blockId of message.blocks) {
     const block = messageBlocksSelectors.selectById(state, blockId)
-    if (block && block.type === 'translation') {
+    if (block && block.type === MessageBlockType.TRANSLATION) {
       translationBlocks.push(block as TranslationMessageBlock)
     }
   }

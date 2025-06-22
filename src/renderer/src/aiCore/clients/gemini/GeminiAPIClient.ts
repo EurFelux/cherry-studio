@@ -58,12 +58,13 @@ import {
   mcpToolCallResponseToGeminiMessage,
   mcpToolsToGeminiTools
 } from '@renderer/utils/mcp-tools'
-import { findFileBlocks, findImageBlocks, getMainTextContent } from '@renderer/utils/messageUtils/find'
+import { findAllBlocks, findFileBlocks, findImageBlocks, getMainTextContent } from '@renderer/utils/messageUtils/find'
 import { buildSystemPrompt } from '@renderer/utils/prompt'
 import { MB } from '@shared/config/constant'
 
 import { BaseApiClient } from '../BaseApiClient'
 import { RequestTransformer, ResponseChunkTransformer } from '../types'
+import { getContentWithTools } from '../utils'
 
 export class GeminiAPIClient extends BaseApiClient<
   GoogleGenAI,
@@ -239,7 +240,8 @@ export class GeminiAPIClient extends BaseApiClient<
    */
   private async convertMessageToSdkParam(message: Message): Promise<Content> {
     const role = message.role === 'user' ? 'user' : 'model'
-    const parts: Part[] = [{ text: await this.getMessageContent(message) }]
+    const parts: Part[] = [{ text: getContentWithTools(findAllBlocks(message)) }]
+
     // Add any generated images from previous responses
     const imageBlocks = findImageBlocks(message)
     for (const imageBlock of imageBlocks) {

@@ -34,7 +34,7 @@ import {
   mcpToolsToOpenAIResponseTools,
   openAIToolsToMcpTool
 } from '@renderer/utils/mcp-tools'
-import { findFileBlocks, findImageBlocks } from '@renderer/utils/messageUtils/find'
+import { findAllBlocks, findFileBlocks, findImageBlocks } from '@renderer/utils/messageUtils/find'
 import { buildSystemPrompt } from '@renderer/utils/prompt'
 import { MB } from '@shared/config/constant'
 import { isEmpty } from 'lodash'
@@ -42,6 +42,7 @@ import OpenAI from 'openai'
 import { ResponseInput } from 'openai/resources/responses/responses'
 
 import { RequestTransformer, ResponseChunkTransformer } from '../types'
+import { getContentWithTools } from '../utils'
 import { OpenAIAPIClient } from './OpenAIApiClient'
 import { OpenAIBaseClient } from './OpenAIBaseClient'
 
@@ -113,7 +114,7 @@ export class OpenAIResponseAPIClient extends OpenAIBaseClient<
 
   public async convertMessageToSdkParam(message: Message, model: Model): Promise<OpenAIResponseSdkMessageParam> {
     const isVision = isVisionModel(model)
-    const content = await this.getMessageContent(message)
+    const content = getContentWithTools(findAllBlocks(message))
     const fileBlocks = findFileBlocks(message)
     const imageBlocks = findImageBlocks(message)
 
