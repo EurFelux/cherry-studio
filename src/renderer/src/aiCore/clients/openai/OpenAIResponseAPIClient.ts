@@ -34,7 +34,7 @@ import {
   mcpToolsToOpenAIResponseTools,
   openAIToolsToMcpTool
 } from '@renderer/utils/mcp-tools'
-import { findFileBlocks, findImageBlocks, getContentWithTools } from '@renderer/utils/messageUtils/find'
+import { findFileBlocks, findImageBlocks } from '@renderer/utils/messageUtils/find'
 import { buildSystemPrompt } from '@renderer/utils/prompt'
 import { MB } from '@shared/config/constant'
 import { isEmpty } from 'lodash'
@@ -114,7 +114,7 @@ export class OpenAIResponseAPIClient extends OpenAIBaseClient<
 
   public async convertMessageToSdkParam(message: Message, model: Model): Promise<OpenAIResponseSdkMessageParam> {
     const isVision = isVisionModel(model)
-    const content = getContentWithTools(message)
+    const content = await this.getMessageContent(message)
     const fileBlocks = findFileBlocks(message)
     const imageBlocks = findImageBlocks(message)
 

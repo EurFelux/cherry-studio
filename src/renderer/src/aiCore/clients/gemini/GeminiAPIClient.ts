@@ -58,12 +58,7 @@ import {
   mcpToolCallResponseToGeminiMessage,
   mcpToolsToGeminiTools
 } from '@renderer/utils/mcp-tools'
-import {
-  findFileBlocks,
-  findImageBlocks,
-  getContentWithTools,
-  getMainTextContent
-} from '@renderer/utils/messageUtils/find'
+import { findFileBlocks, findImageBlocks, getMainTextContent } from '@renderer/utils/messageUtils/find'
 import { buildSystemPrompt } from '@renderer/utils/prompt'
 import { MB } from '@shared/config/constant'
 
@@ -247,7 +242,7 @@ export class GeminiAPIClient extends BaseApiClient<
    */
   private async convertMessageToSdkParam(message: Message): Promise<Content> {
     const role = message.role === 'user' ? 'user' : 'model'
-    const parts: Part[] = [{ text: getContentWithTools(message) }]
+    const parts: Part[] = [{ text: await this.getMessageContent(message) }]
 
     // Add any generated images from previous responses
     const imageBlocks = findImageBlocks(message)
