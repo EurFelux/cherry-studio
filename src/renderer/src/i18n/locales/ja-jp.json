@@ -412,6 +412,7 @@
       "search": "検索",
       "select": "選択",
       "selectedMessages": "{{count}}件のメッセージを選択しました",
+      "selectedItems": "{{count}}件の項目を選択しました",
       "success": "成功",
       "topics": "トピック",
       "warning": "警告",
@@ -701,6 +702,13 @@
       "warn.yuque.exporting": "語雀にエクスポート中です。重複してエクスポートしないでください!",
       "warn.siyuan.exporting": "思源ノートにエクスポート中です。重複してエクスポートしないでください!",
       "error.yuque.no_config": "語雀のAPIアドレスまたはトークンが設定されていません",
+      "websearch": {
+        "rag": "RAGを実行中...",
+        "rag_complete": "{{countBefore}}個の結果から{{countAfter}}個を保持...",
+        "rag_failed": "RAGが失敗しました。空の結果を返します...",
+        "cutoff": "検索内容を切り詰めています...",
+        "fetch_complete": "{{count}}回の検索を完了しました..."
+      },
       "download.success": "ダウンロードに成功しました",
       "download.failed": "ダウンロードに失敗しました",
       "error.fetchTopicName": "トピック名の取得に失敗しました"
@@ -775,6 +783,7 @@
       "dimensions": "{{dimensions}} 次元",
       "edit": "モデルを編集",
       "embedding": "埋め込み",
+      "embedding_dimensions": "埋め込み次元",
       "embedding_model": "埋め込み模型",
       "embedding_model_tooltip": "設定->モデルサービス->管理で追加",
       "function_calling": "関数呼び出し",
@@ -804,7 +813,19 @@
         "vision": "画像",
         "websearch": "ウェブ検索"
       },
-      "rerank_model_not_support_provider": "現在、並べ替えモデルはこのプロバイダー ({{provider}}) をサポートしていません。"
+      "rerank_model_not_support_provider": "現在、並べ替えモデルはこのプロバイダー ({{provider}}) をサポートしていません。",
+      "price": {
+        "cost": "コスト",
+        "currency": "通貨",
+        "custom": "カスタム",
+        "custom_currency": "カスタム通貨",
+        "custom_currency_placeholder": "カスタム通貨を入力してください",
+        "input": "入力価格",
+        "million_tokens": "百万トークン",
+        "output": "出力価格",
+        "price": "価格"
+      },
+      "reasoning": "思考"
     },
     "navbar": {
       "expand": "ダイアログを展開",
@@ -965,17 +986,6 @@
       "required_field": "必須項目",
       "uploaded_input": "アップロード済みの入力"
     },
-    "price": {
-      "cost": "コスト",
-      "currency": "通貨",
-      "custom": "カスタム",
-      "custom_currency": "カスタム通貨",
-      "custom_currency_placeholder": "カスタム通貨を入力してください",
-      "input": "入力価格",
-      "million_tokens": "百万トークン",
-      "output": "出力価格",
-      "price": "価格"
-    },
     "prompts": {
       "explanation": "この概念を説明してください",
       "summarize": "このテキストを要約してください",
@@ -1084,11 +1094,11 @@
         "app_data": "アプリデータ",
         "app_data.select": "ディレクトリを変更",
         "app_data.select_title": "アプリデータディレクトリの変更",
-        "app_data.restart_notice": "変更を適用するには、アプリを再起動する必要があります",
-        "app_data.copy_data_option": "データをコピーする, 開くと元のディレクトリのデータが新しいディレクトリにコピーされます",
-        "app_data.copy_time_notice": "データコピーには時間がかかります。アプリを強制終了しないでください",
-        "app_data.path_changed_without_copy": "パスが変更されましたが、データがコピーされていません",
-        "app_data.copying_warning": "データコピー中、アプリを強制終了しないでください",
+        "app_data.restart_notice": "変更を適用するには、アプリを再起動する必要があります。",
+        "app_data.copy_data_option": "データをコピーする, 開くと元のディレクトリのデータが新しいディレクトリにコピーされます。",
+        "app_data.copy_time_notice": "データコピーには時間がかかります。アプリを強制終了しないでください。",
+        "app_data.path_changed_without_copy": "パスが変更されました。",
+        "app_data.copying_warning": "データコピー中、アプリを強制終了しないでください。コピーが完了すると、アプリが自動的に再起動します。",
         "app_data.copying": "新しい場所にデータをコピーしています...",
         "app_data.copy_success": "データを新しい場所に正常にコピーしました",
         "app_data.copy_failed": "データのコピーに失敗しました",
@@ -1100,6 +1110,10 @@
         "app_data.select_error_root_path": "新しいパスはルートパスにできません",
         "app_data.select_error_write_permission": "新しいパスに書き込み権限がありません",
         "app_data.stop_quit_app_reason": "アプリは現在データを移行しているため、終了できません",
+        "app_data.select_not_empty_dir": "新しいパスは空ではありません",
+        "app_data.select_not_empty_dir_content": "新しいパスは空ではありません。新しいパスのデータが上書きされます。データが失われるリスクがあります。続行しますか？",
+        "app_data.select_error_same_path": "新しいパスは元のパスと同じです。別のパスを選択してください",
+        "app_data.select_error_in_app_path": "新しいパスはアプリのインストールパスと同じです。別のパスを選択してください",
         "app_knowledge": "知識ベースファイル",
         "app_knowledge.button.delete": "ファイルを削除",
         "app_knowledge.remove_all": "ナレッジベースファイルを削除",
@@ -1160,7 +1174,7 @@
         "markdown_export.select": "選択",
         "markdown_export.title": "Markdown エクスポート",
         "markdown_export.show_model_name.title": "エクスポート時にモデル名を使用",
-        "markdown_export.show_model_name.help": "有効にすると、トピック命名モデルがエクスポートされたメッセージのタイトル作成に使用されます。注意：この設定はNotion、Yuqueなど、Markdownを通じたすべてのエクスポート方法にも影響します。",
+        "markdown_export.show_model_name.help": "有効にすると、Markdownエクスポート時にモデル名を表示します。注意：この設定はNotion、Yuqueなど、Markdownを通じたすべてのエクスポート方法にも影響します。",
         "markdown_export.show_model_provider.title": "モデルプロバイダーを表示",
         "markdown_export.show_model_provider.help": "Markdownエクスポート時にモデルプロバイダー（例：OpenAI、Geminiなど）を表示します。",
         "minute_interval_one": "{{count}} 分",
@@ -1206,8 +1220,6 @@
           "restore.confirm.content": "WebDAV から復元すると現在のデータが上書きされます。続行しますか？",
           "restore.confirm.title": "復元を確認",
           "restore.content": "WebDAVから復元すると現在のデータが上書きされます。続行しますか？",
-          "restore.modal.select.placeholder": "復元するバックアップファイルを選択してください",
-          "restore.modal.title": "WebDAV から復元",
           "restore.title": "WebDAVから復元",
           "syncError": "バックアップエラー",
           "syncStatus": "バックアップ状態",
@@ -1384,6 +1396,8 @@
       "general.user_name": "ユーザー名",
       "general.user_name.placeholder": "ユーザー名を入力",
       "general.view_webdav_settings": "WebDAV設定を表示",
+      "general.spell_check": "スペルチェック",
+      "general.spell_check.languages": "スペルチェック言語",
       "input.auto_translate_with_space": "スペースを3回押して翻訳",
       "input.target_language": "目標言語",
       "input.target_language.chinese": "簡体字中国語",
@@ -1467,7 +1481,8 @@
         "updateSuccess": "サーバーが正常に更新されました",
         "url": "URL",
         "errors": {
-          "32000": "MCP サーバーが起動しませんでした。パラメーターを確認してください"
+          "32000": "MCP サーバーが起動しませんでした。パラメーターを確認してください",
+          "toolNotFound": "ツール {{name}} が見つかりません"
         },
         "editMcpJson": "MCP 設定を編集",
         "installHelp": "インストールヘルプを取得",
@@ -1507,6 +1522,7 @@
         "registry": "パッケージ管理レジストリ",
         "registryTooltip": "デフォルトのレジストリでネットワークの問題が発生した場合、パッケージインストールに使用するレジストリを選択してください。",
         "registryDefault": "デフォルト",
+        "customRegistryPlaceholder": "プライベート倉庫のアドレスを入力してください（例：https://npm.company.com）",
         "not_support": "モデルはサポートされていません",
         "user": "ユーザー",
         "system": "システム",
@@ -1818,12 +1834,44 @@
         "overwrite_tooltip": "大規模言語モデルではなく、サービス検索を使用する",
         "apikey": "API キー",
         "free": "無料",
-        "content_limit": "内容の長さ制限",
-        "content_limit_tooltip": "検索結果の内容長を制限し、制限を超える内容は切り捨てられます。"
+        "compression": {
+          "title": "検索結果の圧縮",
+          "method": "圧縮方法",
+          "method.none": "圧縮しない",
+          "method.cutoff": "切り捨て",
+          "cutoff.limit": "切り捨て長",
+          "cutoff.limit.placeholder": "長さを入力",
+          "cutoff.limit.tooltip": "検索結果の内容長を制限し、制限を超える内容は切り捨てられます（例：2000文字）",
+          "cutoff.unit.char": "文字",
+          "cutoff.unit.token": "トークン",
+          "method.rag": "RAG",
+          "rag.document_count": "文書数",
+          "rag.document_count.default": "デフォルト",
+          "rag.document_count.tooltip": "単一の検索結果から抽出する文書数。実際に抽出される文書数は、この値に検索結果数を乗じたものです。",
+          "rag.embedding_dimensions.auto_get": "次元を自動取得",
+          "rag.embedding_dimensions.placeholder": "次元を設定しない",
+          "rag.embedding_dimensions.tooltip": "空の場合、dimensions パラメーターは渡されません",
+          "info": {
+            "dimensions_auto_success": "次元が自動取得されました。次元: {{dimensions}}"
+          },
+          "error": {
+            "embedding_model_required": "まず埋め込みモデルを選択してください",
+            "dimensions_auto_failed": "次元の自動取得に失敗しました",
+            "provider_not_found": "プロバイダーが見つかりません",
+            "rag_failed": "RAG に失敗しました"
+          }
+        }
       },
       "general.auto_check_update.title": "自動更新",
       "general.early_access.title": "早期アクセス",
-      "general.early_access.tooltip": "有効にすると、GitHub の最新バージョンを使用します。ダウンロード速度が遅く、不安定な場合があります。データを事前にバックアップしてください。",
+      "general.early_access.tooltip": "更新すると、データが失われる可能性があります。データを事前にバックアップしてください。",
+      "general.early_access.beta_version": "ベータ版",
+      "general.early_access.rc_version": "RC版",
+      "general.early_access.latest_version": "最新版",
+      "general.early_access.latest_version_tooltip": "github latest バージョン, 最新安定版",
+      "general.early_access.version_options": "バージョンオプション",
+      "general.early_access.rc_version_tooltip": "より安定しています。データを事前にバックアップしてください。",
+      "general.early_access.beta_version_tooltip": "最新の機能ですが、不安定な場合があります。使用には注意してください。",
       "quickPhrase": {
         "title": "クイックフレーズ",
         "add": "フレーズを追加",

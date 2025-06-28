@@ -412,6 +412,7 @@
       "search": "Поиск",
       "select": "Выбрать",
       "selectedMessages": "Выбрано {{count}} сообщений",
+      "selectedItems": "Выбрано {{count}} элементов",
       "success": "Успешно",
       "topics": "Топики",
       "warning": "Предупреждение",
@@ -701,6 +702,13 @@
       "success.siyuan.export": "Успешный экспорт в Siyuan",
       "warn.yuque.exporting": "Экспортируется в Yuque, пожалуйста, не отправляйте повторные запросы!",
       "warn.siyuan.exporting": "Экспортируется в Siyuan, пожалуйста, не отправляйте повторные запросы!",
+      "websearch": {
+        "rag": "Выполнение RAG...",
+        "rag_complete": "Сохранено {{countAfter}} из {{countBefore}} результатов...",
+        "rag_failed": "RAG не удалось, возвращается пустой результат...",
+        "cutoff": "Обрезка содержимого поиска...",
+        "fetch_complete": "Завершено {{count}} поисков..."
+      },
       "download.success": "Скачано успешно",
       "download.failed": "Скачивание не удалось",
       "error.fetchTopicName": "Не удалось назвать топик"
@@ -775,6 +783,7 @@
       "dimensions": "{{dimensions}} мер",
       "edit": "Редактировать модель",
       "embedding": "Встраиваемые",
+      "embedding_dimensions": "Встраиваемые размерности",
       "embedding_model": "Встраиваемые модели",
       "embedding_model_tooltip": "Добавьте в настройки->модель сервиса->управление",
       "function_calling": "Вызов функции",
@@ -804,7 +813,19 @@
         "vision": "Визуальные",
         "websearch": "Веб-поисковые"
       },
-      "rerank_model_not_support_provider": "В настоящее время модель переупорядочивания не поддерживает этого провайдера ({{provider}})"
+      "rerank_model_not_support_provider": "В настоящее время модель переупорядочивания не поддерживает этого провайдера ({{provider}})",
+      "price": {
+        "cost": "Стоимость",
+        "currency": "Валюта",
+        "custom": "Пользовательский",
+        "custom_currency": "Пользовательская валюта",
+        "custom_currency_placeholder": "Введите пользовательскую валюту",
+        "input": "Цена ввода",
+        "million_tokens": "M Tokens",
+        "output": "Цена вывода",
+        "price": "Цена"
+      },
+      "reasoning": "Рассуждение"
     },
     "navbar": {
       "expand": "Развернуть диалоговое окно",
@@ -962,30 +983,8 @@
       "per_image": "за изображение",
       "per_images": "за изображения",
       "required_field": "Обязательное поле",
-      "uploaded_input": "Загруженный ввод"
-    },
-    "plantuml": {
-      "download": {
-        "failed": "下载失败，请检查网络",
-        "png": "下载 PNG",
-        "svg": "下载 SVG"
-      },
-      "tabs": {
-        "preview": "Предпросмотр",
-        "source": "Исходный код"
-      },
-      "title": "PlantUML 图表"
-    },
-    "price": {
-      "cost": "Стоимость",
-      "currency": "Валюта",
-      "custom": "Пользовательский",
-      "custom_currency": "Пользовательская валюта",
-      "custom_currency_placeholder": "Введите пользовательскую валюту",
-      "input": "Цена ввода",
-      "million_tokens": "M Tokens",
-      "output": "Цена вывода",
-      "price": "Цена"
+      "uploaded_input": "Загруженный ввод",
+      "prompt_placeholder_en": "[to be translated]:Enter your image description, currently Imagen only supports English prompts"
     },
     "prompts": {
       "explanation": "Объясните мне этот концепт",
@@ -1095,11 +1094,11 @@
         "app_data": "Данные приложения",
         "app_data.select": "Изменить директорию",
         "app_data.select_title": "Изменить директорию данных приложения",
-        "app_data.restart_notice": "Для применения изменений потребуется перезапуск приложения",
-        "app_data.copy_data_option": "Копировать данные из исходной директории в новую директорию",
+        "app_data.restart_notice": "Для применения изменений может потребоваться несколько перезапусков приложения",
+        "app_data.copy_data_option": "Копировать данные, будет автоматически перезапущено после копирования данных из исходной директории в новую директорию",
         "app_data.copy_time_notice": "Копирование данных из исходной директории займет некоторое время, пожалуйста, будьте терпеливы",
-        "app_data.path_changed_without_copy": "Путь изменен успешно, но данные не скопированы",
-        "app_data.copying_warning": "Копирование данных, нельзя взаимодействовать с приложением, не закрывайте приложение",
+        "app_data.path_changed_without_copy": "Путь изменен успешно",
+        "app_data.copying_warning": "Копирование данных, нельзя взаимодействовать с приложением, не закрывайте приложение, приложение будет перезапущено после копирования",
         "app_data.copying": "Копирование данных в новое место...",
         "app_data.copy_success": "Данные успешно скопированы в новое место",
         "app_data.copy_failed": "Не удалось скопировать данные",
@@ -1111,6 +1110,10 @@
         "app_data.select_error_root_path": "Новый путь не может быть корневым",
         "app_data.select_error_write_permission": "Новый путь не имеет разрешения на запись",
         "app_data.stop_quit_app_reason": "Приложение в настоящее время перемещает данные и не может быть закрыто",
+        "app_data.select_not_empty_dir": "Новый путь не пуст",
+        "app_data.select_not_empty_dir_content": "Новый путь не пуст, он перезапишет данные в новом пути, есть риск потери данных и ошибки копирования, продолжить?",
+        "app_data.select_error_in_app_path": "Новый путь совпадает с исходным путем, пожалуйста, выберите другой путь",
+        "app_data.select_error_same_path": "Новый путь совпадает с исходным путем, пожалуйста, выберите другой путь",
         "app_knowledge": "Файлы базы знаний",
         "app_knowledge.button.delete": "Удалить файл",
         "app_knowledge.remove_all": "Удалить файлы базы знаний",
@@ -1171,7 +1174,7 @@
         "markdown_export.select": "Выбрать",
         "markdown_export.title": "Экспорт в Markdown",
         "markdown_export.show_model_name.title": "Использовать имя модели при экспорте",
-        "markdown_export.show_model_name.help": "Если включено, для создания заголовков экспортируемых сообщений будет использоваться модель именования темы. Примечание: Эта опция также влияет на все методы экспорта через Markdown, такие как Notion, Yuque и т.д.",
+        "markdown_export.show_model_name.help": "Если включено, при экспорте в Markdown будет отображаться имя модели. Примечание: Эта опция также влияет на все методы экспорта через Markdown, такие как Notion, Yuque и т.д.",
         "markdown_export.show_model_provider.title": "Показать поставщика модели",
         "markdown_export.show_model_provider.help": "Показывать поставщика модели (например, OpenAI, Gemini) при экспорте в Markdown",
         "minute_interval_one": "{{count}} минута",
@@ -1235,8 +1238,6 @@
           "restore.confirm.content": "Восстановление с WebDAV перезапишет текущие данные, продолжить?",
           "restore.confirm.title": "Подтверждение восстановления",
           "restore.content": "Восстановление с WebDAV перезапишет текущие данные, продолжить?",
-          "restore.modal.select.placeholder": "Выберите файл резервной копии для восстановления",
-          "restore.modal.title": "Восстановление с WebDAV",
           "restore.title": "Восстановление с WebDAV",
           "syncError": "Ошибка резервного копирования",
           "syncStatus": "Статус резервного копирования",
@@ -1395,6 +1396,8 @@
       "general.user_name": "Имя пользователя",
       "general.user_name.placeholder": "Введите ваше имя",
       "general.view_webdav_settings": "Просмотр настроек WebDAV",
+      "general.spell_check": "Проверка орфографии",
+      "general.spell_check.languages": "Языки проверки орфографии",
       "input.auto_translate_with_space": "Быстрый перевод с помощью 3-х пробелов",
       "input.target_language": "Целевой язык",
       "input.target_language.chinese": "Китайский упрощенный",
@@ -1470,7 +1473,8 @@
           "version": "Версия"
         },
         "errors": {
-          "32000": "MCP сервер не запущен, пожалуйста, проверьте параметры"
+          "32000": "MCP сервер не запущен, пожалуйста, проверьте параметры",
+          "toolNotFound": "Инструмент {{name}} не найден"
         },
         "serverPlural": "серверы",
         "serverSingular": "сервер",
@@ -1518,6 +1522,7 @@
         "registry": "Реестр пакетов",
         "registryTooltip": "Выберите реестр для установки пакетов, если возникают проблемы с сетью при использовании реестра по умолчанию.",
         "registryDefault": "По умолчанию",
+        "customRegistryPlaceholder": "Введите адрес частного склада, например: https://npm.company.com",
         "not_support": "Модель не поддерживается",
         "user": "Пользователь",
         "system": "Система",
@@ -1829,12 +1834,44 @@
         "overwrite_tooltip": "Использовать провайдера поиска вместо LLM",
         "apikey": "API ключ",
         "free": "Бесплатно",
-        "content_limit": "Ограничение длины текста",
-        "content_limit_tooltip": "Ограничьте длину содержимого результатов поиска, контент, превышающий ограничение, будет обрезан."
+        "compression": {
+          "title": "Сжатие результатов поиска",
+          "method": "Метод сжатия",
+          "method.none": "Не сжимать",
+          "method.cutoff": "Обрезка",
+          "cutoff.limit": "Лимит обрезки",
+          "cutoff.limit.placeholder": "Введите длину",
+          "cutoff.limit.tooltip": "Ограничьте длину содержимого результатов поиска, контент, превышающий ограничение, будет обрезан (например, 2000 символов)",
+          "cutoff.unit.char": "Символы",
+          "cutoff.unit.token": "Токены",
+          "method.rag": "RAG",
+          "rag.document_count": "Количество документов",
+          "rag.document_count.default": "По умолчанию",
+          "rag.document_count.tooltip": "Ожидаемое количество документов, которые будут извлечены из каждого результата поиска. Фактическое количество извлеченных документов равно этому значению, умноженному на количество результатов поиска.",
+          "rag.embedding_dimensions.auto_get": "Автоматически получить размерности",
+          "rag.embedding_dimensions.placeholder": "Не устанавливать размерности",
+          "rag.embedding_dimensions.tooltip": "Если оставить пустым, параметр dimensions не будет передан",
+          "info": {
+            "dimensions_auto_success": "Размерности успешно получены, размерности: {{dimensions}}"
+          },
+          "error": {
+            "embedding_model_required": "Пожалуйста, сначала выберите модель встраивания",
+            "dimensions_auto_failed": "Не удалось получить размерности",
+            "provider_not_found": "Поставщик не найден",
+            "rag_failed": "RAG не удалось"
+          }
+        }
       },
       "general.auto_check_update.title": "Автоматическое обновление",
       "general.early_access.title": "Ранний доступ",
-      "general.early_access.tooltip": "Включить для использования последней версии из GitHub, что может быть медленнее и нестабильно. Пожалуйста, сделайте резервную копию данных заранее.",
+      "general.early_access.tooltip": "Обновление до тестовых версий не может быть откачено, существует риск потери данных, пожалуйста, сделайте резервную копию данных заранее",
+      "general.early_access.beta_version": "Бета версия",
+      "general.early_access.rc_version": "RC версия",
+      "general.early_access.latest_version": "Стабильная версия",
+      "general.early_access.latest_version_tooltip": "github latest версия, стабильная версия",
+      "general.early_access.version_options": "Варианты версии",
+      "general.early_access.rc_version_tooltip": "Более стабильно, пожалуйста, сделайте резервную копию данных заранее",
+      "general.early_access.beta_version_tooltip": "Самые последние функции, но нестабильно, используйте с осторожностью",
       "quickPhrase": {
         "title": "Быстрые фразы",
         "add": "Добавить фразу",

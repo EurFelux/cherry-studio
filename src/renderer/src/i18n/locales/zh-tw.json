@@ -412,6 +412,7 @@
       "search": "搜尋",
       "select": "選擇",
       "selectedMessages": "選中 {{count}} 條訊息",
+      "selectedItems": "已選擇 {{count}} 項",
       "success": "成功",
       "topics": "話題",
       "warning": "警告",
@@ -702,6 +703,13 @@
       "success.siyuan.export": "導出到思源筆記成功",
       "warn.yuque.exporting": "正在導出語雀，請勿重複請求導出！",
       "warn.siyuan.exporting": "正在導出到思源筆記，請勿重複請求導出！",
+      "websearch": {
+        "rag": "正在執行 RAG...",
+        "rag_complete": "保留 {{countBefore}} 個結果中的 {{countAfter}} 個...",
+        "rag_failed": "RAG 失敗，返回空結果...",
+        "cutoff": "正在截斷搜尋內容...",
+        "fetch_complete": "已完成 {{count}} 次搜尋..."
+      },
       "download.success": "下載成功",
       "download.failed": "下載失敗"
     },
@@ -775,6 +783,7 @@
       "dimensions": "{{dimensions}} 維",
       "edit": "編輯模型",
       "embedding": "嵌入",
+      "embedding_dimensions": "嵌入維度",
       "embedding_model": "嵌入模型",
       "embedding_model_tooltip": "在設定->模型服務中點選管理按鈕新增",
       "function_calling": "函數調用",
@@ -804,7 +813,19 @@
         "vision": "視覺",
         "websearch": "網路搜尋"
       },
-      "rerank_model_not_support_provider": "目前，重新排序模型不支援此提供者（{{provider}}）"
+      "rerank_model_not_support_provider": "目前，重新排序模型不支援此提供者（{{provider}}）",
+      "price": {
+        "cost": "花費",
+        "currency": "幣種",
+        "custom": "自訂",
+        "custom_currency": "自訂幣種",
+        "custom_currency_placeholder": "請輸入自訂幣種",
+        "input": "輸入價格",
+        "million_tokens": "M Tokens",
+        "output": "輸出價格",
+        "price": "價格"
+      },
+      "reasoning": "推理"
     },
     "navbar": {
       "expand": "伸縮對話框",
@@ -965,17 +986,6 @@
       "required_field": "必填欄位",
       "uploaded_input": "已上傳輸入"
     },
-    "price": {
-      "cost": "花費",
-      "currency": "幣種",
-      "custom": "自訂",
-      "custom_currency": "自訂幣種",
-      "custom_currency_placeholder": "請輸入自訂幣種",
-      "input": "輸入價格",
-      "million_tokens": "M Tokens",
-      "output": "輸出價格",
-      "price": "價格"
-    },
     "prompts": {
       "explanation": "幫我解釋一下這個概念",
       "summarize": "幫我總結一下這段話",
@@ -1086,11 +1096,11 @@
         "app_data": "應用數據",
         "app_data.select": "修改目錄",
         "app_data.select_title": "變更應用數據目錄",
-        "app_data.restart_notice": "變更數據目錄後需要重啟應用才能生效",
-        "app_data.copy_data_option": "複製數據, 開啟後會將原始目錄數據複製到新目錄",
+        "app_data.restart_notice": "變更數據目錄後可能需要重啟應用才能生效",
+        "app_data.copy_data_option": "複製數據, 會自動重啟後將原始目錄數據複製到新目錄",
         "app_data.copy_time_notice": "複製數據將需要一些時間，複製期間不要關閉應用",
-        "app_data.path_changed_without_copy": "路徑已變更成功，但數據未複製",
-        "app_data.copying_warning": "數據複製中，不要強制退出應用",
+        "app_data.path_changed_without_copy": "路徑已變更成功",
+        "app_data.copying_warning": "數據複製中，不要強制退出應用, 複製完成後會自動重啟應用",
         "app_data.copying": "正在複製數據到新位置...",
         "app_data.copy_success": "成功複製數據到新位置",
         "app_data.copy_failed": "複製數據失敗",
@@ -1102,6 +1112,10 @@
         "app_data.select_error_root_path": "新路徑不能是根路徑",
         "app_data.select_error_write_permission": "新路徑沒有寫入權限",
         "app_data.stop_quit_app_reason": "應用目前正在遷移數據，不能退出",
+        "app_data.select_not_empty_dir": "新路徑不為空",
+        "app_data.select_not_empty_dir_content": "新路徑不為空，選擇複製將覆蓋新路徑中的數據, 有數據丟失和複製失敗的風險，是否繼續？",
+        "app_data.select_error_same_path": "新路徑與舊路徑相同，請選擇其他路徑",
+        "app_data.select_error_in_app_path": "新路徑與應用安裝路徑相同，請選擇其他路徑",
         "app_knowledge": "知識庫文件",
         "app_knowledge.button.delete": "刪除檔案",
         "app_knowledge.remove_all": "刪除知識庫檔案",
@@ -1162,7 +1176,7 @@
         "markdown_export.select": "選擇",
         "markdown_export.title": "Markdown 匯出",
         "markdown_export.show_model_name.title": "匯出時使用模型名稱",
-        "markdown_export.show_model_name.help": "啟用後，將以主題命名模型為匯出的訊息建立標題。注意：該項也會影響所有透過Markdown匯出的方式，如Notion、語雀等。",
+        "markdown_export.show_model_name.help": "啟用後，匯出Markdown時會顯示模型名稱。注意：該項也會影響所有透過Markdown匯出的方式，如Notion、語雀等。",
         "markdown_export.show_model_provider.title": "顯示模型供應商",
         "markdown_export.show_model_provider.help": "在匯出Markdown時顯示模型供應商，如OpenAI、Gemini等",
         "minute_interval_one": "{{count}} 分鐘",
@@ -1226,8 +1240,6 @@
           "restore.confirm.content": "從 WebDAV 恢復將覆蓋目前資料，是否繼續？",
           "restore.confirm.title": "復元確認",
           "restore.content": "從 WebDAV 恢復將覆蓋目前資料，是否繼續？",
-          "restore.modal.select.placeholder": "請選擇要恢復的備份文件",
-          "restore.modal.title": "從 WebDAV 恢復",
           "restore.title": "從 WebDAV 恢復",
           "syncError": "備份錯誤",
           "syncStatus": "備份狀態",
@@ -1386,6 +1398,8 @@
       "general.user_name": "使用者名稱",
       "general.user_name.placeholder": "輸入您的名稱",
       "general.view_webdav_settings": "檢視 WebDAV 設定",
+      "general.spell_check": "拼寫檢查",
+      "general.spell_check.languages": "拼寫檢查語言",
       "input.auto_translate_with_space": "快速敲擊 3 次空格翻譯",
       "input.show_translate_confirm": "顯示翻譯確認對話框",
       "input.target_language": "目標語言",
@@ -1462,7 +1476,8 @@
           "version": "版本"
         },
         "errors": {
-          "32000": "MCP 伺服器啟動失敗，請根據教程檢查參數是否填寫完整"
+          "32000": "MCP 伺服器啟動失敗，請根據教程檢查參數是否填寫完整",
+          "toolNotFound": "未找到工具 {{name}}"
         },
         "serverPlural": "伺服器",
         "serverSingular": "伺服器",
@@ -1510,6 +1525,7 @@
         "registry": "套件管理源",
         "registryTooltip": "選擇用於安裝套件的源，以解決預設源的網路問題",
         "registryDefault": "預設",
+        "customRegistryPlaceholder": "請輸入私有倉庫位址，如: https://npm.company.com",
         "not_support": "不支援此模型",
         "user": "用戶",
         "system": "系統",
@@ -1821,12 +1837,44 @@
         "overwrite_tooltip": "強制使用搜尋服務商而不是大語言模型進行搜尋",
         "apikey": "API 金鑰",
         "free": "免費",
-        "content_limit": "內容長度限制",
-        "content_limit_tooltip": "限制搜尋結果的內容長度，超過限制的內容將被截斷"
+        "compression": {
+          "title": "搜尋結果壓縮",
+          "method": "壓縮方法",
+          "method.none": "不壓縮",
+          "method.cutoff": "截斷",
+          "cutoff.limit": "截斷長度",
+          "cutoff.limit.placeholder": "輸入長度",
+          "cutoff.limit.tooltip": "限制搜尋結果的內容長度，超過限制的內容將被截斷（例如 2000 字符）",
+          "cutoff.unit.char": "字符",
+          "cutoff.unit.token": "Token",
+          "method.rag": "RAG",
+          "rag.document_count": "文檔數量",
+          "rag.document_count.default": "預設",
+          "rag.document_count.tooltip": "預期從單個搜尋結果中提取的文檔數量，實際提取的總數量是這個值乘以搜尋結果數量。",
+          "rag.embedding_dimensions.auto_get": "自動獲取維度",
+          "rag.embedding_dimensions.placeholder": "不設置維度",
+          "rag.embedding_dimensions.tooltip": "留空則不傳遞 dimensions 參數",
+          "info": {
+            "dimensions_auto_success": "維度自動獲取成功，維度為 {{dimensions}}"
+          },
+          "error": {
+            "embedding_model_required": "請先選擇嵌入模型",
+            "dimensions_auto_failed": "維度自動獲取失敗",
+            "provider_not_found": "未找到服務商",
+            "rag_failed": "RAG 失敗"
+          }
+        }
       },
       "general.auto_check_update.title": "自動更新",
       "general.early_access.title": "搶先體驗",
-      "general.early_access.tooltip": "開啟後，將使用 GitHub 的最新版本，下載速度可能較慢，請務必提前備份數據",
+      "general.early_access.tooltip": "更新到測試版本不能降級，有數據丟失風險，請務必提前備份數據",
+      "general.early_access.beta_version": "預覽版本",
+      "general.early_access.rc_version": "公測版本",
+      "general.early_access.latest_version": "穩定版本",
+      "general.early_access.latest_version_tooltip": "github latest 版本, 最新穩定版本",
+      "general.early_access.version_options": "版本選項",
+      "general.early_access.rc_version_tooltip": "相對穩定，請務必提前備份數據",
+      "general.early_access.beta_version_tooltip": "功能最新但不穩定，謹慎使用",
       "quickPhrase": {
         "title": "快捷短語",
         "add": "新增短語",

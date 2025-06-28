@@ -1,3 +1,4 @@
+import { languages } from '@shared/config/languages'
 import remarkParse from 'remark-parse'
 import remarkStringify from 'remark-stringify'
 import removeMarkdown from 'remove-markdown'
@@ -28,6 +29,136 @@ export const findCitationInChildren = (children: any): string => {
   return ''
 }
 
+// 检查是否包含潜在的 LaTeX 模式
+const containsLatexRegex = /\\\(.*?\\\)|\\\[.*?\\\]/s
+
+/**
+ * 转换 LaTeX 公式括号 `\[\]` 和 `\(\)` 为 Markdown 格式 `$$...$$` 和 `$...$`
+ *
+ * remark-math 本身不支持 LaTeX 原生语法，作为替代的一些插件效果也不理想。
+ *
+ * 目前的实现：
+ * - 保护代码块和链接，避免被 remark-math 处理
+ * - 支持嵌套括号的平衡匹配
+ * - 转义括号 `\\(\\)` 或 `\\[\\]` 不会被处理
+ *
+ * @see https://github.com/remarkjs/remark-math/issues/39
+ * @param text 输入的 Markdown 文本
+ * @returns 处理后的字符串
+ */
+export const processLatexBrackets = (text: string) => {
+  // 没有 LaTeX 模式直接返回
+  if (!containsLatexRegex.test(text)) {
+    return text
+  }
+
+  // 保护代码块和链接
+  const protectedItems: string[] = []
+  let processedContent = text
+
+  processedContent = processedContent
+    // 保护代码块（包括多行代码块和行内代码）
+    .replace(/(```[\s\S]*?```|`[^`]*`)/g, (match) => {
+      const index = protectedItems.length
+      protectedItems.push(match)
+      return `__CHERRY_STUDIO_PROTECTED_${index}__`
+    })
+    // 保护链接 [text](url)
+    .replace(/\[([^[\]]*(?:\[[^\]]*\][^[\]]*)*)\]\([^)]*?\)/g, (match) => {
+      const index = protectedItems.length
+      protectedItems.push(match)
+      return `__CHERRY_STUDIO_PROTECTED_${index}__`
+    })
+
+  // LaTeX 括号转换函数
+  const processMath = (content: string, openDelim: string, closeDelim: string, wrapper: string): string => {
+    let result = ''
+    let remaining = content
+
+    while (remaining.length > 0) {
+      const match = findLatexMatch(remaining, openDelim, closeDelim)
+      if (!match) {
+        result += remaining
+        break
+      }
+
+      result += match.pre
+      result += `${wrapper}${match.body}${wrapper}`
+      remaining = match.post
+    }
+
+    return result
+  }
+
+  // 先处理块级公式，再处理内联公式
+  let result = processMath(processedContent, '\\[', '\\]', '$$')
+  result = processMath(result, '\\(', '\\)', '$')
+
+  // 还原被保护的内容
+  result = result.replace(/__CHERRY_STUDIO_PROTECTED_(\d+)__/g, (match, indexStr) => {
+    const index = parseInt(indexStr, 10)
+    // 添加边界检查，防止数组越界
+    if (index >= 0 && index < protectedItems.length) {
+      return protectedItems[index]
+    }
+    // 如果索引无效，保持原始匹配
+    return match
+  })
+
+  return result
+}
+
+/**
+ * 查找 LaTeX 数学公式的匹配括号对
+ *
+ * 使用平衡括号算法处理嵌套结构，正确识别转义字符
+ *
+ * @param text 要搜索的文本
+ * @param openDelim 开始分隔符 (如 '\[' 或 '\(')
+ * @param closeDelim 结束分隔符 (如 '\]' 或 '\)')
+ * @returns 匹配结果对象或 null
+ */
+const findLatexMatch = (text: string, openDelim: string, closeDelim: string) => {
+  // 统计连续反斜杠：奇数个表示转义，偶数个表示未转义
+  const escaped = (i: number) => {
+    let count = 0
+    while (--i >= 0 && text[i] === '\\') count++
+    return count & 1
+  }
+
+  // 查找第一个有效的开始标记
+  for (let i = 0, n = text.length; i <= n - openDelim.length; i++) {
+    // 没有找到开始分隔符或被转义，跳过
+    if (!text.startsWith(openDelim, i) || escaped(i)) continue
+
+    // 处理嵌套结构
+    for (let j = i + openDelim.length, depth = 1; j <= n - closeDelim.length && depth; j++) {
+      // 计算当前位置对深度的影响：+1(开始), -1(结束), 0(无关)
+      const delta =
+        text.startsWith(openDelim, j) && !escaped(j) ? 1 : text.startsWith(closeDelim, j) && !escaped(j) ? -1 : 0
+
+      if (delta) {
+        depth += delta
+
+        // 找到了匹配的结束位置
+        if (!depth)
+          return {
+            start: i,
+            end: j + closeDelim.length,
+            pre: text.slice(0, i),
+            body: text.slice(i + openDelim.length, j),
+            post: text.slice(j + closeDelim.length)
+          }
+
+        // 跳过已处理的分隔符字符，避免重复检查
+        j += (delta > 0 ? openDelim : closeDelim).length - 1
+      }
+    }
+  }
+
+  return null
+}
+
 /**
  * 转换数学公式格式：
  * - 将 LaTeX 格式的 '\\[' 和 '\\]' 转换为 '$$$$'。
@@ -52,6 +183,40 @@ export function convertMathFormula(input: string): string {
 export function removeTrailingDoubleSpaces(markdown: string): string {
   // 使用正则表达式匹配末尾的两个空格，并替换为空字符串
   return markdown.replace(/ {2}$/gm, '')
+}
+
+/**
+ * 根据语言名称获取文件扩展名
+ * - 先精确匹配，再忽略大小写，最后匹配别名
+ * - 返回第一个扩展名
+ * @param language 语言名称
+ * @returns 文件扩展名
+ */
+export function getExtensionByLanguage(language: string): string {
+  const lowerLanguage = language.toLowerCase()
+
+  // 精确匹配语言名称
+  const directMatch = languages[language]
+  if (directMatch?.extensions?.[0]) {
+    return directMatch.extensions[0]
+  }
+
+  // 大小写不敏感的语言名称匹配
+  for (const [langName, data] of Object.entries(languages)) {
+    if (langName.toLowerCase() === lowerLanguage && data.extensions?.[0]) {
+      return data.extensions[0]
+    }
+  }
+
+  // 通过别名匹配
+  for (const [, data] of Object.entries(languages)) {
+    if (data.aliases?.some((alias) => alias.toLowerCase() === lowerLanguage)) {
+      return data.extensions?.[0] || `.${language}`
+    }
+  }
+
+  // 回退到语言名称
+  return `.${language}`
 }
 
 /**

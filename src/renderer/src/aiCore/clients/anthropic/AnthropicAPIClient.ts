@@ -66,7 +66,7 @@ import {
   mcpToolCallResponseToAnthropicMessage,
   mcpToolsToAnthropicTools
 } from '@renderer/utils/mcp-tools'
-import { findFileBlocks, findImageBlocks, getMainTextContent } from '@renderer/utils/messageUtils/find'
+import { findFileBlocks, findImageBlocks } from '@renderer/utils/messageUtils/find'
 import { buildSystemPrompt } from '@renderer/utils/prompt'
 
 import { BaseApiClient } from '../BaseApiClient'
@@ -90,11 +90,12 @@ export class AnthropicAPIClient extends BaseApiClient<
       return this.sdkInstance
     }
     this.sdkInstance = new Anthropic({
-      apiKey: this.getApiKey(),
+      apiKey: this.apiKey,
       baseURL: this.getBaseURL(),
       dangerouslyAllowBrowser: true,
       defaultHeaders: {
-        'anthropic-beta': 'output-128k-2025-02-19'
+        'anthropic-beta': 'output-128k-2025-02-19',
+        ...this.provider.extra_headers
       }
     })
     return this.sdkInstance
@@ -125,7 +126,7 @@ export class AnthropicAPIClient extends BaseApiClient<
 
   // @ts-ignore sdk未提供
   override async getEmbeddingDimensions(): Promise<number> {
-    return 0
+    throw new Error("Anthropic SDK doesn't support getEmbeddingDimensions method.")
   }
 
   override getTemperature(assistant: Assistant, model: Model): number | undefined {
@@ -191,7 +192,7 @@ export class AnthropicAPIClient extends BaseApiClient<
     const parts: MessageParam['content'] = [
       {
         type: 'text',
-        text: getMainTextContent(message)
+        text: await this.getMessageContent(message)
       }
     ]
 
@@ -367,7 +368,7 @@ export class AnthropicAPIClient extends BaseApiClient<
    * Anthropic专用的原始流监听器
    * 处理MessageStream对象的特定事件
    */
-  override attachRawStreamListener(
+  attachRawStreamListener(
     rawOutput: AnthropicSdkRawOutput,
     listener: RawStreamListener<AnthropicSdkRawChunk>
   ): AnthropicSdkRawOutput {
