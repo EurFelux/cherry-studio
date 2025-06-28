@@ -66,12 +66,11 @@ import {
   mcpToolCallResponseToAnthropicMessage,
   mcpToolsToAnthropicTools
 } from '@renderer/utils/mcp-tools'
-import { findAllBlocks, findFileBlocks, findImageBlocks } from '@renderer/utils/messageUtils/find'
+import { findFileBlocks, findImageBlocks, getContentWithTools } from '@renderer/utils/messageUtils/find'
 import { buildSystemPrompt } from '@renderer/utils/prompt'
 
 import { BaseApiClient } from '../BaseApiClient'
 import { AnthropicStreamListener, RawStreamListener, RequestTransformer, ResponseChunkTransformer } from '../types'
-import { getContentWithTools } from '../utils'
 
 export class AnthropicAPIClient extends BaseApiClient<
   Anthropic,
@@ -192,7 +191,7 @@ export class AnthropicAPIClient extends BaseApiClient<
     const parts: MessageParam['content'] = [
       {
         type: 'text',
-        text: getContentWithTools(findAllBlocks(message))
+        text: getContentWithTools(message)
       }
     ]
 

@@ -48,14 +48,13 @@ import {
   mcpToolsToOpenAIChatTools,
   openAIToolsToMcpTool
 } from '@renderer/utils/mcp-tools'
-import { findAllBlocks, findFileBlocks, findImageBlocks } from '@renderer/utils/messageUtils/find'
+import { findFileBlocks, findImageBlocks, getContentWithTools } from '@renderer/utils/messageUtils/find'
 import { buildSystemPrompt } from '@renderer/utils/prompt'
 import OpenAI, { AzureOpenAI } from 'openai'
 import { ChatCompletionContentPart, ChatCompletionContentPartRefusal, ChatCompletionTool } from 'openai/resources'
 
 import { GenericChunk } from '../../middleware/schemas'
 import { RequestTransformer, ResponseChunkTransformer, ResponseChunkTransformerContext } from '../types'
-import { getContentWithTools } from '../utils'
 import { OpenAIBaseClient } from './OpenAIBaseClient'
 
 export class OpenAIAPIClient extends OpenAIBaseClient<
@@ -227,7 +226,7 @@ export class OpenAIAPIClient extends OpenAIBaseClient<
    */
   public async convertMessageToSdkParam(message: Message, model: Model): Promise<OpenAISdkMessageParam> {
     const isVision = isVisionModel(model)
-    const content = getContentWithTools(findAllBlocks(message))
+    const content = getContentWithTools(message)
     const fileBlocks = findFileBlocks(message)
     const imageBlocks = findImageBlocks(message)
 
