@@ -8,12 +8,14 @@ export interface AssistantsState {
   defaultAssistant: Assistant
   assistants: Assistant[]
   tagsOrder: string[]
+  collapsedTags: Record<string, boolean>
 }
 
 const initialState: AssistantsState = {
   defaultAssistant: getDefaultAssistant(),
   assistants: [getDefaultAssistant()],
-  tagsOrder: []
+  tagsOrder: [],
+  collapsedTags: {}
 }
 // 注意：这些函数仅修改redux状态，不修改db
 const assistantsSlice = createSlice({
@@ -55,6 +57,26 @@ const assistantsSlice = createSlice({
             assistant.settings[key] = settings[key]
           }
         }
+      }
+    },
+    setTagsOrder: (state, action: PayloadAction<string[]>) => {
+      const newOrder = action.payload
+      state.tagsOrder = newOrder
+      const prevCollapsed = state.collapsedTags || {}
+      const updatedCollapsed: Record<string, boolean> = { ...prevCollapsed }
+      newOrder.forEach((tag) => {
+        if (!(tag in updatedCollapsed)) {
+          updatedCollapsed[tag] = false
+        }
+      })
+      state.collapsedTags = updatedCollapsed
+    },
+    updateTagCollapse: (state, action: PayloadAction<string>) => {
+      const tag = action.payload
+      const prev = state.collapsedTags || {}
+      state.collapsedTags = {
+        ...prev,
+        [tag]: !prev[tag]
       }
     },
     addTopic: (state, action: PayloadAction<{ assistantId: string; topic: Topic }>) => {
@@ -131,9 +153,6 @@ const assistantsSlice = createSlice({
             }
           : assistant
       )
-    },
-    setTagsOrder: (state, action: PayloadAction<string[]>) => {
-      state.tagsOrder = action.payload
     }
   }
 })
@@ -151,7 +170,8 @@ export const {
   removeAllTopics,
   setModel,
   setTagsOrder,
-  updateAssistantSettings
+  updateAssistantSettings,
+  updateTagCollapse
 } = assistantsSlice.actions
 
 export default assistantsSlice.reducer

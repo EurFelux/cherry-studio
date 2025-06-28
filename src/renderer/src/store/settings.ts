@@ -11,6 +11,7 @@ import {
   ThemeMode,
   TranslateLanguageVarious
 } from '@renderer/types'
+import { UpgradeChannel } from '@shared/config/constant'
 
 import { WebDAVSyncState } from './backup'
 
@@ -34,6 +35,19 @@ export type AssistantIconType = 'model' | 'emoji' | 'none'
 
 export type UserTheme = {
   colorPrimary: string
+}
+
+export interface S3Config {
+  endpoint: string
+  region: string
+  bucket: string
+  accessKeyId: string
+  secretAccessKey: string
+  root: string
+  autoSync: boolean
+  syncInterval: number
+  maxBackups: number
+  skipBackupFile: boolean
 }
 
 export interface SettingsState {
@@ -67,7 +81,8 @@ export interface SettingsState {
   pasteLongTextThreshold: number
   clickAssistantToShowTopic: boolean
   autoCheckUpdate: boolean
-  earlyAccess: boolean
+  testPlan: boolean
+  testChannel: UpgradeChannel
   renderInputMessageAsMarkdown: boolean
   // 代码执行
   codeExecution: {
@@ -155,6 +170,8 @@ export interface SettingsState {
   minappsOpenLinkExternal: boolean
   // 隐私设置
   enableDataCollection: boolean
+  enableSpellCheck: boolean
+  spellCheckLanguages: string[]
   enableQuickPanelTriggers: boolean
   enableBackspaceDeleteModel: boolean
   exportMenuOptions: {
@@ -181,6 +198,7 @@ export interface SettingsState {
     knowledgeEmbed: boolean
   }
   defaultPaintingProvider: PaintingProvider
+  s3: S3Config
 }
 
 export type MultiModelMessageStyle = 'horizontal' | 'vertical' | 'fold' | 'grid'
@@ -218,7 +236,8 @@ export const initialState: SettingsState = {
   pasteLongTextThreshold: 1500,
   clickAssistantToShowTopic: true,
   autoCheckUpdate: true,
-  earlyAccess: false,
+  testPlan: false,
+  testChannel: UpgradeChannel.LATEST,
   renderInputMessageAsMarkdown: false,
   codeExecution: {
     enabled: false,
@@ -298,6 +317,8 @@ export const initialState: SettingsState = {
   showOpenedMinappsInSidebar: true,
   minappsOpenLinkExternal: false,
   enableDataCollection: false,
+  enableSpellCheck: false,
+  spellCheckLanguages: [],
   enableQuickPanelTriggers: false,
   enableBackspaceDeleteModel: true,
   exportMenuOptions: {
@@ -322,7 +343,19 @@ export const initialState: SettingsState = {
     backup: false,
     knowledgeEmbed: false
   },
-  defaultPaintingProvider: 'aihubmix'
+  defaultPaintingProvider: 'aihubmix',
+  s3: {
+    endpoint: '',
+    region: '',
+    bucket: '',
+    accessKeyId: '',
+    secretAccessKey: '',
+    root: '',
+    autoSync: false,
+    syncInterval: 0,
+    maxBackups: 0,
+    skipBackupFile: false
+  }
 }
 
 const settingsSlice = createSlice({
@@ -422,8 +455,11 @@ const settingsSlice = createSlice({
     setAutoCheckUpdate: (state, action: PayloadAction<boolean>) => {
       state.autoCheckUpdate = action.payload
     },
-    setEarlyAccess: (state, action: PayloadAction<boolean>) => {
-      state.earlyAccess = action.payload
+    setTestPlan: (state, action: PayloadAction<boolean>) => {
+      state.testPlan = action.payload
+    },
+    setTestChannel: (state, action: PayloadAction<UpgradeChannel>) => {
+      state.testChannel = action.payload
     },
     setRenderInputMessageAsMarkdown: (state, action: PayloadAction<boolean>) => {
       state.renderInputMessageAsMarkdown = action.payload
@@ -657,6 +693,12 @@ const settingsSlice = createSlice({
     setEnableDataCollection: (state, action: PayloadAction<boolean>) => {
       state.enableDataCollection = action.payload
     },
+    setEnableSpellCheck: (state, action: PayloadAction<boolean>) => {
+      state.enableSpellCheck = action.payload
+    },
+    setSpellCheckLanguages: (state, action: PayloadAction<string[]>) => {
+      state.spellCheckLanguages = action.payload
+    },
     setExportMenuOptions: (state, action: PayloadAction<typeof initialState.exportMenuOptions>) => {
       state.exportMenuOptions = action.payload
     },
@@ -677,6 +719,9 @@ const settingsSlice = createSlice({
     },
     setDefaultPaintingProvider: (state, action: PayloadAction<PaintingProvider>) => {
       state.defaultPaintingProvider = action.payload
+    },
+    setS3: (state, action: PayloadAction<S3Config>) => {
+      state.s3 = action.payload
     }
   }
 })
@@ -714,7 +759,8 @@ export const {
   setAssistantIconType,
   setPasteLongTextAsFile,
   setAutoCheckUpdate,
-  setEarlyAccess,
+  setTestPlan,
+  setTestChannel,
   setRenderInputMessageAsMarkdown,
   setClickAssistantToShowTopic,
   setSkipBackupFile,
@@ -776,13 +822,16 @@ export const {
   setShowOpenedMinappsInSidebar,
   setMinappsOpenLinkExternal,
   setEnableDataCollection,
-  setEnableQuickPanelTriggers,
+  setEnableSpellCheck,
+  setSpellCheckLanguages,
   setExportMenuOptions,
+  setEnableQuickPanelTriggers,
   setEnableBackspaceDeleteModel,
   setOpenAISummaryText,
   setOpenAIServiceTier,
   setNotificationSettings,
-  setDefaultPaintingProvider
+  setDefaultPaintingProvider,
+  setS3
 } = settingsSlice.actions
 
 export default settingsSlice.reducer
