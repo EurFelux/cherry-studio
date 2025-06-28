@@ -15,7 +15,7 @@ export const TranslateLanguageOptions: TranslateLanguageOption[] = [
     emoji: '🇬🇧'
   },
   {
-    value: 'chinese',
+    value: 'chinese-simplified',
     langCode: 'zh-cn',
     label: i18n.t('languages.chinese'),
     emoji: '🇨🇳'
@@ -129,7 +129,7 @@ export const translateLanguageOptions = (): typeof TranslateLanguageOptions => {
   return TranslateLanguageOptions.map((option) => {
     return {
       value: option.value,
-      label: i18n.t(`languages.${option.value}`),
+      label: option.label,
       emoji: option.emoji
     }
   })
