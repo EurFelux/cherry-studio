@@ -13,8 +13,7 @@ import { translateText } from '@renderer/services/TranslateService'
 import store, { RootState } from '@renderer/store'
 import { messageBlocksSelectors } from '@renderer/store/messageBlock'
 import { selectMessagesForTopic } from '@renderer/store/newMessage'
-import type { Model } from '@renderer/types'
-import type { Assistant, Topic } from '@renderer/types'
+import type { Assistant, Model, Topic } from '@renderer/types'
 import { type Message, MessageBlockType } from '@renderer/types/newMessage'
 import { captureScrollableDivAsBlob, captureScrollableDivAsDataURL } from '@renderer/utils'
 import { copyMessageAsPlainText } from '@renderer/utils/copy'
@@ -31,8 +30,19 @@ import { removeTrailingDoubleSpaces } from '@renderer/utils/markdown'
 import { findMainTextBlocks, findTranslationBlocks, getMainTextContent } from '@renderer/utils/messageUtils/find'
 import { Dropdown, Popconfirm, Tooltip } from 'antd'
 import dayjs from 'dayjs'
-import { AtSign, Copy, Languages, Menu, RefreshCw, Save, Share, Split, ThumbsUp, Trash } from 'lucide-react'
-import { FilePenLine } from 'lucide-react'
+import {
+  AtSign,
+  Copy,
+  FilePenLine,
+  Languages,
+  Menu,
+  RefreshCw,
+  Save,
+  Share,
+  Split,
+  ThumbsUp,
+  Trash
+} from 'lucide-react'
 import { FC, memo, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
@@ -350,7 +360,6 @@ const MessageMenubar: FC<Props> = (props) => {
     )
 
     if (relatedUserMessageBlocks.some((block) => block.type === MessageBlockType.IMAGE)) {
-      console.log('use image filter')
       return (m: Model) => isVisionModel(m)
     } else {
       return () => true

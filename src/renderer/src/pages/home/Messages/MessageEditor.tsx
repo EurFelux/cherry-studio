@@ -5,7 +5,7 @@ import { useAssistant } from '@renderer/hooks/useAssistant'
 import { useSettings } from '@renderer/hooks/useSettings'
 import FileManager from '@renderer/services/FileManager'
 import PasteService from '@renderer/services/PasteService'
-import { RootState } from '@renderer/store'
+import { useAppSelector } from '@renderer/store'
 import { selectMessagesForTopic } from '@renderer/store/newMessage'
 import { FileType, FileTypes } from '@renderer/types'
 import { Message, MessageBlock, MessageBlockStatus, MessageBlockType } from '@renderer/types/newMessage'
@@ -19,7 +19,6 @@ import TextArea, { TextAreaRef } from 'antd/es/input/TextArea'
 import { Save, Send, X } from 'lucide-react'
 import { FC, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useStore } from 'react-redux'
 import styled from 'styled-components'
 
 import AttachmentButton, { AttachmentButtonRef } from '../Inputbar/AttachmentButton'
@@ -210,15 +209,12 @@ const MessageBlockEditor: FC<Props> = ({ message, topicId, onSave, onResend, onC
     }
   }
 
-  const store = useStore<RootState>()
+  const topicMessages = useAppSelector((state) => selectMessagesForTopic(state, topicId))
 
   const couldAddImageFile = useMemo(() => {
-    const state = store.getState()
-    const topicMessages = selectMessagesForTopic(state, topicId)
-
     const relatedAssistantMessages = topicMessages.filter((m) => m.askId === message.id && m.role === 'assistant')
     if (relatedAssistantMessages.length === 0) {
-      // 无关联消息时failback到助手模型
+      // 无关联消息时fallback到助手模型
       return isVisionModel(model)
     }
     return relatedAssistantMessages.every((m) => {
@@ -229,15 +225,12 @@ const MessageBlockEditor: FC<Props> = ({ message, topicId, onSave, onResend, onC
         return true
       }
     })
-  }, [message.id, model, store, topicId])
+  }, [message.id, model, topicMessages])
 
   const couldAddTextFile = useMemo(() => {
-    const state = store.getState()
-    const topicMessages = selectMessagesForTopic(state, topicId)
-
     const relatedAssistantMessages = topicMessages.filter((m) => m.askId === message.id && m.role === 'assistant')
     if (relatedAssistantMessages.length === 0) {
-      // 无关联消息时failback到助手模型
+      // 无关联消息时fallback到助手模型
       return isVisionModel(model) || (!isVisionModel(model) && !isGenerateImageModel(model))
     }
     return relatedAssistantMessages.every((m) => {
@@ -248,7 +241,7 @@ const MessageBlockEditor: FC<Props> = ({ message, topicId, onSave, onResend, onC
         return true
       }
     })
-  }, [message.id, model, store, topicId])
+  }, [message.id, model, topicMessages])
 
   const extensions = useMemo(() => {
     if (couldAddImageFile && couldAddTextFile) {
@@ -333,7 +326,6 @@ const MessageBlockEditor: FC<Props> = ({ message, topicId, onSave, onResend, onC
           {isUserMessage && (
             <AttachmentButton
               ref={attachmentButtonRef}
-              model={model}
               files={files}
               setFiles={setFiles}
               couldAddImageFile={couldAddImageFile}

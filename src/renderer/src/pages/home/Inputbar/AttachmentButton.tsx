@@ -1,4 +1,4 @@
-import { FileType, Model } from '@renderer/types'
+import { FileType } from '@renderer/types'
 import { Tooltip } from 'antd'
 import { Paperclip } from 'lucide-react'
 import { FC, useCallback, useImperativeHandle } from 'react'
@@ -10,7 +10,6 @@ export interface AttachmentButtonRef {
 
 interface Props {
   ref?: React.RefObject<AttachmentButtonRef | null>
-  model: Model
   couldAddImageFile: boolean
   extensions: string[]
   files: FileType[]

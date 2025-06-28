@@ -303,7 +303,6 @@ const InputbarTools = ({
         component: (
           <AttachmentButton
             ref={attachmentButtonRef}
-            model={model}
             couldAddImageFile={couldAddImageFile}
             extensions={extensions}
             files={files}
