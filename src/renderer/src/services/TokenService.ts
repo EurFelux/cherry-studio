@@ -81,8 +81,22 @@ export function estimateImageTokens(file: FileType) {
  * @param file - 文本文件对象
  * @returns 返回估算的 token 数量
  */
-export async function estimateTextFileTokens(file: FileType) {
-  return estimateTextTokens(await (await window.api.file.read(file.id + file.ext)).trim())
+export async function estimateTextFileTokens(file: FileType, path?: string) {
+  if (file.type !== FileTypes.TEXT) {
+    console.error('Not a Text file')
+    return 0
+  }
+  let _path = ''
+  if (!path) {
+    _path = file.id + file.ext
+  }
+  if (file.size >= 5 * MB) {
+    // 大文件进行简单预估，而不读取文件内容。按照 180 token / KB 进行估算
+    return floor((file.size / KB) * 180)
+  } else {
+    const content = (await window.api.fs.read(_path, 'utf-8')).trim()
+    return estimateTextTokens(content)
+  }
 }
 
 /**
@@ -110,17 +124,7 @@ export async function estimateTextFilesTokens(files: FileType[]) {
  * @returns 返回估算的 token 数量
  */
 export async function estimateTextFileTokensByPath(file: FileType) {
-  if (file.type !== FileTypes.TEXT) {
-    console.error('Not a Text file')
-    return
-  }
-  if (file.size >= 5 * MB) {
-    // 大文件进行简单预估，而不读取文件内容。按照 180 token / KB 进行估算
-    return floor((file.size / KB) * 180)
-  } else {
-    const content = await window.api.fs.read(file.path, 'utf-8')
-    return estimateTextTokens(content)
-  }
+  return estimateTextFileTokens(file, file.path)
 }
 
 /**
