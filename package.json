@@ -1,6 +1,6 @@
 {
   "name": "CherryStudio",
-  "version": "1.4.5",
+  "version": "1.4.7",
   "private": true,
   "description": "A powerful AI assistant for producer.",
   "main": "./out/main/index.js",
@@ -124,6 +124,7 @@
     "@types/react-infinite-scroll-component": "^5.0.0",
     "@types/react-window": "^1",
     "@types/tinycolor2": "^1",
+    "@types/word-extractor": "^1",
     "@uiw/codemirror-extensions-langs": "^4.23.12",
     "@uiw/codemirror-themes-all": "^4.23.12",
     "@uiw/react-codemirror": "^4.23.12",
@@ -180,6 +181,7 @@
     "npx-scope-finder": "^1.2.0",
     "officeparser": "^4.1.1",
     "openai": "patch:openai@npm%3A5.1.0#~/.yarn/patches/openai-npm-5.1.0-0e7b3ccb07.patch",
+    "opendal": "0.47.11",
     "p-queue": "^8.1.0",
     "playwright": "^1.52.0",
     "prettier": "^3.5.3",
@@ -212,12 +214,13 @@
     "styled-components": "^6.1.11",
     "tar": "^7.4.3",
     "tiny-pinyin": "^1.3.2",
-    "tokenx": "^0.4.1",
+    "tokenx": "^1.1.0",
     "typescript": "^5.6.2",
     "uuid": "^10.0.0",
     "vite": "6.2.6",
     "vitest": "^3.1.4",
     "webdav": "^5.8.0",
+    "word-extractor": "^1.0.4",
     "zipread": "^1.3.3"
   },
   "resolutions": {

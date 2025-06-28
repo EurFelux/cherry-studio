@@ -1,4 +1,5 @@
 import {
+  CloudServerOutlined,
   CloudSyncOutlined,
   FileSearchOutlined,
   FolderOpenOutlined,
@@ -19,6 +20,7 @@ import store, { useAppDispatch } from '@renderer/store'
 import { setSkipBackupFile as _setSkipBackupFile } from '@renderer/store/settings'
 import { AppInfo } from '@renderer/types'
 import { formatFileSize } from '@renderer/utils'
+import { occupiedDirs } from '@shared/config/constant'
 import { Button, Progress, Switch, Typography } from 'antd'
 import { FileText, FolderCog, FolderInput, Sparkle } from 'lucide-react'
 import { FC, useEffect, useState } from 'react'
@@ -41,6 +43,7 @@ import MarkdownExportSettings from './MarkdownExportSettings'
 import NotionSettings from './NotionSettings'
 import NutstoreSettings from './NutstoreSettings'
 import ObsidianSettings from './ObsidianSettings'
+import S3Settings from './S3Settings'
 import SiyuanSettings from './SiyuanSettings'
 import WebDavSettings from './WebDavSettings'
 import YuqueSettings from './YuqueSettings'
@@ -87,6 +90,7 @@ const DataSettings: FC = () => {
     { key: 'divider_1', isDivider: true, text: t('settings.data.divider.cloud_storage') },
     { key: 'webdav', title: 'settings.data.webdav.title', icon: <CloudSyncOutlined style={{ fontSize: 16 }} /> },
     { key: 'nutstore', title: 'settings.data.nutstore.title', icon: <NutstoreIcon /> },
+    { key: 's3', title: 'settings.data.s3.title', icon: <CloudServerOutlined style={{ fontSize: 16 }} /> },
     { key: 'divider_2', isDivider: true, text: t('settings.data.divider.export_settings') },
     {
       key: 'export_menu',
@@ -202,9 +206,15 @@ const DataSettings: FC = () => {
       return
     }
 
-    // check new app data path is same as old app data path
-    if (newAppDataPath.startsWith(appInfo!.appDataPath)) {
+    // check new app data path is not in old app data path
+    if (newAppDataPath.startsWith(appInfo.appDataPath)) {
       window.message.error(t('settings.data.app_data.select_error_same_path'))
+      return
+    }
+
+    // check new app data path is not in app install path
+    if (newAppDataPath.startsWith(appInfo.installPath)) {
+      window.message.error(t('settings.data.app_data.select_error_in_app_path'))
       return
     }
 
@@ -219,23 +229,28 @@ const DataSettings: FC = () => {
       <div style={{ fontSize: '18px', fontWeight: 'bold' }}>{t('settings.data.app_data.migration_title')}</div>
     )
     const migrationClassName = 'migration-modal'
-
-    if (await window.api.isNotEmptyDir(newAppDataPath)) {
-      const modal = window.modal.confirm({
-        title: t('settings.data.app_data.select_not_empty_dir'),
-        content: t('settings.data.app_data.select_not_empty_dir_content'),
-        centered: true,
-        okText: t('common.confirm'),
-        cancelText: t('common.cancel'),
-        onOk: () => {
-          modal.destroy()
-          // 显示确认对话框
-          showMigrationConfirmModal(appInfo.appDataPath, newAppDataPath, migrationTitle, migrationClassName)
-        }
-      })
-      return
-    }
     showMigrationConfirmModal(appInfo.appDataPath, newAppDataPath, migrationTitle, migrationClassName)
+  }
+
+  const doubleConfirmModalBeforeCopyData = (newPath: string) => {
+    window.modal.confirm({
+      title: t('settings.data.app_data.select_not_empty_dir'),
+      content: t('settings.data.app_data.select_not_empty_dir_content'),
+      centered: true,
+      okText: t('common.confirm'),
+      cancelText: t('common.cancel'),
+      onOk: () => {
+        window.message.info({
+          content: t('settings.data.app_data.restart_notice'),
+          duration: 2
+        })
+        setTimeout(() => {
+          window.api.relaunchApp({
+            args: ['--new-data-path=' + newPath]
+          })
+        }, 500)
+      }
+    })
   }
 
   // 显示确认迁移的对话框
@@ -280,7 +295,7 @@ const DataSettings: FC = () => {
     )
 
     // 显示确认模态框
-    const modal = window.modal.confirm({
+    window.modal.confirm({
       title,
       className,
       width: 'min(600px, 90vw)',
@@ -305,11 +320,12 @@ const DataSettings: FC = () => {
       cancelText: t('common.cancel'),
       onOk: async () => {
         try {
-          // 立即关闭确认对话框
-          modal.destroy()
-
           if (shouldCopyData) {
-            // 如果选择复制数据，显示进度模态框并执行迁移
+            if (await window.api.isNotEmptyDir(newPath)) {
+              doubleConfirmModalBeforeCopyData(newPath)
+              return
+            }
+
             window.message.info({
               content: t('settings.data.app_data.restart_notice'),
               duration: 3
@@ -318,12 +334,12 @@ const DataSettings: FC = () => {
               window.api.relaunchApp({
                 args: ['--new-data-path=' + newPath]
               })
-            }, 300)
-          } else {
-            // 如果不复制数据，直接设置新的应用数据路径
-            await window.api.setAppDataPath(newPath)
-            window.message.success(t('settings.data.app_data.path_changed_without_copy'))
+            }, 500)
+            return
           }
+          // 如果不复制数据，直接设置新的应用数据路径
+          await window.api.setAppDataPath(newPath)
+          window.message.success(t('settings.data.app_data.path_changed_without_copy'))
 
           // 更新应用数据路径
           setAppInfo(await window.api.getAppInfo())
@@ -333,7 +349,7 @@ const DataSettings: FC = () => {
             window.message.success(t('settings.data.app_data.select_success'))
             window.api.setStopQuitApp(false, '')
             window.api.relaunchApp()
-          }, 1000)
+          }, 500)
         } catch (error) {
           window.api.setStopQuitApp(false, '')
           window.message.error({
@@ -358,6 +374,134 @@ const DataSettings: FC = () => {
       )
       const className = 'migration-modal'
       const messageKey = 'data-migration'
+
+      // 显示进度模态框
+      const showProgressModal = (title: React.ReactNode, className: string, PathsContent: React.FC) => {
+        let currentProgress = 0
+        let progressInterval: NodeJS.Timeout | null = null
+
+        // 创建进度更新模态框
+        const loadingModal = window.modal.info({
+          title,
+          className,
+          width: 'min(600px, 90vw)',
+          style: { minHeight: '400px' },
+          icon: <LoadingOutlined style={{ fontSize: 18 }} />,
+          content: (
+            <MigrationModalContent>
+              <PathsContent />
+              <MigrationNotice>
+                <p>{t('settings.data.app_data.copying')}</p>
+                <div style={{ marginTop: '12px' }}>
+                  <Progress percent={currentProgress} status="active" strokeWidth={8} />
+                </div>
+                <p style={{ color: 'var(--color-warning)', marginTop: '12px', fontSize: '13px' }}>
+                  {t('settings.data.app_data.copying_warning')}
+                </p>
+              </MigrationNotice>
+            </MigrationModalContent>
+          ),
+          centered: true,
+          closable: false,
+          maskClosable: false,
+          okButtonProps: { style: { display: 'none' } }
+        })
+
+        // 更新进度的函数
+        const updateProgress = (progress: number, status: 'active' | 'success' = 'active') => {
+          loadingModal.update({
+            title,
+            content: (
+              <MigrationModalContent>
+                <PathsContent />
+                <MigrationNotice>
+                  <p>{t('settings.data.app_data.copying')}</p>
+                  <div style={{ marginTop: '12px' }}>
+                    <Progress percent={Math.round(progress)} status={status} strokeWidth={8} />
+                  </div>
+                  <p style={{ color: 'var(--color-warning)', marginTop: '12px', fontSize: '13px' }}>
+                    {t('settings.data.app_data.copying_warning')}
+                  </p>
+                </MigrationNotice>
+              </MigrationModalContent>
+            )
+          })
+        }
+
+        // 开始模拟进度更新
+        progressInterval = setInterval(() => {
+          if (currentProgress < 95) {
+            currentProgress += Math.random() * 5 + 1
+            if (currentProgress > 95) currentProgress = 95
+            updateProgress(currentProgress)
+          }
+        }, 500)
+
+        return { loadingModal, progressInterval, updateProgress }
+      }
+
+      // 开始迁移数据
+      const startMigration = async (
+        originalPath: string,
+        newPath: string,
+        progressInterval: NodeJS.Timeout | null,
+        updateProgress: (progress: number, status?: 'active' | 'success') => void,
+        loadingModal: { destroy: () => void },
+        messageKey: string
+      ): Promise<void> => {
+        // flush app data
+        await window.api.flushAppData()
+
+        // wait 2 seconds to flush app data
+        await new Promise((resolve) => setTimeout(resolve, 2000))
+
+        // 开始复制过程
+        const copyResult = await window.api.copy(
+          originalPath,
+          newPath,
+          occupiedDirs.map((dir) => originalPath + '/' + dir)
+        )
+
+        // 停止进度更新
+        if (progressInterval) {
+          clearInterval(progressInterval)
+        }
+
+        // 显示100%完成
+        updateProgress(100, 'success')
+
+        if (!copyResult.success) {
+          // 延迟关闭加载模态框
+          await new Promise<void>((resolve) => {
+            setTimeout(() => {
+              loadingModal.destroy()
+              window.message.error({
+                content: t('settings.data.app_data.copy_failed') + ': ' + copyResult.error,
+                key: messageKey,
+                duration: 5
+              })
+              resolve()
+            }, 500)
+          })
+
+          throw new Error(copyResult.error || 'Unknown error during copy')
+        }
+
+        // 在复制成功后设置新的AppDataPath
+        await window.api.setAppDataPath(newPath)
+
+        // 短暂延迟以显示100%完成
+        await new Promise((resolve) => setTimeout(resolve, 500))
+
+        // 关闭加载模态框
+        loadingModal.destroy()
+
+        window.message.success({
+          content: t('settings.data.app_data.copy_success'),
+          key: messageKey,
+          duration: 2
+        })
+      }
 
       // Create PathsContent component for this specific migration
       const PathsContent = () => (
@@ -405,128 +549,7 @@ const DataSettings: FC = () => {
     }
 
     handleDataMigration()
-  }, [])
-
-  // 显示进度模态框
-  const showProgressModal = (title: React.ReactNode, className: string, PathsContent: React.FC) => {
-    let currentProgress = 0
-    let progressInterval: NodeJS.Timeout | null = null
-
-    // 创建进度更新模态框
-    const loadingModal = window.modal.info({
-      title,
-      className,
-      width: 'min(600px, 90vw)',
-      style: { minHeight: '400px' },
-      icon: <LoadingOutlined style={{ fontSize: 18 }} />,
-      content: (
-        <MigrationModalContent>
-          <PathsContent />
-          <MigrationNotice>
-            <p>{t('settings.data.app_data.copying')}</p>
-            <div style={{ marginTop: '12px' }}>
-              <Progress percent={currentProgress} status="active" strokeWidth={8} />
-            </div>
-            <p style={{ color: 'var(--color-warning)', marginTop: '12px', fontSize: '13px' }}>
-              {t('settings.data.app_data.copying_warning')}
-            </p>
-          </MigrationNotice>
-        </MigrationModalContent>
-      ),
-      centered: true,
-      closable: false,
-      maskClosable: false,
-      okButtonProps: { style: { display: 'none' } }
-    })
-
-    // 更新进度的函数
-    const updateProgress = (progress: number, status: 'active' | 'success' = 'active') => {
-      loadingModal.update({
-        title,
-        content: (
-          <MigrationModalContent>
-            <PathsContent />
-            <MigrationNotice>
-              <p>{t('settings.data.app_data.copying')}</p>
-              <div style={{ marginTop: '12px' }}>
-                <Progress percent={Math.round(progress)} status={status} strokeWidth={8} />
-              </div>
-              <p style={{ color: 'var(--color-warning)', marginTop: '12px', fontSize: '13px' }}>
-                {t('settings.data.app_data.copying_warning')}
-              </p>
-            </MigrationNotice>
-          </MigrationModalContent>
-        )
-      })
-    }
-
-    // 开始模拟进度更新
-    progressInterval = setInterval(() => {
-      if (currentProgress < 95) {
-        currentProgress += Math.random() * 5 + 1
-        if (currentProgress > 95) currentProgress = 95
-        updateProgress(currentProgress)
-      }
-    }, 500)
-
-    return { loadingModal, progressInterval, updateProgress }
-  }
-
-  // 开始迁移数据
-  const startMigration = async (
-    originalPath: string,
-    newPath: string,
-    progressInterval: NodeJS.Timeout | null,
-    updateProgress: (progress: number, status?: 'active' | 'success') => void,
-    loadingModal: { destroy: () => void },
-    messageKey: string
-  ): Promise<void> => {
-    // flush app data
-    await window.api.flushAppData()
-
-    // 开始复制过程
-    const copyResult = await window.api.copy(originalPath, newPath)
-
-    // 停止进度更新
-    if (progressInterval) {
-      clearInterval(progressInterval)
-    }
-
-    // 显示100%完成
-    updateProgress(100, 'success')
-
-    if (!copyResult.success) {
-      // 延迟关闭加载模态框
-      await new Promise<void>((resolve) => {
-        setTimeout(() => {
-          loadingModal.destroy()
-          window.message.error({
-            content: t('settings.data.app_data.copy_failed') + ': ' + copyResult.error,
-            key: messageKey,
-            duration: 5
-          })
-          resolve()
-        }, 500)
-      })
-
-      throw new Error(copyResult.error || 'Unknown error during copy')
-    }
-
-    // 在复制成功后设置新的AppDataPath
-    await window.api.setAppDataPath(newPath)
-
-    // 短暂延迟以显示100%完成
-    await new Promise((resolve) => setTimeout(resolve, 500))
-
-    // 关闭加载模态框
-    loadingModal.destroy()
-
-    window.message.success({
-      content: t('settings.data.app_data.copy_success'),
-      key: messageKey,
-      duration: 2
-    })
-  }
+  }, [t])
 
   const onSkipBackupFilesChange = (value: boolean) => {
     setSkipBackupFile(value)
@@ -633,6 +656,7 @@ const DataSettings: FC = () => {
         )}
         {menu === 'webdav' && <WebDavSettings />}
         {menu === 'nutstore' && <NutstoreSettings />}
+        {menu === 's3' && <S3Settings />}
         {menu === 'export_menu' && <ExportMenuOptions />}
         {menu === 'markdown_export' && <MarkdownExportSettings />}
         {menu === 'notion' && <NotionSettings />}
@@ -666,8 +690,12 @@ const MenuList = styled.div`
   gap: 5px;
   width: var(--settings-width);
   padding: 12px;
+  padding-bottom: 48px;
   border-right: 0.5px solid var(--color-border);
-  height: 100%;
+  height: 100vh;
+  overflow: auto;
+  box-sizing: border-box;
+  min-height: 0;
   .iconfont {
     color: var(--color-text-2);
     line-height: 16px;
