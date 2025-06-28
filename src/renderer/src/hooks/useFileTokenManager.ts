@@ -19,7 +19,7 @@ export function useFileTokenManager({ files, onFilesChange }: UseFileTokenManage
           if (file.type === FileTypes.IMAGE) {
             const tokens = estimateImageTokens(file)
             onFilesChange(files.map((f) => (f.id === file.id ? { ...f, tokens } : f)))
-          } else if (file.type === FileTypes.TEXT || file.type === FileTypes.DOCUMENT) {
+          } else if (file.type === FileTypes.TEXT) {
             if (file.size >= 5 * MB) {
               // 大文件进行简单预估，而不读取文件内容。按照 180 token / KB 进行估算
               // pdf等文档估算不准确
