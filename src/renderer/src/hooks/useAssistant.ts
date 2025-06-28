@@ -28,12 +28,11 @@ export function useAssistants() {
     assistants,
     updateAssistants: (assistants: Assistant[]) => dispatch(updateAssistants(assistants)),
     addAssistant: (assistant: Assistant) => dispatch(addAssistant(assistant)),
-    removeAssistant: (assistantId: string) => {
-      dispatch(removeAssistant({ id: assistantId }))
-      const assistant = assistants.find((a) => a.id === assistantId)
+    removeAssistant: (id: string) => {
+      dispatch(removeAssistant({ id }))
+      const assistant = assistants.find((a) => a.id === id)
       const topics = assistant?.topics || []
-      topics.forEach((topic) => TopicManager.removeTopic(topic, assistantId))
-      // 并没有db删除assistant，只删除了redux状态
+      topics.forEach((topic) => TopicManager.removeTopic(topic, id))
     }
   }
 }
@@ -76,9 +75,7 @@ export function useAssistant(id: string) {
     updateTopic: (topic: Topic) => dispatch(updateTopic({ assistantId: assistant.id, topic })),
     updateTopics: (topics: Topic[]) => dispatch(updateTopics({ assistantId: assistant.id, topics })),
     removeAllTopics: () => {
-      for (const topic of assistant.topics) {
-        TopicManager.removeTopic(topic, assistant.id)
-      }
+      TopicManager.removeAllTopics(assistant.id)
     },
     setModel: useCallback(
       (model: Model) => assistant && dispatch(setModel({ assistantId: assistant?.id, model })),

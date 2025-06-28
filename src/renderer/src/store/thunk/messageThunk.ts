@@ -17,8 +17,7 @@ import type {
   PlaceholderMessageBlock,
   ToolMessageBlock
 } from '@renderer/types/newMessage'
-import { AssistantMessageStatus, MessageBlockStatus, MessageBlockType } from '@renderer/types/newMessage'
-import { Response } from '@renderer/types/newMessage'
+import { AssistantMessageStatus, MessageBlockStatus, MessageBlockType, Response } from '@renderer/types/newMessage'
 import { uuid } from '@renderer/utils'
 import { formatErrorMessage, isAbortError } from '@renderer/utils/error'
 import {
@@ -190,23 +189,24 @@ const cancelThrottledBlockUpdate = (id: string) => {
  * 批量清理多个消息块，包括redux状态与db。还会同时清理掉文件块的文件。
  */
 export const cleanupMultipleBlocks = async (dispatch: AppDispatch, blockIds: string[]) => {
-  if (blockIds.length > 0) {
-    blockIds.forEach((id) => {
-      cancelThrottledBlockUpdate(id)
-    })
-
-    const blocks = await db.message_blocks.where('id').anyOf(blockIds).toArray()
-
-    const files = blocks
-      .filter((block) => block.type === MessageBlockType.FILE || block.type === MessageBlockType.IMAGE)
-      .map((block) => block.file)
-      .filter((file): file is FileType => file !== undefined)
-
-    await Promise.all(files.map((file) => FileManager.deleteFile(file.id, false)))
-
-    await db.message_blocks.bulkDelete(blockIds)
-    dispatch(removeManyBlocks(blockIds))
+  if (blockIds.length === 0) {
+    return
   }
+  blockIds.forEach((id) => {
+    cancelThrottledBlockUpdate(id)
+  })
+
+  const blocks = await db.message_blocks.where('id').anyOf(blockIds).toArray()
+
+  const files = blocks
+    .filter((block) => block.type === MessageBlockType.FILE || block.type === MessageBlockType.IMAGE)
+    .map((block) => block.file)
+    .filter((file): file is FileType => file !== undefined)
+
+  await Promise.all(files.map((file) => FileManager.deleteFile(file.id, false)))
+
+  await db.message_blocks.bulkDelete(blockIds)
+  dispatch(removeManyBlocks(blockIds))
 }
 
 /**

@@ -1,5 +1,6 @@
 import db from '@renderer/databases'
 import i18n from '@renderer/i18n'
+import { getAssistantById } from '@renderer/services/AssistantService'
 import { EVENT_NAMES, EventEmitter } from '@renderer/services/EventService'
 import store from '@renderer/store'
 import { removeTopic, updateTopic } from '@renderer/store/assistants'
@@ -180,9 +181,27 @@ export const TopicManager = {
    * @param assistantId
    */
   async removeTopic(topic: Topic, assistantId: string) {
-    this.clearTopicMessages(topic.id)
-    store.dispatch(removeTopic({ assistantId: assistantId, topic }))
-    db.topics.delete(topic.id)
+    await this.clearTopicMessages(topic.id)
+    await db.topics.delete(topic.id)
+    store.dispatch(removeTopic({ assistantId, topic }))
+  },
+
+  async removeAllTopics(assistantId: string) {
+    const topics = getAssistantById(assistantId)?.topics
+    if (!topics) {
+      return
+    }
+
+    const tasks = topics.map((topic) => {
+      this.clearTopicMessages(topic.id)
+    })
+    await Promise.all(tasks)
+
+    await db.topics.bulkDelete(topics.map((topic) => topic.id))
+
+    topics.forEach((topic) => {
+      store.dispatch(removeTopic({ assistantId, topic }))
+    })
   },
 
   /**
