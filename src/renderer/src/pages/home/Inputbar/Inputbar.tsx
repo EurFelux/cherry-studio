@@ -25,11 +25,7 @@ import FileManager from '@renderer/services/FileManager'
 import { checkRateLimit, getUserMessage } from '@renderer/services/MessagesService'
 import { getModelUniqId } from '@renderer/services/ModelService'
 import PasteService from '@renderer/services/PasteService'
-import {
-  estimateExternalTextFileTokens,
-  estimateTextTokens as estimateTxtTokens,
-  estimateUserPromptUsage
-} from '@renderer/services/TokenService'
+import { estimateTextTokens as estimateTxtTokens, estimateUserPromptUsage } from '@renderer/services/TokenService'
 import { translateText } from '@renderer/services/TranslateService'
 import WebSearchService from '@renderer/services/WebSearchService'
 import { useAppDispatch, useAppSelector } from '@renderer/store'
@@ -39,8 +35,7 @@ import { Assistant, FileType, KnowledgeBase, KnowledgeItem, Model, Topic } from 
 import type { MessageInputBaseParams } from '@renderer/types/newMessage'
 import { classNames, delay, formatFileSize, getFileExtension } from '@renderer/utils'
 import { formatQuotedText } from '@renderer/utils/formats'
-import { getFilesFromDropEvent } from '@renderer/utils/input'
-import { getSendMessageShortcutLabel, isSendMessageKeyPressed } from '@renderer/utils/input'
+import { getFilesFromDropEvent, getSendMessageShortcutLabel, isSendMessageKeyPressed } from '@renderer/utils/input'
 import { documentExts, imageExts, textExts } from '@shared/config/constant'
 import { IpcChannel } from '@shared/IpcChannel'
 import { Button, Tooltip } from 'antd'
@@ -127,7 +122,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
     [setFiles]
   )
 
-  useFileTokenManager({ files, onFilesChange, estimateFileFunc: estimateExternalTextFileTokens })
+  useFileTokenManager({ files, onFilesChange })
 
   const fileTokens = useMemo(
     () => files.map((f) => (f.tokens ? f.tokens : 0)).reduce((sum, tokens) => sum + tokens, 0),
