@@ -1,4 +1,4 @@
-import { CheckOutlined, EditOutlined, MenuOutlined, QuestionCircleOutlined, SyncOutlined } from '@ant-design/icons'
+import { CheckOutlined, EditOutlined, QuestionCircleOutlined, SyncOutlined } from '@ant-design/icons'
 import ObsidianExportPopup from '@renderer/components/Popups/ObsidianExportPopup'
 import SelectModelPopup from '@renderer/components/Popups/SelectModelPopup'
 import { isVisionModel } from '@renderer/config/models'
@@ -35,6 +35,7 @@ import {
   Copy,
   FilePenLine,
   Languages,
+  ListChecks,
   Menu,
   RefreshCw,
   Save,
@@ -207,7 +208,7 @@ const MessageMenubar: FC<Props> = (props) => {
       {
         label: t('chat.multiple.select'),
         key: 'multi-select',
-        icon: <MenuOutlined size={16} />,
+        icon: <ListChecks size={16} />,
         onClick: () => {
           toggleMultiSelectMode(true)
         }
