@@ -1,7 +1,5 @@
-import { estimateExternalTextFileTokens, estimateImageTokens } from '@renderer/services/TokenService'
+import { estimateImageTokens, estimateTextFileTokensByPath } from '@renderer/services/TokenService'
 import { FileType, FileTypes } from '@renderer/types'
-import { KB, MB } from '@shared/config/constant'
-import { floor } from 'lodash'
 import { useEffect } from 'react'
 
 interface UseFileTokenManagerProps {
@@ -20,16 +18,8 @@ export function useFileTokenManager({ files, onFilesChange }: UseFileTokenManage
             const tokens = estimateImageTokens(file)
             onFilesChange(files.map((f) => (f.id === file.id ? { ...f, tokens } : f)))
           } else if (file.type === FileTypes.TEXT) {
-            if (file.size >= 5 * MB) {
-              // 大文件进行简单预估，而不读取文件内容。按照 180 token / KB 进行估算
-              // pdf等文档估算不准确
-              const tokens = floor((file.size / KB) * 180)
-              onFilesChange(files.map((f) => (f.id === file.id ? { ...f, tokens } : f)))
-            } else {
-              // 小文件精确读取内容进行评估
-              const tokens = await estimateExternalTextFileTokens(file)
-              onFilesChange(files.map((f) => (f.id === file.id ? { ...f, tokens } : f)))
-            }
+            const tokens = await estimateTextFileTokensByPath(file)
+            onFilesChange(files.map((f) => (f.id === file.id ? { ...f, tokens } : f)))
           }
           // 跳过非文本文件和图片的文件
         } catch (error) {

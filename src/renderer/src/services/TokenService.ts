@@ -1,7 +1,8 @@
 import { Assistant, FileType, FileTypes, Usage } from '@renderer/types'
 import type { Message } from '@renderer/types/newMessage'
 import { findFileBlocks, getMainTextContent, getThinkingContent } from '@renderer/utils/messageUtils/find'
-import { flatten, takeRight } from 'lodash'
+import { KB, MB } from '@shared/config/constant'
+import { flatten, floor, takeRight } from 'lodash'
 import { approximateTokenSize } from 'tokenx'
 
 import { getAssistantSettings } from './AssistantService'
@@ -104,13 +105,22 @@ export async function estimateTextFilesTokens(files: FileType[]) {
 }
 
 /**
- * 估算未上传的外部文本文件的 token。
+ * 通过文件路径估算文本文件的 token。
  * @param file - 文本文件对象
  * @returns 返回估算的 token 数量
  */
-export async function estimateExternalTextFileTokens(file: FileType) {
-  const content = await window.api.fs.read(file.path, 'utf-8')
-  return estimateTextTokens(content)
+export async function estimateTextFileTokensByPath(file: FileType) {
+  if (file.type !== FileTypes.TEXT) {
+    console.error('Not a Text file')
+    return
+  }
+  if (file.size >= 5 * MB) {
+    // 大文件进行简单预估，而不读取文件内容。按照 180 token / KB 进行估算
+    return floor((file.size / KB) * 180)
+  } else {
+    const content = await window.api.fs.read(file.path, 'utf-8')
+    return estimateTextTokens(content)
+  }
 }
 
 /**
