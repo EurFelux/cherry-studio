@@ -393,8 +393,11 @@ const PopupContainer: React.FC<Props> = ({ model, resolve, modelFilter }) => {
           borderRadius: 20,
           padding: 0,
           overflow: 'hidden',
-          paddingBottom: 20,
-          border: '1px solid var(--color-border)'
+          paddingBottom: 16
+        },
+        body: {
+          maxHeight: 'inherit',
+          padding: 0
         }
       }}
       closeIcon={null}
