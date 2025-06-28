@@ -4,10 +4,12 @@ import TranslateButton from '@renderer/components/TranslateButton'
 import Logger from '@renderer/config/logger'
 import {
   isGenerateImageModel,
+  isGenerateImageModels,
   isSupportedDisableGenerationModel,
   isSupportedReasoningEffortModel,
   isSupportedThinkingTokenModel,
   isVisionModel,
+  isVisionModels,
   isWebSearchModel
 } from '@renderer/config/models'
 import db from '@renderer/databases'
@@ -34,8 +36,7 @@ import { Assistant, FileType, FileTypes, KnowledgeBase, KnowledgeItem, Model, To
 import type { MessageInputBaseParams } from '@renderer/types/newMessage'
 import { classNames, delay, formatFileSize, getFileExtension } from '@renderer/utils'
 import { formatQuotedText } from '@renderer/utils/formats'
-import { getFilesFromDropEvent } from '@renderer/utils/input'
-import { getSendMessageShortcutLabel, isSendMessageKeyPressed } from '@renderer/utils/input'
+import { getFilesFromDropEvent, getSendMessageShortcutLabel, isSendMessageKeyPressed } from '@renderer/utils/input'
 import { documentExts, imageExts, textExts } from '@shared/config/constant'
 import { IpcChannel } from '@shared/IpcChannel'
 import { Button, Tooltip } from 'antd'
@@ -107,19 +108,19 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
   const isVisionAssistant = useMemo(() => isVisionModel(model), [model])
   const isGenerateImageAssistant = useMemo(() => isGenerateImageModel(model), [model])
 
-  const isVisionSupported = useMemo(() => {
-    return (
-      (mentionedModels.length > 0 && mentionedModels.every((model) => isVisionModel(model))) ||
-      (mentionedModels.length == 0 && isVisionAssistant)
-    )
-  }, [mentionedModels, isVisionAssistant])
+  const isVisionSupported = useMemo(
+    () =>
+      (mentionedModels.length > 0 && isVisionModels(mentionedModels)) ||
+      (mentionedModels.length === 0 && isVisionAssistant),
+    [mentionedModels, isVisionAssistant]
+  )
 
-  const isGenerateImageSupported = useMemo(() => {
-    return (
-      ((!mentionedModels || mentionedModels.length == 0) && isGenerateImageAssistant) ||
-      (mentionedModels && mentionedModels.length > 0 && mentionedModels.every((model) => isGenerateImageModel(model)))
-    )
-  }, [mentionedModels, isGenerateImageAssistant])
+  const isGenerateImageSupported = useMemo(
+    () =>
+      (mentionedModels.length > 0 && isGenerateImageModels(mentionedModels)) ||
+      (mentionedModels.length === 0 && isGenerateImageAssistant),
+    [mentionedModels, isGenerateImageAssistant]
+  )
 
   // 仅允许在不含图片文件时mention非视觉模型
   const couldMentionNotVisionModel = useMemo(() => {
@@ -135,7 +136,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
     return isVisionSupported || (!isVisionSupported && !isGenerateImageSupported)
   }, [isGenerateImageSupported, isVisionSupported])
 
-  const supportExts = useMemo(() => {
+  const supportedExts = useMemo(() => {
     if (couldAddImageFile && couldAddTextFile) {
       return [...imageExts, ...documentExts, ...textExts]
     } else if (couldAddImageFile) {
@@ -490,7 +491,6 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
       const lastSymbol = newText[cursorPosition - 1]
 
       if (enableQuickPanelTriggers && !quickPanel.isVisible && lastSymbol === '/') {
-        console.log('onChange could...', couldAddImageFile)
         const quickPanelMenu =
           inputbarToolsRef.current?.getQuickPanelMenu({
             t,
@@ -521,7 +521,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
         event,
         isVisionModel(model),
         isGenerateImageModel(model),
-        supportExts,
+        supportedExts,
         setFiles,
         setText,
         pasteLongTextAsFile,
@@ -531,7 +531,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
         t
       )
     },
-    [model, pasteLongTextAsFile, pasteLongTextThreshold, resizeTextArea, supportExts, t, text]
+    [model, pasteLongTextAsFile, pasteLongTextThreshold, resizeTextArea, supportedExts, t, text]
   )
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -559,7 +559,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
       setIsFileDragging(false)
 
       const files = await getFilesFromDropEvent(e).catch((err) => {
-        Logger.error('[src/renderer/src/pages/home/Inputbar/Inputbar.tsx] handleDrop:', err)
+        Logger.error('[Inputbar] handleDrop:', err)
         return null
       })
 
@@ -567,7 +567,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
         let supportedFiles = 0
 
         files.forEach((file) => {
-          if (supportExts.includes(getFileExtension(file.path))) {
+          if (supportedExts.includes(getFileExtension(file.path))) {
             setFiles((prevFiles) => [...prevFiles, file])
             supportedFiles++
           }
@@ -582,7 +582,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
         }
       }
     },
-    [supportExts, t]
+    [supportedExts, t]
   )
 
   const onTranslated = (translatedText: string) => {
@@ -771,7 +771,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
           return exists ? prev.filter((m) => getModelUniqId(m) !== modelId) : [...prev, model]
         })
       } else {
-        window.message.error('在已上传图片时，不能添加非视觉模型')
+        console.error('在已上传图片时，不能添加非视觉模型')
       }
     },
     [couldMentionNotVisionModel]
@@ -872,7 +872,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
               assistant={assistant}
               model={model}
               files={files}
-              extensions={supportExts}
+              extensions={supportedExts}
               setFiles={setFiles}
               showThinkingButton={showThinkingButton}
               showKnowledgeIcon={showKnowledgeIcon}
