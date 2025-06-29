@@ -165,6 +165,16 @@ export const INITIAL_PROVIDERS: Provider[] = [
     enabled: false
   },
   {
+    id: 'o3',
+    name: 'O3',
+    type: 'openai',
+    apiKey: '',
+    apiHost: 'https://api.o3.fan',
+    models: SYSTEM_MODELS.o3,
+    isSystem: true,
+    enabled: false
+  },
+  {
     id: 'openrouter',
     name: 'OpenRouter',
     type: 'openai',
