@@ -5,7 +5,7 @@ import { SYSTEM_MODELS } from '@renderer/config/models'
 import { TRANSLATE_PROMPT } from '@renderer/config/prompts'
 import db from '@renderer/databases'
 import i18n from '@renderer/i18n'
-import { Assistant, Provider, WebSearchProvider } from '@renderer/types'
+import { Assistant, LanguageCode, Provider, WebSearchProvider } from '@renderer/types'
 import { getDefaultGroupName, getLeadingEmoji, runAsyncFunction, uuid } from '@renderer/utils'
 import { UpgradeChannel } from '@shared/config/constant'
 import { isEmpty } from 'lodash'
@@ -1674,8 +1674,21 @@ const migrateConfig = {
     }
   },
   '118': (state: RootState) => {
+    const langMap: Record<string, LanguageCode> = {
+      english: 'en-us',
+      chinese: 'zh-cn',
+      'chinese-traditional': 'zh-tw',
+      japanese: 'ja-jp',
+      russian: 'ru-ru'
+    }
+    function isLanguageCode(value: unknown): value is LanguageCode {
+      return Object.values(langMap).includes(value as any)
+    }
     try {
-      state.settings.targetLanguage = 'en-us'
+      const origin = state.settings.targetLanguage
+      const newLang = langMap[origin]
+      if (isLanguageCode(newLang)) state.settings.targetLanguage = newLang
+      else state.settings.targetLanguage = 'en-us'
       return state
     } catch (error) {
       return state
