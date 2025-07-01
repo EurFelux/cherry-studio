@@ -9,6 +9,7 @@ import type {
   MessageBlock
 } from '@renderer/types/newMessage'
 import { AssistantMessageStatus, MessageBlockStatus } from '@renderer/types/newMessage'
+import { getLanguageByLangcode } from '@renderer/utils/translate'
 import { Transaction } from 'dexie'
 import { isEmpty } from 'lodash'
 
@@ -310,13 +311,7 @@ export async function upgradeToV7(tx: Transaction): Promise<void> {
 }
 
 export async function upgradeToV8(tx: Transaction): Promise<void> {
-  const table = tx.table('settings')
-  const defaultPair: [Language, Language] = [LanguagesEnum.enUS, LanguagesEnum.zhCN]
-  await table.put({ id: 'translate:bidirectional:pair', value: defaultPair })
-  await table.put({ id: 'translate:target:language', value: LanguagesEnum.zhCN })
-  await table.put({ id: 'translate:source:language', value: LanguagesEnum.enUS })
-
-  const histories = tx.table('translate_history')
+  Logger.log('DB migration to version 8 started')
 
   const langMap: Record<string, LanguageCode> = {
     english: 'en-us',
@@ -340,9 +335,48 @@ export async function upgradeToV8(tx: Transaction): Promise<void> {
     malay: 'ms-my'
   }
 
+  const settingsTable = tx.table('settings')
+  const defaultPair: [Language, Language] = [LanguagesEnum.enUS, LanguagesEnum.zhCN]
+  const originSource = (await settingsTable.get('translate:source:language')).value
+  const originTarget = (await settingsTable.get('translate:target:language')).value
+  const originPair = (await settingsTable.get('translate:bidirectional:pair')).value
+  let newSource, newTarget, newPair
+  Logger.log('originSource: %o', originSource)
+  if (originSource === 'auto') {
+    newSource = 'auto'
+  } else {
+    try {
+      newSource = langMap[originSource]
+    } catch (error) {
+      newSource = LanguagesEnum.enUS.langCode
+    }
+  }
+
+  Logger.log('originTarget: %o', originTarget)
+  try {
+    newTarget = langMap[originTarget]
+  } catch (error) {
+    newTarget = LanguagesEnum.zhCN.langCode
+  }
+
+  Logger.log('originPair: %o', originPair)
+  try {
+    newPair = [getLanguageByLangcode(langMap[originPair[0]]), getLanguageByLangcode(langMap[originPair[1]])]
+  } catch (error) {
+    newPair = defaultPair
+  }
+
+  Logger.log('DB migration to version 8: %o', { newSource, newTarget, newPair })
+
+  await settingsTable.put({ id: 'translate:bidirectional:pair', value: newPair })
+  await settingsTable.put({ id: 'translate:source:language', value: newSource })
+  await settingsTable.put({ id: 'translate:target:language', value: newTarget })
+
+  const histories = tx.table('translate_history')
+
   for (const history of await histories.toArray()) {
     try {
-      await histories.put({
+      await tx.table('translate_history').put({
         ...history,
         sourceLanguage: langMap[history.sourceLanguage],
         targetLanguage: langMap[history.targetLanguage]
@@ -351,4 +385,5 @@ export async function upgradeToV8(tx: Transaction): Promise<void> {
       console.error('Error upgrading history:', error)
     }
   }
+  Logger.log('DB migration to version 8 finished.')
 }
