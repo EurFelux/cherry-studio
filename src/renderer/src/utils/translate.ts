@@ -6,8 +6,8 @@ import React, { MutableRefObject } from 'react'
 /**
  * 使用Unicode字符范围检测语言
  * 适用于较短文本的语言检测
- * @param {string} text 需要检测语言的文本
- * @returns {string} 检测到的语言代码
+ * @param text 需要检测语言的文本
+ * @returns 检测到的语言
  */
 export const detectLanguageByUnicode = (text: string): Language => {
   const counts = {
@@ -71,14 +71,15 @@ export const detectLanguageByUnicode = (text: string): Language => {
     case 'en':
       return LanguagesEnum.enUS
     default:
+      console.error(`Unknown language: ${maxLang}`)
       return LanguagesEnum.enUS
   }
 }
 
 /**
  * 检测输入文本的语言
- * @param {string} inputText 需要检测语言的文本
- * @returns {Promise<string>} 检测到的语言代码 (zh, ja, etc.)
+ * @param inputText 需要检测语言的文本
+ * @returns 检测到的语言
  */
 export const detectLanguage = async (inputText: string): Promise<Language> => {
   const text = inputText.trim()
