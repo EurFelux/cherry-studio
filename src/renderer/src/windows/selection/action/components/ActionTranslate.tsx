@@ -15,7 +15,7 @@ import { Assistant, Language, Topic } from '@renderer/types'
 import type { ActionItem } from '@renderer/types/selectionTypes'
 import { runAsyncFunction } from '@renderer/utils'
 import { abortCompletion } from '@renderer/utils/abortController'
-import { detectLanguage } from '@renderer/utils/translate'
+import { detectLanguage, getLanguageByLangcode } from '@renderer/utils/translate'
 import { Select, Space, Tooltip } from 'antd'
 import { ArrowRightFromLine, ArrowRightToLine, ChevronDown, CircleHelp, Globe } from 'lucide-react'
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -121,7 +121,7 @@ const ActionTranslate: FC<Props> = ({ action, scrollToBottom }) => {
     const sourceLanguage = await detectLanguage(action.selectedText)
 
     let translateLang: Language
-    if (sourceLanguage === targetLanguage) {
+    if (sourceLanguage.langCode === targetLanguage.langCode) {
       translateLang = alterLanguage
     } else {
       translateLang = targetLanguage
@@ -177,13 +177,13 @@ const ActionTranslate: FC<Props> = ({ action, scrollToBottom }) => {
           <ArrowRightToLine size={16} color="var(--color-text-3)" style={{ margin: '0 2px' }} />
           <Tooltip placement="bottom" title={t('translate.target_language')} arrow>
             <Select
-              value={targetLanguage}
+              value={targetLanguage.langCode}
               style={{ minWidth: 80, maxWidth: 200, flex: 'auto' }}
               listHeight={160}
               title={t('translate.target_language')}
               optionFilterProp="label"
               options={translateLanguageOptions.map((lang) => ({
-                value: lang.value,
+                value: lang.langCode,
                 label: (
                   <Space.Compact direction="horizontal" block>
                     <span role="img" aria-label={lang.emoji} style={{ marginRight: 8 }}>
@@ -193,7 +193,7 @@ const ActionTranslate: FC<Props> = ({ action, scrollToBottom }) => {
                   </Space.Compact>
                 )
               }))}
-              onChange={(value) => handleChangeLanguage(value, alterLanguage)}
+              onChange={(value) => handleChangeLanguage(getLanguageByLangcode(value), alterLanguage)}
               disabled={isLoading}
             />
           </Tooltip>
