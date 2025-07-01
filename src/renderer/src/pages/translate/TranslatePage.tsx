@@ -275,15 +275,15 @@ const TranslatePage: FC = () => {
   const saveTranslateHistory = async (
     sourceText: string,
     targetText: string,
-    sourceLanguage: Language,
-    targetLanguage: Language
+    sourceLanguage: LanguageCode,
+    targetLanguage: LanguageCode
   ) => {
     const history: TranslateHistory = {
       id: uuid(),
       sourceText,
       targetText,
-      sourceLanguage: sourceLanguage.langCode,
-      targetLanguage: targetLanguage.langCode,
+      sourceLanguage: sourceLanguage,
+      targetLanguage: targetLanguage,
       createdAt: new Date().toISOString()
     }
     await db.translate_history.add(history)
@@ -354,7 +354,7 @@ const TranslatePage: FC = () => {
         }
       })
 
-      await saveTranslateHistory(text, translatedText, actualSourceLanguage, actualTargetLanguage)
+      await saveTranslateHistory(text, translatedText, actualSourceLanguage.langCode, actualTargetLanguage.langCode)
       setLoading(false)
     } catch (error) {
       console.error('Translation error:', error)
