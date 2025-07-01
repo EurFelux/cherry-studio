@@ -897,6 +897,7 @@ const migrateConfig = {
   },
   '65': (state: RootState) => {
     try {
+      // @ts-ignore expect error
       state.settings.targetLanguage = 'english'
       return state
     } catch (error) {
@@ -1667,6 +1668,14 @@ const migrateConfig = {
         models: SYSTEM_MODELS.ppio,
         apiHost: 'https://api.ppinfra.com/v3/openai/'
       })
+      return state
+    } catch (error) {
+      return state
+    }
+  },
+  '118': (state: RootState) => {
+    try {
+      state.settings.targetLanguage = 'en-us'
       return state
     } catch (error) {
       return state

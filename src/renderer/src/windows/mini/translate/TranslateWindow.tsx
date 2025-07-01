@@ -1,11 +1,11 @@
 import { SwapOutlined } from '@ant-design/icons'
 import Scrollbar from '@renderer/components/Scrollbar'
-import { TranslateLanguageOptions } from '@renderer/config/translate'
+import { LanguagesEnum, translateLanguageOptions } from '@renderer/config/translate'
 import db from '@renderer/databases'
 import { useDefaultModel } from '@renderer/hooks/useAssistant'
 import { fetchTranslate } from '@renderer/services/ApiService'
 import { getDefaultTranslateAssistant } from '@renderer/services/AssistantService'
-import { Assistant } from '@renderer/types'
+import { Assistant, Language } from '@renderer/types'
 import { runAsyncFunction } from '@renderer/utils'
 import { Select, Space } from 'antd'
 import { isEmpty } from 'lodash'
@@ -18,11 +18,11 @@ interface Props {
   text: string
 }
 
-let _targetLanguage = 'chinese'
+let _targetLanguage = LanguagesEnum.zhCN
 
 const Translate: FC<Props> = ({ text }) => {
   const [result, setResult] = useState('')
-  const [targetLanguage, setTargetLanguage] = useState(_targetLanguage)
+  const [targetLanguage, setTargetLanguage] = useState<Language>(_targetLanguage)
   const { translateModel } = useDefaultModel()
   const { t } = useTranslation()
   const translatingRef = useRef(false)
@@ -94,7 +94,7 @@ const Translate: FC<Props> = ({ text }) => {
           value={targetLanguage}
           style={{ maxWidth: 200, minWidth: 130, flex: 1 }}
           optionFilterProp="label"
-          options={TranslateLanguageOptions}
+          options={translateLanguageOptions}
           onChange={async (value) => {
             await db.settings.put({ id: 'translate:target:language', value })
             setTargetLanguage(value)

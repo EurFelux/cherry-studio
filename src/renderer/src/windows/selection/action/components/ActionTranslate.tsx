@@ -1,6 +1,6 @@
 import { LoadingOutlined } from '@ant-design/icons'
 import CopyButton from '@renderer/components/CopyButton'
-import { TranslateLanguageOptions, translateLanguageOptions } from '@renderer/config/translate'
+import { LanguagesEnum, translateLanguageOptions } from '@renderer/config/translate'
 import db from '@renderer/databases'
 import { useTopicMessages } from '@renderer/hooks/useMessageOperations'
 import { useSettings } from '@renderer/hooks/useSettings'
@@ -11,7 +11,7 @@ import {
   getDefaultTopic,
   getTranslateModel
 } from '@renderer/services/AssistantService'
-import { Assistant, Topic } from '@renderer/types'
+import { Assistant, Language, Topic } from '@renderer/types'
 import type { ActionItem } from '@renderer/types/selectionTypes'
 import { runAsyncFunction } from '@renderer/utils'
 import { abortCompletion } from '@renderer/utils/abortController'
@@ -33,8 +33,8 @@ const ActionTranslate: FC<Props> = ({ action, scrollToBottom }) => {
   const { t } = useTranslation()
   const { translateModelPrompt, language } = useSettings()
 
-  const [targetLanguage, setTargetLanguage] = useState('')
-  const [alterLanguage, setAlterLanguage] = useState('')
+  const [targetLanguage, setTargetLanguage] = useState<Language>(LanguagesEnum.enUS)
+  const [alterLanguage, setAlterLanguage] = useState<Language>(LanguagesEnum.zhCN)
 
   const [error, setError] = useState('')
   const [showOriginal, setShowOriginal] = useState(false)
@@ -52,22 +52,22 @@ const ActionTranslate: FC<Props> = ({ action, scrollToBottom }) => {
     runAsyncFunction(async () => {
       const biDirectionLangPair = await db.settings.get({ id: 'translate:bidirectional:pair' })
 
-      let targetLang = ''
-      let alterLang = ''
+      let targetLang
+      let alterLang
 
       if (!biDirectionLangPair || !biDirectionLangPair.value[0]) {
-        const lang = TranslateLanguageOptions.find((lang) => lang.langCode?.toLowerCase() === language.toLowerCase())
+        const lang = translateLanguageOptions.find((lang) => lang.langCode?.toLowerCase() === language.toLowerCase())
         if (lang) {
           targetLang = lang.value
         } else {
-          targetLang = 'chinese'
+          targetLang = LanguagesEnum.zhCN
         }
       } else {
         targetLang = biDirectionLangPair.value[0]
       }
 
       if (!biDirectionLangPair || !biDirectionLangPair.value[1]) {
-        alterLang = 'english'
+        alterLang = LanguagesEnum.enUS
       } else {
         alterLang = biDirectionLangPair.value[1]
       }
@@ -120,7 +120,7 @@ const ActionTranslate: FC<Props> = ({ action, scrollToBottom }) => {
 
     const sourceLanguage = await detectLanguage(action.selectedText)
 
-    let translateLang = ''
+    let translateLang: Language
     if (sourceLanguage === targetLanguage) {
       translateLang = alterLanguage
     } else {
@@ -129,7 +129,7 @@ const ActionTranslate: FC<Props> = ({ action, scrollToBottom }) => {
 
     // Initialize prompt content
     const userContent = translateModelPrompt
-      .replaceAll('{{target_language}}', translateLang)
+      .replaceAll('{{target_language}}', translateLang.value)
       .replaceAll('{{text}}', action.selectedText)
 
     processMessages(assistantRef.current, topicRef.current, userContent, setAskId, onStream, onFinish, onError)
@@ -147,7 +147,7 @@ const ActionTranslate: FC<Props> = ({ action, scrollToBottom }) => {
     return lastAssistantMessage ? <MessageContent key={lastAssistantMessage.id} message={lastAssistantMessage} /> : null
   }, [allMessages])
 
-  const handleChangeLanguage = (targetLanguage: string, alterLanguage: string) => {
+  const handleChangeLanguage = (targetLanguage: Language, alterLanguage: Language) => {
     setTargetLanguage(targetLanguage)
     setAlterLanguage(alterLanguage)
 
@@ -182,7 +182,7 @@ const ActionTranslate: FC<Props> = ({ action, scrollToBottom }) => {
               listHeight={160}
               title={t('translate.target_language')}
               optionFilterProp="label"
-              options={translateLanguageOptions().map((lang) => ({
+              options={translateLanguageOptions.map((lang) => ({
                 value: lang.value,
                 label: (
                   <Space.Compact direction="horizontal" block>
@@ -205,7 +205,7 @@ const ActionTranslate: FC<Props> = ({ action, scrollToBottom }) => {
               listHeight={160}
               title={t('translate.alter_language')}
               optionFilterProp="label"
-              options={translateLanguageOptions().map((lang) => ({
+              options={translateLanguageOptions.map((lang) => ({
                 value: lang.value,
                 label: (
                   <Space.Compact direction="horizontal" block>

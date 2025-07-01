@@ -1,5 +1,6 @@
 import Logger from '@renderer/config/logger'
-import type { LegacyMessage as OldMessage, Topic } from '@renderer/types'
+import { LanguagesEnum } from '@renderer/config/translate'
+import type { Language, LegacyMessage as OldMessage, Topic } from '@renderer/types'
 import { FileTypes } from '@renderer/types' // Import FileTypes enum
 import { WebSearchSource } from '@renderer/types'
 import type {
@@ -307,4 +308,12 @@ export async function upgradeToV7(tx: Transaction): Promise<void> {
   }
 
   Logger.log('DB migration to version 7 finished successfully.')
+}
+
+export async function upgradeToV8(tx: Transaction): Promise<void> {
+  const table = tx.table('settings')
+  const defaultPair: [Language, Language] = [LanguagesEnum.enUS, LanguagesEnum.zhCN]
+  await table.put({ id: 'translate:bidirectional:pair', value: defaultPair })
+  await table.put({ id: 'translate:target:language', value: LanguagesEnum.zhCN })
+  await table.put({ id: 'translate:source:language', value: LanguagesEnum.enUS })
 }
