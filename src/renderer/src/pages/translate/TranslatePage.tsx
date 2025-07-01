@@ -426,8 +426,7 @@ const TranslatePage: FC = () => {
           target = langPair[1]
         }
 
-        // old db migrate
-        if (source && target && typeof source !== 'string' && typeof target !== 'string') {
+        if (source && target) {
           setBidirectionalPair([source, target])
         } else {
           const defaultPair: [Language, Language] = [LanguagesEnum.enUS, LanguagesEnum.zhCN]
