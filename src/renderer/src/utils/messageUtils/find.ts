@@ -216,25 +216,23 @@ export function getContentWithTools(message: Message) {
         constructedContent += block.content
       } else if (block.type === MessageBlockType.TOOL) {
         // 如果是工具调用结果，为其添加文本消息
-        if (block.type === MessageBlockType.TOOL) {
-          let resultString =
-            '\n\nAssistant called a tool.\nTool Name:' +
-            block.metadata?.rawMcpToolResponse?.tool.name +
-            '\nTool call result: \n```json\n'
-          try {
-            resultString += JSON.stringify(
-              {
-                params: block.metadata?.rawMcpToolResponse?.arguments,
-                response: block.metadata?.rawMcpToolResponse?.response
-              },
-              null,
-              2
-            )
-          } catch (e) {
-            resultString += 'Invalid Result'
-          }
-          constructedContent += resultString + '\n```\n\n'
+        let resultString =
+          '\n\nAssistant called a tool.\nTool Name:' +
+          block.metadata?.rawMcpToolResponse?.tool.name +
+          '\nTool call result: \n```json\n'
+        try {
+          resultString += JSON.stringify(
+            {
+              params: block.metadata?.rawMcpToolResponse?.arguments,
+              response: block.metadata?.rawMcpToolResponse?.response
+            },
+            null,
+            2
+          )
+        } catch (e) {
+          resultString += 'Invalid Result'
         }
+        constructedContent += resultString + '\n```\n\n'
       }
     }
   }
