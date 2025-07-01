@@ -1,8 +1,7 @@
 import Logger from '@renderer/config/logger'
 import { LanguagesEnum } from '@renderer/config/translate'
 import type { Language, LegacyMessage as OldMessage, Topic } from '@renderer/types'
-import { FileTypes } from '@renderer/types' // Import FileTypes enum
-import { WebSearchSource } from '@renderer/types'
+import { FileTypes, WebSearchSource } from '@renderer/types' // Import FileTypes enum
 import type {
   BaseMessageBlock,
   CitationMessageBlock,
@@ -316,4 +315,36 @@ export async function upgradeToV8(tx: Transaction): Promise<void> {
   await table.put({ id: 'translate:bidirectional:pair', value: defaultPair })
   await table.put({ id: 'translate:target:language', value: LanguagesEnum.zhCN })
   await table.put({ id: 'translate:source:language', value: LanguagesEnum.enUS })
+
+  const histories = tx.table('translate_history')
+
+  const langMap = {
+    english: 'en-us',
+    chinese: 'zh-cn',
+    'chinese-traditional': 'zh-tw',
+    japanese: 'ja-jp',
+    korean: 'ko-kr',
+    french: 'fr-fr',
+    german: 'de-de',
+    italian: 'it-it',
+    spanish: 'es-es',
+    portuguese: 'pt-pt',
+    russian: 'ru-ru',
+    polish: 'pl-pl',
+    arabic: 'ar-ar',
+    turkish: 'tr-tr',
+    thai: 'th-th',
+    vietnamese: 'vi-vn',
+    indonesian: 'id-id',
+    urdu: 'ur-pk',
+    malay: 'ms-my'
+  }
+
+  for (const history of await histories.toArray()) {
+    await histories.put({
+      ...history,
+      sourceLanguage: langMap[history.sourceLanguage],
+      targetLanguage: langMap[history.targetLanguage]
+    })
+  }
 }
