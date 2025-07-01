@@ -1,6 +1,6 @@
 import Logger from '@renderer/config/logger'
 import { LanguagesEnum } from '@renderer/config/translate'
-import type { Language, LegacyMessage as OldMessage, Topic } from '@renderer/types'
+import type { Language, LanguageCode, LegacyMessage as OldMessage, Topic } from '@renderer/types'
 import { FileTypes, WebSearchSource } from '@renderer/types' // Import FileTypes enum
 import type {
   BaseMessageBlock,
@@ -318,7 +318,7 @@ export async function upgradeToV8(tx: Transaction): Promise<void> {
 
   const histories = tx.table('translate_history')
 
-  const langMap = {
+  const langMap: Record<string, LanguageCode> = {
     english: 'en-us',
     chinese: 'zh-cn',
     'chinese-traditional': 'zh-tw',
@@ -341,10 +341,14 @@ export async function upgradeToV8(tx: Transaction): Promise<void> {
   }
 
   for (const history of await histories.toArray()) {
-    await histories.put({
-      ...history,
-      sourceLanguage: langMap[history.sourceLanguage],
-      targetLanguage: langMap[history.targetLanguage]
-    })
+    try {
+      await histories.put({
+        ...history,
+        sourceLanguage: langMap[history.sourceLanguage],
+        targetLanguage: langMap[history.targetLanguage]
+      })
+    } catch (error) {
+      console.error('Error upgrading history:', error)
+    }
   }
 }
