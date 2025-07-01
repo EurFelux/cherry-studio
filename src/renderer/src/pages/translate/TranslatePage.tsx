@@ -96,10 +96,6 @@ const TranslateSettings: FC<{
     onClose()
   }
 
-  useEffect(() => {
-    console.log('localPair', localPair)
-  }, [localPair])
-
   return (
     <Modal
       title={<div style={{ fontSize: 16 }}>{t('translate.settings.title')}</div>}
