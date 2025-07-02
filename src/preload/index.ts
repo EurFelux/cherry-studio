@@ -76,8 +76,8 @@ const api = {
   file: {
     select: (options?: OpenDialogOptions) => ipcRenderer.invoke(IpcChannel.File_Select, options),
     upload: (file: FileType) => ipcRenderer.invoke(IpcChannel.File_Upload, file),
-    delete: (fileId: string) => ipcRenderer.invoke(IpcChannel.File_Delete, fileId),
-    read: (fileId: string) => ipcRenderer.invoke(IpcChannel.File_Read, fileId),
+    delete: (fileId: string) => ipcRenderer.invoke(IpcChannel.File_Delete, fileId), // fileId is with ext
+    read: (fileId: string) => ipcRenderer.invoke(IpcChannel.File_Read, fileId), // fildId is with ext
     clear: () => ipcRenderer.invoke(IpcChannel.File_Clear),
     get: (filePath: string) => ipcRenderer.invoke(IpcChannel.File_Get, filePath),
     create: (fileName: string) => ipcRenderer.invoke(IpcChannel.File_Create, fileName),

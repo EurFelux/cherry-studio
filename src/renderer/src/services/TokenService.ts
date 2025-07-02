@@ -79,6 +79,7 @@ export function estimateImageTokens(file: FileType) {
  * 会自动去除文本首尾的空白字符。
  *
  * @param file - 文本文件对象
+ * @param path - 文本文件路径，可选参数。如果不提供，会使用 file.id + file.ext 作为路径，在应用数据目录下读取文件。
  * @returns 返回估算的 token 数量
  */
 export async function estimateTextFileTokens(file: FileType, path?: string) {
@@ -86,17 +87,17 @@ export async function estimateTextFileTokens(file: FileType, path?: string) {
     console.error('Not a Text file')
     return 0
   }
-  let _path = ''
-  if (!path) {
-    _path = file.id + file.ext
-  } else {
-    _path = path
-  }
+
   if (file.size >= 5 * MB) {
     // 大文件进行简单预估，而不读取文件内容。按照 180 token / KB 进行估算
     return floor((file.size / KB) * 180)
   } else {
-    const content = (await window.api.fs.read(_path, 'utf-8')).trim()
+    let content: string
+    if (!path) {
+      content = (await window.api.file.read(file.id + file.ext)).trim()
+    } else {
+      content = (await window.api.fs.read(path, 'utf-8')).trim()
+    }
     return estimateTextTokens(content)
   }
 }
@@ -158,7 +159,7 @@ export async function estimateUserPromptUsage({
       }
     }
 
-    const texts = files.filter((f) => f.type === FileTypes.TEXT || f.type === FileTypes.DOCUMENT)
+    const texts = files.filter((f) => f.type === FileTypes.TEXT)
     textTokens = await estimateTextFilesTokens(texts)
   }
 
