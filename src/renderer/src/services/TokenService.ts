@@ -89,6 +89,8 @@ export async function estimateTextFileTokens(file: FileType, path?: string) {
   let _path = ''
   if (!path) {
     _path = file.id + file.ext
+  } else {
+    _path = path
   }
   if (file.size >= 5 * MB) {
     // 大文件进行简单预估，而不读取文件内容。按照 180 token / KB 进行估算
