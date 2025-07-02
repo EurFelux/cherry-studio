@@ -364,7 +364,7 @@ const MessageMenubar: FC<Props> = (props) => {
       return () => true
     }
 
-    if (relatedUserMessageBlocks.some((block) => block.type === MessageBlockType.IMAGE)) {
+    if (relatedUserMessageBlocks.some((block) => block && block.type === MessageBlockType.IMAGE)) {
       return (m: Model) => isVisionModel(m)
     } else {
       return () => true
