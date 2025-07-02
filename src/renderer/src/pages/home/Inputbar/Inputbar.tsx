@@ -43,7 +43,7 @@ import TextArea, { TextAreaRef } from 'antd/es/input/TextArea'
 import dayjs from 'dayjs'
 import { debounce, isEmpty } from 'lodash'
 import { CirclePause, FileSearch, FileText, Upload } from 'lucide-react'
-import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { CSSProperties, FC, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -1021,4 +1021,4 @@ export const ToolbarButton = styled(Button)`
   }
 `
 
-export default Inputbar
+export default memo(Inputbar)
