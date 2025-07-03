@@ -1,23 +1,16 @@
-import InfoTooltip from '@renderer/components/InfoTooltip'
 import { Center, VStack } from '@renderer/components/Layout'
 import { TopView } from '@renderer/components/TopView'
 import ImageStorage from '@renderer/services/ImageStorage'
 import { Provider, ProviderType } from '@renderer/types'
 import { compressImage } from '@renderer/utils'
-import { Checkbox, Divider, Dropdown, Form, Input, Modal, Select, Upload } from 'antd'
+import { Divider, Dropdown, Form, Input, Modal, Select, Upload } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 interface Props {
   provider?: Provider
-  resolve: (result: {
-    name: string
-    type: ProviderType
-    logo?: string
-    logoFile?: File
-    isNotSupportArrayContent: boolean
-  }) => void
+  resolve: (result: { name: string; type: ProviderType; logo?: string; logoFile?: File }) => void
 }
 
 const PopupContainer: React.FC<Props> = ({ provider, resolve }) => {
@@ -25,7 +18,6 @@ const PopupContainer: React.FC<Props> = ({ provider, resolve }) => {
   const [name, setName] = useState(provider?.name || '')
   const [type, setType] = useState<ProviderType>(provider?.type || 'openai')
   const [logo, setLogo] = useState<string | null>(null)
-  const [isNotSupportArrayContent, setIsNotSupportArrayContent] = useState(provider?.isNotSupportArrayContent || false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const { t } = useTranslation()
 
@@ -52,19 +44,18 @@ const PopupContainer: React.FC<Props> = ({ provider, resolve }) => {
     const result = {
       name,
       type,
-      logo: logo || undefined,
-      isNotSupportArrayContent
+      logo: logo || undefined
     }
     resolve(result)
   }
 
   const onCancel = () => {
     setOpen(false)
-    resolve({ name: '', type: 'openai', isNotSupportArrayContent: false })
+    resolve({ name: '', type: 'openai' })
   }
 
   const onClose = () => {
-    resolve({ name, type, logo: logo || undefined, isNotSupportArrayContent })
+    resolve({ name, type, logo: logo || undefined })
   }
 
   const buttonDisabled = name.length === 0
@@ -209,18 +200,6 @@ const PopupContainer: React.FC<Props> = ({ provider, resolve }) => {
             ]}
           />
         </Form.Item>
-        <Form.Item valuePropName="checked">
-          <Checkbox
-            checked={isNotSupportArrayContent}
-            onChange={(e) => {
-              setIsNotSupportArrayContent(e.target.checked)
-            }}>
-            <CheckboxLabelContainer>
-              {t('settings.provider.is_not_support_array_content')}
-              <InfoTooltip content={t('settings.provider.add.compatible')} />
-            </CheckboxLabelContainer>
-          </Checkbox>
-        </Form.Item>
       </Form>
     </Modal>
   )
@@ -259,11 +238,6 @@ const ProviderInitialsLogo = styled.div`
   }
 `
 
-const CheckboxLabelContainer = styled.div`
-  display: flex;
-  align-items: center;
-`
-
 export default class AddProviderPopup {
   static topviewId = 0
   static hide() {
@@ -275,7 +249,6 @@ export default class AddProviderPopup {
       type: ProviderType
       logo?: string
       logoFile?: File
-      isNotSupportArrayContent: boolean
     }>((resolve) => {
       TopView.show(
         <PopupContainer
