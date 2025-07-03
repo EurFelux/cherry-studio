@@ -272,7 +272,7 @@ const ProvidersList: FC = () => {
   }
 
   const onAddProvider = async () => {
-    const { name: providerName, type, logo } = await AddProviderPopup.show()
+    const { name: providerName, type, logo, isNotSupportArrayContent } = await AddProviderPopup.show()
 
     if (!providerName.trim()) {
       return
@@ -286,7 +286,8 @@ const ProvidersList: FC = () => {
       apiHost: '',
       models: [],
       enabled: true,
-      isSystem: false
+      isSystem: false,
+      isNotSupportArrayContent
     } as Provider
 
     let updatedLogos = { ...providerLogos }
@@ -321,10 +322,10 @@ const ProvidersList: FC = () => {
       key: 'edit',
       icon: <EditOutlined />,
       async onClick() {
-        const { name, type, logoFile, logo } = await AddProviderPopup.show(provider)
+        const { name, type, logoFile, logo, isNotSupportArrayContent } = await AddProviderPopup.show(provider)
 
         if (name) {
-          updateProvider({ ...provider, name, type })
+          updateProvider({ ...provider, name, type, isNotSupportArrayContent })
           if (provider.id) {
             if (logoFile && logo) {
               try {

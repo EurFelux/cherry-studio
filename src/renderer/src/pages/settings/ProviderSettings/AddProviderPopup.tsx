@@ -3,14 +3,20 @@ import { TopView } from '@renderer/components/TopView'
 import ImageStorage from '@renderer/services/ImageStorage'
 import { Provider, ProviderType } from '@renderer/types'
 import { compressImage } from '@renderer/utils'
-import { Divider, Dropdown, Form, Input, Modal, Select, Upload } from 'antd'
+import { Checkbox, Divider, Dropdown, Form, Input, Modal, Select, Upload } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 interface Props {
   provider?: Provider
-  resolve: (result: { name: string; type: ProviderType; logo?: string; logoFile?: File }) => void
+  resolve: (result: {
+    name: string
+    type: ProviderType
+    logo?: string
+    logoFile?: File
+    isNotSupportArrayContent: boolean
+  }) => void
 }
 
 const PopupContainer: React.FC<Props> = ({ provider, resolve }) => {
@@ -18,6 +24,7 @@ const PopupContainer: React.FC<Props> = ({ provider, resolve }) => {
   const [name, setName] = useState(provider?.name || '')
   const [type, setType] = useState<ProviderType>(provider?.type || 'openai')
   const [logo, setLogo] = useState<string | null>(null)
+  const [isNotSupportArrayContent, setIsNotSupportArrayContent] = useState(provider?.isNotSupportArrayContent || false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const { t } = useTranslation()
 
@@ -44,19 +51,19 @@ const PopupContainer: React.FC<Props> = ({ provider, resolve }) => {
     const result = {
       name,
       type,
-      logo: logo || undefined
+      logo: logo || undefined,
+      isNotSupportArrayContent
     }
-
     resolve(result)
   }
 
   const onCancel = () => {
     setOpen(false)
-    resolve({ name: '', type: 'openai' })
+    resolve({ name: '', type: 'openai', isNotSupportArrayContent: false })
   }
 
   const onClose = () => {
-    resolve({ name, type, logo: logo || undefined })
+    resolve({ name, type, logo: logo || undefined, isNotSupportArrayContent })
   }
 
   const buttonDisabled = name.length === 0
@@ -201,6 +208,15 @@ const PopupContainer: React.FC<Props> = ({ provider, resolve }) => {
             ]}
           />
         </Form.Item>
+        <Form.Item valuePropName="checked">
+          <Checkbox
+            checked={isNotSupportArrayContent}
+            onChange={(e) => {
+              setIsNotSupportArrayContent(e.target.checked)
+            }}>
+            {t('settings.provider.is_not_support_array_content')}
+          </Checkbox>
+        </Form.Item>
       </Form>
     </Modal>
   )
@@ -245,7 +261,13 @@ export default class AddProviderPopup {
     TopView.hide('AddProviderPopup')
   }
   static show(provider?: Provider) {
-    return new Promise<{ name: string; type: ProviderType; logo?: string; logoFile?: File }>((resolve) => {
+    return new Promise<{
+      name: string
+      type: ProviderType
+      logo?: string
+      logoFile?: File
+      isNotSupportArrayContent: boolean
+    }>((resolve) => {
       TopView.show(
         <PopupContainer
           provider={provider}
