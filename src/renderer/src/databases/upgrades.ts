@@ -336,9 +336,9 @@ export async function upgradeToV8(tx: Transaction): Promise<void> {
 
   const settingsTable = tx.table('settings')
   const defaultPair: [LanguageCode, LanguageCode] = [LanguagesEnum.enUS.langCode, LanguagesEnum.zhCN.langCode]
-  const originSource = (await settingsTable.get('translate:source:language')).value
-  const originTarget = (await settingsTable.get('translate:target:language')).value
-  const originPair = (await settingsTable.get('translate:bidirectional:pair')).value
+  const originSource = (await settingsTable.get('translate:source:language'))?.value
+  const originTarget = (await settingsTable.get('translate:target:language'))?.value
+  const originPair = (await settingsTable.get('translate:bidirectional:pair'))?.value
   let newSource, newTarget, newPair
   Logger.log('originSource: %o', originSource)
   if (originSource === 'auto') {
