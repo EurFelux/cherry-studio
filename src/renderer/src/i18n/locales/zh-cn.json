@@ -1702,6 +1702,7 @@
         "add.name.placeholder": "例如 OpenAI",
         "add.title": "添加提供商",
         "add.type": "提供商类型",
+        "add.compatible": "兼容不支持数组格式用户消息的API",
         "api.url.preview": "预览: {{url}}",
         "api.url.reset": "重置",
         "api.url.tip": "/ 结尾忽略 v1 版本，# 结尾强制使用输入地址",

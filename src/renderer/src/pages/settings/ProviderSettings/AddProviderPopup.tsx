@@ -1,3 +1,4 @@
+import InfoTooltip from '@renderer/components/InfoTooltip'
 import { Center, VStack } from '@renderer/components/Layout'
 import { TopView } from '@renderer/components/TopView'
 import ImageStorage from '@renderer/services/ImageStorage'
@@ -214,7 +215,10 @@ const PopupContainer: React.FC<Props> = ({ provider, resolve }) => {
             onChange={(e) => {
               setIsNotSupportArrayContent(e.target.checked)
             }}>
-            {t('settings.provider.is_not_support_array_content')}
+            <CheckboxLabelContainer>
+              {t('settings.provider.is_not_support_array_content')}
+              <InfoTooltip content={t('settings.provider.add.compatible')} />
+            </CheckboxLabelContainer>
           </Checkbox>
         </Form.Item>
       </Form>
@@ -253,6 +257,11 @@ const ProviderInitialsLogo = styled.div`
   &:hover {
     opacity: 0.8;
   }
+`
+
+const CheckboxLabelContainer = styled.div`
+  display: flex;
+  align-items: center;
 `
 
 export default class AddProviderPopup {

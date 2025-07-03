@@ -1702,6 +1702,7 @@
         "add.name.placeholder": "Example: OpenAI",
         "add.title": "Add Provider",
         "add.type": "Provider Type",
+        "add.compatible": "Compatible with providers that do not support arrays in user messages",
         "api.url.preview": "Preview: {{url}}",
         "api.url.reset": "Reset",
         "api.url.tip": "Ending with / ignores v1, ending with # forces use of input address",
