@@ -3,7 +3,7 @@ import i18n from '@renderer/i18n'
 import { getAssistantById } from '@renderer/services/AssistantService'
 import { EVENT_NAMES, EventEmitter } from '@renderer/services/EventService'
 import store from '@renderer/store'
-import { removeTopic, updateTopic } from '@renderer/store/assistants'
+import { removeAllTopics, removeTopic, updateTopic } from '@renderer/store/assistants'
 import { setNewlyRenamedTopics, setRenamingTopics } from '@renderer/store/runtime'
 import { deleteTopicMessagesThunk, loadTopicMessagesThunk } from '@renderer/store/thunk/messageThunk'
 import { Assistant, Topic } from '@renderer/types'
@@ -199,9 +199,7 @@ export const TopicManager = {
 
     await db.topics.bulkDelete(topics.map((topic) => topic.id))
 
-    topics.forEach((topic) => {
-      store.dispatch(removeTopic({ assistantId, topic }))
-    })
+    store.dispatch(removeAllTopics({ assistantId }))
   },
 
   /**
