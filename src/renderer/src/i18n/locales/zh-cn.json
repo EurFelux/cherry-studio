@@ -1060,7 +1060,8 @@
       "tokenflux": "TokenFlux",
       "302ai": "302.AI",
       "lanyun": "蓝耘科技",
-      "vertexai": "Vertex AI"
+      "vertexai": "Vertex AI",
+      "ph8": "PH8 大模型开放平台"
     },
     "restore": {
       "confirm": "确定要恢复数据吗？",
@@ -1679,6 +1680,7 @@
       "models.provider_key_no_change": "{{provider}} 的 API 密钥没有变化",
       "models.provider_key_add_failed_by_empty_data": "添加服务商 API 密钥失败，数据为空",
       "models.provider_key_add_failed_by_invalid_data": "添加服务商 API 密钥失败，数据格式错误",
+      "models.provider_key_override_confirm": "{{provider}} 已存在相同 API 密钥, 是否覆盖？",
       "moresetting": "更多设置",
       "moresetting.check.confirm": "确认勾选",
       "moresetting.check.warn": "请慎重勾选此选项，勾选错误会导致模型无法正常使用！！！",
