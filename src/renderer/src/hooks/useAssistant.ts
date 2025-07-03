@@ -29,10 +29,10 @@ export function useAssistants() {
     updateAssistants: (assistants: Assistant[]) => dispatch(updateAssistants(assistants)),
     addAssistant: (assistant: Assistant) => dispatch(addAssistant(assistant)),
     removeAssistant: (id: string) => {
-      dispatch(removeAssistant({ id }))
       const assistant = assistants.find((a) => a.id === id)
       const topics = assistant?.topics || []
       topics.forEach((topic) => TopicManager.removeTopic(topic, id))
+      dispatch(removeAssistant({ id }))
     }
   }
 }
