@@ -4,8 +4,8 @@
 
 ## 字段
 
-| 字段名                         | 类型                   | 说明         |
-| ------------------------------ | ---------------------- | ------------ |
-| `translate:target:language`    | `LanguageCode`         | 翻译目标语言 |
-| `translate:source:language`    | `LanguageCode`         | 翻译源语言   |
-| `translate:bidirectional:pair` | `[Language, Language]` | 双向翻译对   |
+| 字段名                         | 类型                           | 说明         |
+| ------------------------------ | ------------------------------ | ------------ |
+| `translate:target:language`    | `LanguageCode`                 | 翻译目标语言 |
+| `translate:source:language`    | `LanguageCode`                 | 翻译源语言   |
+| `translate:bidirectional:pair` | `[LanguageCode, LanguageCode]` | 双向翻译对   |
