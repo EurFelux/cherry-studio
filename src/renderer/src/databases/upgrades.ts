@@ -344,24 +344,21 @@ export async function upgradeToV8(tx: Transaction): Promise<void> {
   if (originSource === 'auto') {
     newSource = 'auto'
   } else {
-    try {
-      newSource = langMap[originSource]
-    } catch (error) {
+    newSource = langMap[originSource]
+    if (!newSource) {
       newSource = LanguagesEnum.enUS.langCode
     }
   }
 
   Logger.log('originTarget: %o', originTarget)
-  try {
-    newTarget = langMap[originTarget]
-  } catch (error) {
+  newTarget = langMap[originTarget]
+  if (!newTarget) {
     newTarget = LanguagesEnum.zhCN.langCode
   }
 
   Logger.log('originPair: %o', originPair)
-  try {
-    newPair = [langMap[originPair[0]], langMap[originPair[1]]]
-  } catch (error) {
+  newPair = [langMap[originPair[0]], langMap[originPair[1]]]
+  if (!newPair[0] || !newPair[1]) {
     newPair = defaultPair
   }
 
