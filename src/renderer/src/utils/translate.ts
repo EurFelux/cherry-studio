@@ -229,6 +229,15 @@ export const createOutputScrollHandler = (
   }
 }
 
+/**
+ * 根据语言代码获取对应的语言对象
+ * @param langcode - 语言代码
+ * @returns 返回对应的语言对象，如果找不到则返回英语(enUS)
+ * @example
+ * ```typescript
+ * const language = getLanguageByLangcode('zh-cn') // 返回中文语言对象
+ * ```
+ */
 export const getLanguageByLangcode = (langcode: LanguageCode): Language => {
   const result = Object.values(LanguagesEnum).find((item) => item.langCode === langcode)
   if (!result) {
