@@ -82,7 +82,7 @@ export function estimateImageTokens(file: FileMetadata) {
  * @param path - 文本文件路径，可选参数。如果不提供，会使用 file.id + file.ext 作为路径，在应用数据目录下读取文件。
  * @returns 返回估算的 token 数量
  */
-export async function estimateTextFileTokens(file: FileType, path?: string) {
+export async function estimateTextFileTokens(file: FileMetadata, path?: string) {
   if (file.type !== FileTypes.TEXT) {
     console.error('Not a Text file')
     return 0
@@ -112,7 +112,7 @@ export async function estimateTextFileTokens(file: FileType, path?: string) {
  * @param files - 文本文件对象数组
  * @returns 返回所有文件的 token 总和
  */
-export async function estimateTextFilesTokens(files: FileType[]) {
+export async function estimateTextFilesTokens(files: FileMetadata[]) {
   // 并行读取所有文本文件的 token
   // 在这里不会对files的tokens字段进行更新
   const textFileTokens = await Promise.all(
@@ -126,7 +126,7 @@ export async function estimateTextFilesTokens(files: FileType[]) {
  * @param file - 文本文件对象
  * @returns 返回估算的 token 数量
  */
-export async function estimateTextFileTokensByPath(file: FileType) {
+export async function estimateTextFileTokensByPath(file: FileMetadata) {
   return estimateTextFileTokens(file, file.path)
 }
 
