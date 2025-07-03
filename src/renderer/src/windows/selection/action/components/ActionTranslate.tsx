@@ -151,7 +151,7 @@ const ActionTranslate: FC<Props> = ({ action, scrollToBottom }) => {
     setTargetLanguage(targetLanguage)
     setAlterLanguage(alterLanguage)
 
-    db.settings.put({ id: 'translate:bidirectional:pair', value: [targetLanguage, alterLanguage] })
+    db.settings.put({ id: 'translate:bidirectional:pair', value: [targetLanguage.langCode, alterLanguage.langCode] })
   }
 
   const handlePause = () => {
