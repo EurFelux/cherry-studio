@@ -1,6 +1,6 @@
 import Logger from '@renderer/config/logger'
 import { LanguagesEnum } from '@renderer/config/translate'
-import type { Language, LanguageCode, LegacyMessage as OldMessage, Topic } from '@renderer/types'
+import type { LanguageCode, LegacyMessage as OldMessage, Topic } from '@renderer/types'
 import { FileTypes, WebSearchSource } from '@renderer/types' // Import FileTypes enum
 import type {
   BaseMessageBlock,
@@ -9,7 +9,6 @@ import type {
   MessageBlock
 } from '@renderer/types/newMessage'
 import { AssistantMessageStatus, MessageBlockStatus } from '@renderer/types/newMessage'
-import { getLanguageByLangcode } from '@renderer/utils/translate'
 import { Transaction } from 'dexie'
 import { isEmpty } from 'lodash'
 
@@ -336,7 +335,7 @@ export async function upgradeToV8(tx: Transaction): Promise<void> {
   }
 
   const settingsTable = tx.table('settings')
-  const defaultPair: [Language, Language] = [LanguagesEnum.enUS, LanguagesEnum.zhCN]
+  const defaultPair: [LanguageCode, LanguageCode] = [LanguagesEnum.enUS.langCode, LanguagesEnum.zhCN.langCode]
   const originSource = (await settingsTable.get('translate:source:language')).value
   const originTarget = (await settingsTable.get('translate:target:language')).value
   const originPair = (await settingsTable.get('translate:bidirectional:pair')).value
@@ -361,7 +360,7 @@ export async function upgradeToV8(tx: Transaction): Promise<void> {
 
   Logger.log('originPair: %o', originPair)
   try {
-    newPair = [getLanguageByLangcode(langMap[originPair[0]]), getLanguageByLangcode(langMap[originPair[1]])]
+    newPair = [langMap[originPair[0]], langMap[originPair[1]]]
   } catch (error) {
     newPair = defaultPair
   }

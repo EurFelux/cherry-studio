@@ -95,7 +95,7 @@ const TranslateSettings: FC<{
       return
     }
     setBidirectionalPair(localPair)
-    db.settings.put({ id: 'translate:bidirectional:pair', value: localPair })
+    db.settings.put({ id: 'translate:bidirectional:pair', value: [localPair[0].langCode, localPair[1].langCode] })
     db.settings.put({ id: 'translate:scroll:sync', value: isScrollSyncEnabled })
     db.settings.put({ id: 'translate:markdown:enabled', value: enableMarkdown })
     db.settings.put({ id: 'translate:model:prompt', value: localPrompt })
@@ -480,8 +480,8 @@ const TranslatePage: FC = () => {
         let target: undefined | Language
 
         if (Array.isArray(langPair) && langPair.length === 2 && langPair[0] !== langPair[1]) {
-          source = langPair[0]
-          target = langPair[1]
+          source = getLanguageByLangcode(langPair[0])
+          target = getLanguageByLangcode(langPair[1])
         }
 
         if (source && target) {
@@ -489,7 +489,10 @@ const TranslatePage: FC = () => {
         } else {
           const defaultPair: [Language, Language] = [LanguagesEnum.enUS, LanguagesEnum.zhCN]
           setBidirectionalPair(defaultPair)
-          db.settings.put({ id: 'translate:bidirectional:pair', value: defaultPair })
+          db.settings.put({
+            id: 'translate:bidirectional:pair',
+            value: [defaultPair[0].langCode, defaultPair[1].langCode]
+          })
         }
       }
 

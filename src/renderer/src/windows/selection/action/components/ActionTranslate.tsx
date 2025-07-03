@@ -52,24 +52,24 @@ const ActionTranslate: FC<Props> = ({ action, scrollToBottom }) => {
     runAsyncFunction(async () => {
       const biDirectionLangPair = await db.settings.get({ id: 'translate:bidirectional:pair' })
 
-      let targetLang
-      let alterLang
+      let targetLang: Language
+      let alterLang: Language
 
       if (!biDirectionLangPair || !biDirectionLangPair.value[0]) {
         const lang = translateLanguageOptions.find((lang) => lang.langCode?.toLowerCase() === language.toLowerCase())
         if (lang) {
-          targetLang = lang.value
+          targetLang = lang
         } else {
           targetLang = LanguagesEnum.zhCN
         }
       } else {
-        targetLang = biDirectionLangPair.value[0]
+        targetLang = getLanguageByLangcode(biDirectionLangPair.value[0])
       }
 
       if (!biDirectionLangPair || !biDirectionLangPair.value[1]) {
         alterLang = LanguagesEnum.enUS
       } else {
-        alterLang = biDirectionLangPair.value[1]
+        alterLang = getLanguageByLangcode(biDirectionLangPair.value[1])
       }
 
       setTargetLanguage(targetLang)
