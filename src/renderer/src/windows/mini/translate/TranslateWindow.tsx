@@ -101,7 +101,7 @@ const Translate: FC<Props> = ({ text }) => {
           }}
           optionRender={(option) => (
             <Space>
-              <span role="img" aria-label={option.data.label}>
+              <span role="img" aria-label={option.data.label()}>
                 {option.data.emoji}
               </span>
               {option.label}

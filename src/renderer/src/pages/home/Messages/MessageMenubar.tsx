@@ -458,7 +458,7 @@ const MessageMenubar: FC<Props> = (props) => {
             },
             items: [
               ...translateLanguageOptions.map((item) => ({
-                label: item.emoji + ' ' + item.label,
+                label: item.emoji + ' ' + item.label(),
                 key: item.langCode,
                 onClick: () => handleTranslate(item)
               })),

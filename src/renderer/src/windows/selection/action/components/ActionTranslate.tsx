@@ -189,7 +189,7 @@ const ActionTranslate: FC<Props> = ({ action, scrollToBottom }) => {
                     <span role="img" aria-label={lang.emoji} style={{ marginRight: 8 }}>
                       {lang.emoji}
                     </span>
-                    <Space.Compact block>{lang.label}</Space.Compact>
+                    <Space.Compact block>{lang.label()}</Space.Compact>
                   </Space.Compact>
                 )
               }))}
@@ -212,7 +212,7 @@ const ActionTranslate: FC<Props> = ({ action, scrollToBottom }) => {
                     <span role="img" aria-label={lang.emoji} style={{ marginRight: 8 }}>
                       {lang.emoji}
                     </span>
-                    <Space.Compact block>{lang.label}</Space.Compact>
+                    <Space.Compact block>{lang.label()}</Space.Compact>
                   </Space.Compact>
                 )
               }))}

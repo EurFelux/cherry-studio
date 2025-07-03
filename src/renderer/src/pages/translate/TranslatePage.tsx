@@ -199,7 +199,7 @@ const TranslateSettings: FC<{
                         <span role="img" aria-label={lang.emoji} style={{ marginRight: 8 }}>
                           {lang.emoji}
                         </span>
-                        <Space.Compact block>{lang.label}</Space.Compact>
+                        <Space.Compact block>{lang.label()}</Space.Compact>
                       </Space.Compact>
                     )
                   }))}
@@ -216,7 +216,7 @@ const TranslateSettings: FC<{
                         <span role="img" aria-label={lang.emoji} style={{ marginRight: 8 }}>
                           {lang.emoji}
                         </span>
-                        <div style={{ textAlign: 'left', flex: 1 }}>{lang.label}</div>
+                        <div style={{ textAlign: 'left', flex: 1 }}>{lang.label()}</div>
                       </Space.Compact>
                     )
                   }))}
@@ -517,14 +517,19 @@ const TranslatePage: FC = () => {
 
   // 获取当前语言状态显示
   const getLanguageDisplay = () => {
-    if (isBidirectional) {
-      return (
-        <Flex align="center" style={{ width: 160 }}>
-          <BidirectionalLanguageDisplay>
-            {`${bidirectionalPair[0].label} ⇆ ${bidirectionalPair[1].label}`}
-          </BidirectionalLanguageDisplay>
-        </Flex>
-      )
+    try {
+      if (isBidirectional) {
+        return (
+          <Flex align="center" style={{ width: 160 }}>
+            <BidirectionalLanguageDisplay>
+              {`${bidirectionalPair[0].label()} ⇆ ${bidirectionalPair[1].label()}`}
+            </BidirectionalLanguageDisplay>
+          </Flex>
+        )
+      }
+    } catch (error) {
+      console.error('Error getting language display:', error)
+      setBidirectionalPair([LanguagesEnum.enUS, LanguagesEnum.zhCN])
     }
 
     return (
@@ -542,7 +547,7 @@ const TranslatePage: FC = () => {
               <span role="img" aria-label={lang.emoji} style={{ marginRight: 8 }}>
                 {lang.emoji}
               </span>
-              <Space.Compact block>{lang.label}</Space.Compact>
+              <Space.Compact block>{lang.label()}</Space.Compact>
             </Space.Compact>
           )
         }))}
@@ -630,8 +635,8 @@ const TranslatePage: FC = () => {
                 options={[
                   {
                     value: 'auto',
-                    label: detectedLanguage?.label
-                      ? `${t('translate.detected.language')} (${detectedLanguage.label})`
+                    label: detectedLanguage?.label()
+                      ? `${t('translate.detected.language')} (${detectedLanguage.label()})`
                       : t('translate.detected.language')
                   },
                   ...translateLanguageOptions.map((lang) => ({
@@ -641,7 +646,7 @@ const TranslatePage: FC = () => {
                         <span role="img" aria-label={lang.emoji} style={{ marginRight: 8 }}>
                           {lang.emoji}
                         </span>
-                        <Space.Compact block>{lang.label}</Space.Compact>
+                        <Space.Compact block>{lang.label()}</Space.Compact>
                       </Space.Compact>
                     )
                   }))

@@ -621,7 +621,7 @@ const SettingsTab: FC<Props> = (props) => {
               value={targetLanguage}
               onChange={(value) => setTargetLanguage(value)}
               options={translateLanguageOptions.map((item) => {
-                return { value: item.langCode, label: item.emoji + ' ' + item.label }
+                return { value: item.langCode, label: item.emoji + ' ' + item.label() }
               })}
             />
           </SettingRow>

@@ -489,7 +489,7 @@ export type LanguageCode =
 export type Language = {
   value: string
   langCode: LanguageCode
-  label: string
+  label: () => string
   emoji: string
 }
 
