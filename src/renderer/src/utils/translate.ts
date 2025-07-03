@@ -84,11 +84,11 @@ export const detectLanguageByUnicode = (text: string): Language => {
 export const detectLanguage = async (inputText: string): Promise<Language> => {
   const text = inputText.trim()
   if (!text) return LanguagesEnum.zhCN
-  let code: Language
+  let lang: Language
 
   // 如果文本长度小于20个字符，使用Unicode范围检测
   if (text.length < 20) {
-    code = detectLanguageByUnicode(text)
+    lang = detectLanguageByUnicode(text)
   } else {
     // franc 返回 ISO 639-3 代码
     const iso3 = franc(text)
@@ -112,10 +112,10 @@ export const detectLanguage = async (inputText: string): Promise<Language> => {
       urd: LanguagesEnum.urPK,
       zsm: LanguagesEnum.msMY
     }
-    code = isoMap[iso3] || LanguagesEnum.enUS
+    lang = isoMap[iso3] || LanguagesEnum.enUS
   }
 
-  return code
+  return lang
 }
 
 /**

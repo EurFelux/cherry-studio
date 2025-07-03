@@ -1764,13 +1764,11 @@ const migrateConfig = {
       japanese: 'ja-jp',
       russian: 'ru-ru'
     }
-    function isLanguageCode(value: unknown): value is LanguageCode {
-      return Object.values(langMap).includes(value as any)
-    }
+
     try {
       const origin = state.settings.targetLanguage
       const newLang = langMap[origin]
-      if (isLanguageCode(newLang)) state.settings.targetLanguage = newLang
+      if (newLang) state.settings.targetLanguage = newLang
       else state.settings.targetLanguage = 'en-us'
       return state
     } catch (error) {

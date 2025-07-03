@@ -200,13 +200,13 @@ const ActionTranslate: FC<Props> = ({ action, scrollToBottom }) => {
           <ArrowRightFromLine size={16} color="var(--color-text-3)" style={{ margin: '0 2px' }} />
           <Tooltip placement="bottom" title={t('translate.alter_language')} arrow>
             <Select
-              value={alterLanguage}
+              value={alterLanguage.langCode}
               style={{ minWidth: 80, maxWidth: 200, flex: 'auto' }}
               listHeight={160}
               title={t('translate.alter_language')}
               optionFilterProp="label"
               options={translateLanguageOptions.map((lang) => ({
-                value: lang.value,
+                value: lang.langCode,
                 label: (
                   <Space.Compact direction="horizontal" block>
                     <span role="img" aria-label={lang.emoji} style={{ marginRight: 8 }}>
@@ -216,7 +216,7 @@ const ActionTranslate: FC<Props> = ({ action, scrollToBottom }) => {
                   </Space.Compact>
                 )
               }))}
-              onChange={(value) => handleChangeLanguage(targetLanguage, value)}
+              onChange={(value) => handleChangeLanguage(targetLanguage, getLanguageByLangcode(value))}
               disabled={isLoading}
             />
           </Tooltip>

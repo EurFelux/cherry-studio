@@ -340,8 +340,8 @@ const TranslatePage: FC = () => {
       id: uuid(),
       sourceText,
       targetText,
-      sourceLanguage: sourceLanguage,
-      targetLanguage: targetLanguage,
+      sourceLanguage,
+      targetLanguage,
       createdAt: new Date().toISOString()
     }
     await db.translate_history.add(history)
@@ -376,10 +376,7 @@ const TranslatePage: FC = () => {
         actualSourceLanguage = sourceLanguage
       }
 
-      const result = determineTargetLanguage(actualSourceLanguage, targetLanguage, isBidirectional, [
-        bidirectionalPair[0],
-        bidirectionalPair[1]
-      ])
+      const result = determineTargetLanguage(actualSourceLanguage, targetLanguage, isBidirectional, bidirectionalPair)
       if (!result.success) {
         let errorMessage = ''
         if (result.errorType === 'same_language') {
@@ -638,7 +635,7 @@ const TranslatePage: FC = () => {
                 options={[
                   {
                     value: 'auto',
-                    label: detectedLanguage?.label()
+                    label: detectedLanguage
                       ? `${t('translate.detected.language')} (${detectedLanguage.label()})`
                       : t('translate.detected.language')
                   },
