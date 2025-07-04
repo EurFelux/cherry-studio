@@ -57,7 +57,7 @@ const MessageBlockEditor: FC<Props> = ({ message, topicId, onSave, onResend, onC
     }
     return relatedAssistantMessages.every((m) => {
       if (m.model) {
-        return isVisionModel(m.model)
+        return isVisionModel(m.model) || isGenerateImageModel(m.model)
       } else {
         // 若消息关联不存在的模型，视为其支持视觉
         return true
