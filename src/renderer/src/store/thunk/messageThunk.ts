@@ -1103,7 +1103,7 @@ export const resendMessageThunk =
         const resetMsg = resetAssistantMessage(originalMsg, {
           status: AssistantMessageStatus.PENDING,
           updatedAt: new Date().toISOString(),
-          ...(assistantMessagesToReset.length === 1 ? { model: assistant.model } : {})
+          ...(assistantMessagesToReset.length === 1 ? { model: originalMsg.model ?? assistant.model } : {})
         })
 
         resetDataList.push(resetMsg)
