@@ -55,7 +55,6 @@ export const handlePaste = async (
       // 短文本走默认粘贴行为，直接返回
       return false
     }
-    console.log('try to paste file/image', event.clipboardData?.files)
     // 2. 文件/图片粘贴（仅在无文本时处理）
     if (event.clipboardData?.files && event.clipboardData.files.length > 0) {
       event.preventDefault()
