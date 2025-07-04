@@ -518,7 +518,6 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
 
   const onPaste = useCallback(
     async (event: ClipboardEvent) => {
-      console.log('onPaste', supportedExts, event.clipboardData?.files)
       return await PasteService.handlePaste(
         event,
         supportedExts,
