@@ -53,7 +53,7 @@ export function useAssistant(id: string) {
     assistant: assistantWithModel,
     model,
     addTopic: (topic: Topic) => dispatch(addTopic({ assistantId: assistant.id, topic })),
-    removeTopic: (topic: Topic) => {
+    removeTopic: async (topic: Topic) => {
       TopicManager.removeTopic(topic, assistant.id)
     },
     moveTopic: (topic: Topic, toAssistant: Assistant) => {
@@ -74,7 +74,7 @@ export function useAssistant(id: string) {
     },
     updateTopic: (topic: Topic) => dispatch(updateTopic({ assistantId: assistant.id, topic })),
     updateTopics: (topics: Topic[]) => dispatch(updateTopics({ assistantId: assistant.id, topics })),
-    removeAllTopics: () => {
+    removeAllTopics: async () => {
       TopicManager.removeAllTopics(assistant.id)
     },
     setModel: useCallback(
