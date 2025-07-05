@@ -1728,15 +1728,15 @@ const migrateConfig = {
     }
   },
   '120': (state: RootState) => {
-    const langMap: Record<string, LanguageCode> = {
-      english: 'en-us',
-      chinese: 'zh-cn',
-      'chinese-traditional': 'zh-tw',
-      japanese: 'ja-jp',
-      russian: 'ru-ru'
-    }
-
     try {
+      const langMap: Record<string, LanguageCode> = {
+        english: 'en-us',
+        chinese: 'zh-cn',
+        'chinese-traditional': 'zh-tw',
+        japanese: 'ja-jp',
+        russian: 'ru-ru'
+      }
+
       const origin = state.settings.targetLanguage
       const newLang = langMap[origin]
       if (newLang) state.settings.targetLanguage = newLang
