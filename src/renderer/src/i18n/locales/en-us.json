@@ -1039,6 +1039,7 @@
       "modelscope": "ModelScope",
       "moonshot": "Moonshot",
       "nvidia": "Nvidia",
+      "new-api": "New API",
       "o3": "O3",
       "ocoolai": "ocoolAI",
       "ollama": "Ollama",
@@ -1616,6 +1617,7 @@
       "messages.use_serif_font": "Use serif font",
       "model": "Default Model",
       "models.add.add_model": "Add Model",
+      "models.add.batch_add_models": "Batch Add Models",
       "models.add.group_name": "Group Name",
       "models.add.group_name.placeholder": "Optional e.g. ChatGPT",
       "models.add.group_name.tooltip": "Optional e.g. ChatGPT",
@@ -1625,6 +1627,10 @@
       "models.add.model_id.tooltip": "Example: gpt-3.5-turbo",
       "models.add.model_name": "Model Name",
       "models.add.model_name.tooltip": "Optional e.g. GPT-4",
+      "models.add.endpoint_type": "Endpoint Type",
+      "models.add.endpoint_type.placeholder": "Select endpoint type",
+      "models.add.endpoint_type.tooltip": "Select the API endpoint type format",
+      "models.add.endpoint_type.required": "Please select an endpoint type",
       "models.add.model_name.placeholder": "Optional e.g. GPT-4",
       "models.check.all": "All",
       "models.check.all_models_passed": "All models check passed",
@@ -1799,6 +1805,13 @@
         "title": "Proxy Settings"
       },
       "proxy.title": "Proxy Address",
+      "hardware_acceleration": {
+        "title": "Disable Hardware Acceleration",
+        "confirm": {
+          "title": "Restart Required",
+          "content": "Disabling hardware acceleration requires restarting the app to take effect. Do you want to restart now?"
+        }
+      },
       "quickAssistant": {
         "click_tray_to_show": "Click the tray icon to start",
         "enable_quick_assistant": "Enable Quick Assistant",
@@ -1883,7 +1896,7 @@
           "search_max_result": "Number of search results",
           "search_provider": "Search service provider",
           "search_provider_placeholder": "Choose a search service provider.",
-          "search_result_default": "Default",
+          "search_max_result.tooltip": "When search result compression is disabled, the number of results may be too large, which may lead to insufficient tokens",
           "search_with_time": "Search with dates included",
           "tavily": {
             "api_key": "Tavily API Key",
@@ -1918,7 +1931,6 @@
             "cutoff.unit.token": "Token",
             "method.rag": "RAG",
             "rag.document_count": "Document Count",
-            "rag.document_count.default": "Default",
             "rag.document_count.tooltip": "Expected number of documents to extract from each search result, the actual total number of extracted documents is this value multiplied by the number of search results.",
             "rag.embedding_dimensions.auto_get": "Auto Get Dimensions",
             "rag.embedding_dimensions.placeholder": "Leave empty",

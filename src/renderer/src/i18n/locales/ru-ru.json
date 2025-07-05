@@ -1039,6 +1039,7 @@
       "modelscope": "ModelScope",
       "moonshot": "Moonshot",
       "nvidia": "Nvidia",
+      "new-api": "New API",
       "o3": "O3",
       "ocoolai": "ocoolAI",
       "ollama": "Ollama",
@@ -1604,6 +1605,7 @@
       "messages.use_serif_font": "Использовать serif шрифт",
       "model": "Модель по умолчанию",
       "models.add.add_model": "Добавить модель",
+      "models.add.batch_add_models": "Пакетное добавление моделей",
       "models.add.group_name": "Имя группы",
       "models.add.group_name.placeholder": "Необязательно, например, ChatGPT",
       "models.add.group_name.tooltip": "Необязательно, например, ChatGPT",
@@ -1613,6 +1615,10 @@
       "models.add.model_id.tooltip": "Пример: gpt-3.5-turbo",
       "models.add.model_name": "Имя модели",
       "models.add.model_name.tooltip": "Необязательно, например, GPT-4",
+      "models.add.endpoint_type": "Тип конечной точки",
+      "models.add.endpoint_type.placeholder": "Выберите тип конечной точки",
+      "models.add.endpoint_type.tooltip": "Выберите формат типа конечной точки API",
+      "models.add.endpoint_type.required": "Пожалуйста, выберите тип конечной точки",
       "models.add.model_name.placeholder": "Необязательно, например, GPT-4",
       "models.check.all": "Все",
       "models.check.all_models_passed": "Все модели прошли проверку",
@@ -1781,6 +1787,13 @@
         "title": "Настройки прокси"
       },
       "proxy.title": "Адрес прокси",
+      "hardware_acceleration": {
+        "title": "Отключить аппаратное ускорение",
+        "confirm": {
+          "title": "Требуется перезапуск",
+          "content": "Отключение аппаратного ускорения требует перезапуска приложения для вступления в силу. Перезапустить приложение?"
+        }
+      },
       "quickAssistant": {
         "click_tray_to_show": "Нажмите на иконку трея для запуска",
         "enable_quick_assistant": "Включить быстрый помощник",
@@ -1836,9 +1849,9 @@
           "get_api_key": "Получить ключ API",
           "no_provider_selected": "Пожалуйста, выберите поставщика поисковых услуг, затем проверьте.",
           "search_max_result": "Количество результатов поиска",
+          "search_max_result.tooltip": "При отключенном сжатии результатов поиска, количество результатов может быть слишком большим, что приведет к исчерпанию токенов",
           "search_provider": "поиск сервисного провайдера",
           "search_provider_placeholder": "Выберите поставщика поисковых услуг",
-          "search_result_default": "По умолчанию",
           "search_with_time": "Поиск, содержащий дату",
           "tavily": {
             "api_key": "Ключ API Tavily",
@@ -1873,7 +1886,6 @@
             "cutoff.unit.token": "Токены",
             "method.rag": "RAG",
             "rag.document_count": "Количество документов",
-            "rag.document_count.default": "По умолчанию",
             "rag.document_count.tooltip": "Ожидаемое количество документов, которые будут извлечены из каждого результата поиска. Фактическое количество извлеченных документов равно этому значению, умноженному на количество результатов поиска.",
             "rag.embedding_dimensions.auto_get": "Автоматически получить размерности",
             "rag.embedding_dimensions.placeholder": "Не устанавливать размерности",
