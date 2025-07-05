@@ -179,13 +179,18 @@ export const TopicManager = {
    * @param topic
    * @param assistantId
    */
-  async removeTopic(topic: Topic, assistantId: string) {
+  async removeTopic(topic: Topic, assistantId: string): Promise<void> {
     await this.clearTopicMessages(topic.id)
     await db.topics.delete(topic.id)
     store.dispatch(removeTopic({ assistantId, topic }))
   },
 
-  async removeAllTopics(assistantId: string) {
+  /**
+   * 删除指定话题，包括话题本身与话题中所有消息及其blocks
+   * @param topic - 要删除的话题对象
+   * @param assistantId - 关联的助手ID
+   */
+  async removeAllTopics(assistantId: string): Promise<void> {
     const topics = getAssistantById(assistantId)?.topics
     if (!topics) {
       return
