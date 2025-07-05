@@ -134,28 +134,6 @@ export const MALAY: Language = {
   emoji: '🇲🇾'
 }
 
-export const translateLanguageOptions: Language[] = [
-  ENGLISH,
-  CHINESE_SIMPLIFIED,
-  CHINESE_TRADITIONAL,
-  JAPANESE,
-  KOREAN,
-  FRENCH,
-  GERMAN,
-  ITALIAN,
-  SPANISH,
-  PORTUGUESE,
-  RUSSIAN,
-  POLISH,
-  ARABIC,
-  TURKISH,
-  THAI,
-  VIETNAMESE,
-  INDONESIAN,
-  URDU,
-  MALAY
-]
-
 export const LanguagesEnum = {
   enUS: ENGLISH,
   zhCN: CHINESE_SIMPLIFIED,
@@ -177,3 +155,5 @@ export const LanguagesEnum = {
   urPK: URDU,
   msMY: MALAY
 } as const
+
+export const translateLanguageOptions: Language[] = Object.values(LanguagesEnum)
