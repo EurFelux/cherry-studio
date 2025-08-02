@@ -14,32 +14,42 @@ interface TextCallbacksDependencies {
   getCitationBlockId: () => string | null
 }
 
+
+
 export const createTextCallbacks = (deps: TextCallbacksDependencies) => {
   const { blockManager, getState, assistantMsgId, getCitationBlockId } = deps
 
   // 内部维护的状态
   let mainTextBlockId: string | null = null
 
+  // 保证文本块初始化完成
+  async function ensureMainTextBlockInitialized() {
+  if (blockManager.hasInitialPlaceholder) {
+          const changes = {
+            type: MessageBlockType.MAIN_TEXT,
+            content: '',
+            status: MessageBlockStatus.STREAMING
+          }
+          mainTextBlockId = blockManager.initialPlaceholderBlockId!
+          blockManager.smartBlockUpdate(mainTextBlockId, changes, MessageBlockType.MAIN_TEXT, true)
+        } else if (!mainTextBlockId) {
+          const newBlock = createMainTextBlock(assistantMsgId, '', {
+            status: MessageBlockStatus.STREAMING
+          })
+          mainTextBlockId = newBlock.id
+          await blockManager.handleBlockTransition(newBlock, MessageBlockType.MAIN_TEXT)
+        }
+  }
+
   return {
     onTextStart: async () => {
-      if (blockManager.hasInitialPlaceholder) {
-        const changes = {
-          type: MessageBlockType.MAIN_TEXT,
-          content: '',
-          status: MessageBlockStatus.STREAMING
-        }
-        mainTextBlockId = blockManager.initialPlaceholderBlockId!
-        blockManager.smartBlockUpdate(mainTextBlockId, changes, MessageBlockType.MAIN_TEXT, true)
-      } else if (!mainTextBlockId) {
-        const newBlock = createMainTextBlock(assistantMsgId, '', {
-          status: MessageBlockStatus.STREAMING
-        })
-        mainTextBlockId = newBlock.id
-        await blockManager.handleBlockTransition(newBlock, MessageBlockType.MAIN_TEXT)
-      }
+      await ensureMainTextBlockInitialized();
     },
 
     onTextChunk: async (text: string) => {
+      if (mainTextBlockId === null) {
+        await ensureMainTextBlockInitialized();
+      }
       const citationBlockId = getCitationBlockId()
       const citationBlockSource = citationBlockId
         ? (getState().messageBlocks.entities[citationBlockId] as CitationMessageBlock).response?.source
