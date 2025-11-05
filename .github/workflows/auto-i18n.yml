@@ -52,7 +52,7 @@ jobs:
 
       - name: 📦 Install dependencies
         run: |
-          yarn install --immutable --immutable-cache
+          yarn install
 
       - name: 🏃‍♀️ Translate
         run: yarn sync:i18n && yarn auto:i18n
