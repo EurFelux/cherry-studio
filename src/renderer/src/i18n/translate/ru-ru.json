@@ -8,7 +8,8 @@
       },
       "title": "Добавить агента",
       "type": {
-        "placeholder": "Выбор типа агента"
+        "placeholder": "Выбор типа агента",
+        "test": "[to be translated]:Create some to be translated."
       }
     },
     "delete": {
