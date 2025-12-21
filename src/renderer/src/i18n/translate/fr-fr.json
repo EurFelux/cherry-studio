@@ -8,7 +8,8 @@
       },
       "title": "Ajouter un agent",
       "type": {
-        "placeholder": "Sélectionner le type d'Agent"
+        "placeholder": "Sélectionner le type d'Agent",
+        "test": "Créez des éléments à traduire."
       }
     },
     "delete": {

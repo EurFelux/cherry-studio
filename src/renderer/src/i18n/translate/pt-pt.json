@@ -8,7 +8,8 @@
       },
       "title": "Adicionar Agente",
       "type": {
-        "placeholder": "Selecionar tipo de Agente"
+        "placeholder": "Selecionar tipo de Agente",
+        "test": "Criar algum texto a ser traduzido."
       }
     },
     "delete": {
