@@ -8,7 +8,8 @@
       },
       "title": "添加 Agent",
       "type": {
-        "placeholder": "选择 Agent 类型"
+        "placeholder": "选择 Agent 类型",
+        "test": "创建一些待翻译内容。"
       }
     },
     "delete": {
