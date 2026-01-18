@@ -8,7 +8,8 @@
       },
       "title": "Προσθήκη Agent",
       "type": {
-        "placeholder": "Επιλέξτε τύπο Agent"
+        "placeholder": "Επιλέξτε τύπο Agent",
+        "test": "Δημιουργήστε ένα προς μετάφραση."
       }
     },
     "delete": {
