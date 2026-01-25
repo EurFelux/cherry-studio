@@ -8,7 +8,8 @@
       },
       "title": "新增代理",
       "type": {
-        "placeholder": "選擇 Agent 類型"
+        "placeholder": "選擇 Agent 類型",
+        "test": "創建一些待翻譯的內容。"
       }
     },
     "delete": {
