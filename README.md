@@ -69,13 +69,9 @@ Cherry Studio is a desktop client that supports multiple LLM providers, availabl
 
 ❤️ Like Cherry Studio? Give it a star 🌟 or [Sponsor](docs/zh/guides/sponsor.md) to support the development!
 
-# 🌠 Screenshot
-
-![](https://github.com/user-attachments/assets/36dddb2c-e0fb-4a5f-9411-91447bab6e18)
-
-![](https://github.com/user-attachments/assets/f549e8a0-2385-40b4-b52b-2039e39f2930)
-
-![](https://github.com/user-attachments/assets/58e0237c-4d36-40de-b428-53051d982026)
+Just randomly remove some lines.
+Haha.
+Oh yeah.
 
 # 🌟 Key Features
 
